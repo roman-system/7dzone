@@ -440,6 +440,36 @@ footer span{color:var(--accent);}
   [data-theme="anime"] .card:hover{transform:none;}
   [data-theme="lava"] .card:hover{transform:none;border-left:4px solid var(--accent);}
 }
+
+/* ===== PINNWAND ===== */
+.pinnwand-post{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:1rem;}
+.pinnwand-img{width:100%;max-height:340px;object-fit:cover;display:block;}
+.pinnwand-meta{padding:0.7rem 1rem 0.9rem;}
+.pinnwand-user{font-weight:900;font-size:0.9rem;color:var(--accent);}
+.pinnwand-caption{font-size:0.88rem;color:var(--text);margin:0.3rem 0 0.5rem;}
+.pinnwand-time{font-size:0.72rem;color:var(--text2);}
+.pinnwand-del{float:right;background:none;border:none;color:#ff4444;cursor:pointer;font-size:0.85rem;}
+
+/* ===== SCHWARZES BRETT ===== */
+.board-item{border-radius:14px;padding:1rem 1.1rem;margin-bottom:0.8rem;border-left:5px solid;}
+.board-item-title{font-family:'Press Start 2P';font-size:0.55rem;margin-bottom:0.5rem;}
+.board-item-body{font-size:0.9rem;line-height:1.5;}
+.board-item-meta{font-size:0.72rem;color:var(--text2);margin-top:0.5rem;}
+.board-del{float:right;background:none;border:none;color:#ff4444;cursor:pointer;font-size:0.85rem;padding:0;}
+
+/* ===== ACHIEVEMENTS ===== */
+.ach-card{background:var(--bg);border:2px solid var(--border);border-radius:14px;padding:0.8rem 0.5rem;text-align:center;transition:all 0.3s;}
+.ach-card.unlocked{border-color:var(--accent);box-shadow:0 0 12px var(--glow);}
+.ach-card.locked{opacity:0.35;filter:grayscale(1);}
+.ach-icon{font-size:2rem;display:block;margin-bottom:0.3rem;}
+.ach-name{font-family:'Press Start 2P';font-size:0.38rem;color:var(--text);line-height:1.5;}
+.ach-desc{font-size:0.68rem;color:var(--text2);margin-top:0.2rem;}
+.ach-prog{height:6px;background:var(--border);border-radius:100px;margin-top:0.4rem;overflow:hidden;}
+.ach-prog-fill{height:100%;background:var(--accent);border-radius:100px;transition:width 0.5s;}
+
+/* ===== FLAPPY CANVAS ===== */
+#flappyCanvas{cursor:pointer;}
+#tetrisCanvas{background:#111;}
 </style>
 </head>
 <body>
@@ -542,6 +572,8 @@ footer span{color:var(--accent);}
   <button class="tbtn" onclick="setTheme('lava',this)">🔴 Lava</button>
   <button class="tbtn" onclick="setTheme('galaxy',this)">🌌 Galaxy</button>
   <button class="tbtn" onclick="setTheme('matrix',this)">💚 Matrix</button>
+  <button class="tbtn" onclick="setTheme('cyberpunk',this)">⚡ Cyber</button>
+  <button class="tbtn" onclick="setTheme('midnight',this)">🌙 Midnight</button>
 </div>
 
 <header>
@@ -550,7 +582,7 @@ footer span{color:var(--accent);}
 </header>
 
 <div class="page-tabs">
-  <button class="ptab on"  onclick="goPage('home',this)">🏠 Home</button>
+  <button class="ptab" onclick="goPage('home',this)">🏠 Home</button>
   <button class="ptab" onclick="goPage('gaming',this)">🎮 Spiele</button>
   <button class="ptab" onclick="goPage('jokes',this)">😂 Witze</button>
   <button class="ptab" onclick="goPage('quiz',this)">🎲 Quiz</button>
@@ -558,7 +590,10 @@ footer span{color:var(--accent);}
   <button class="ptab" onclick="goPage('chat',this)">💬 Chat</button>
   <button class="ptab" onclick="goPage('challenges',this)">🏆 Challenges</button>
   <button class="ptab" onclick="goPage('vote',this)">⭐ Voting</button>
-  <button class="ptab" onclick="goPage('leaderboard',this)">🏆 Rangliste</button>
+  <button class="ptab" onclick="goPage('leaderboard',this)">📊 Rangliste</button>
+  <button class="ptab" onclick="goPage('pinnwand',this)">📸 Pinnwand</button>
+  <button class="ptab" onclick="goPage('board',this)">📋 Schwarzes Brett</button>
+  <button class="ptab" onclick="goPage('achievements',this)">🏅 Badges</button>
   <button class="ptab" onclick="goPage('profile',this)">👤 Profil</button>
   <button class="ptab" onclick="goPage('admin',this)" id="adminTab" style="display:none;border-color:#ff4444;color:#ff4444;">👑 Admin</button>
   <button class="ptab" onclick="goPage('settings',this)" id="settingsTab">⚙️ Settings</button>
@@ -613,8 +648,10 @@ footer span{color:var(--accent);}
 <div class="wrap">
   <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1rem;">
     <button class="btn" id="gbtn-catch" onclick="showGame('catch')">🎮 Fang Emoji</button>
-    <button class="btn" id="gbtn-snake" onclick="showGame('snake')">🐍 hab name vergessen</button>
+    <button class="btn" id="gbtn-snake" onclick="showGame('snake')">🐍 Snake</button>
     <button class="btn" id="gbtn-memory" onclick="showGame('memory')">🧠 Memory</button>
+    <button class="btn" id="gbtn-flappy" onclick="showGame('flappy')">🐦 Flappy Bird</button>
+    <button class="btn" id="gbtn-tetris" onclick="showGame('tetris')">🟦 Tetris</button>
   </div>
 
   <div id="game-catch" style="display:none;">
@@ -696,10 +733,64 @@ footer span{color:var(--accent);}
     <div id="memMsg"></div>
   </div>
   </div>
-</div>
-</div>
 
-<!-- JOKES -->
+  <!-- FLAPPY BIRD -->
+  <div id="game-flappy" style="display:none;">
+  <div class="card">
+    <div class="card-title">🐦 FLAPPY BIRD!!</div>
+    <p>tippe / leertaste zum fliegen!! durch die rohre!! 🟢</p>
+    <div class="game-hud">
+      <div class="hud-box">SCORE: <span id="flappyScore">0</span></div>
+      <div class="hud-box">BEST: <span id="flappyBest">0</span></div>
+    </div>
+    <canvas id="flappyCanvas" width="360" height="400" style="width:100%;border-radius:10px;background:#87CEEB;display:block;touch-action:none;"></canvas>
+    <div class="btn-row" style="margin-top:0.6rem;">
+      <button class="btn" ontouchstart="" onclick="startFlappy()">▶ START</button>
+      <button class="btn red" ontouchstart="" onclick="resetFlappy()">✕ RESET</button>
+    </div>
+    <div id="flappyMsg" style="text-align:center;font-family:'Press Start 2P';font-size:0.5rem;color:var(--text2);margin-top:0.5rem;">tippe zum starten!!</div>
+  </div>
+  </div>
+
+  <!-- TETRIS -->
+  <div id="game-tetris" style="display:none;">
+  <div class="card">
+    <div class="card-title">🟦 TETRIS!!</div>
+    <p>pfeiltasten / swipe zum steuern!! reihen füllen = punkte!! 🎮</p>
+    <div class="game-hud">
+      <div class="hud-box">SCORE: <span id="tetrisScore">0</span></div>
+      <div class="hud-box">LINES: <span id="tetrisLines">0</span></div>
+      <div class="hud-box">LEVEL: <span id="tetrisLevel">1</span></div>
+      <div class="hud-box">BEST: <span id="tetrisBest">0</span></div>
+    </div>
+    <div style="display:flex;gap:0.8rem;justify-content:center;align-items:flex-start;">
+      <canvas id="tetrisCanvas" width="200" height="400" style="border-radius:8px;border:2px solid var(--border);"></canvas>
+      <div>
+        <div style="font-family:'Press Start 2P';font-size:0.44rem;color:var(--text2);margin-bottom:0.4rem;">NEXT:</div>
+        <canvas id="tetrisNext" width="80" height="80" style="border:1px solid var(--border);border-radius:6px;"></canvas>
+      </div>
+    </div>
+    <div class="dpad" style="margin-top:0.8rem;">
+      <div></div>
+      <button class="dpad-btn" ontouchstart="event.preventDefault();tetrisMove('up')" onmousedown="tetrisMove('up')">▲</button>
+      <div></div>
+      <button class="dpad-btn" ontouchstart="event.preventDefault();tetrisMove('left')" onmousedown="tetrisMove('left')">◀</button>
+      <button class="dpad-btn" ontouchstart="event.preventDefault();tetrisMove('drop')" onmousedown="tetrisMove('drop')">⬇</button>
+      <button class="dpad-btn" ontouchstart="event.preventDefault();tetrisMove('right')" onmousedown="tetrisMove('right')">▶</button>
+      <div></div>
+      <button class="dpad-btn" ontouchstart="event.preventDefault();tetrisMove('down')" onmousedown="tetrisMove('down')">▼</button>
+      <div></div>
+    </div>
+    <div class="btn-row" style="margin-top:0.6rem;">
+      <button class="btn" ontouchstart="" onclick="startTetris()">▶ START</button>
+      <button class="btn red" ontouchstart="" onclick="resetTetris()">✕ RESET</button>
+    </div>
+    <div id="tetrisMsg" style="text-align:center;font-family:'Press Start 2P';font-size:0.5rem;color:var(--text2);margin-top:0.4rem;">drück start!!</div>
+  </div>
+  </div>
+
+</div>
+</div>
 <div class="page" id="page-jokes">
 <div class="wrap">
   <div class="card">
@@ -1160,6 +1251,73 @@ footer span{color:var(--accent);}
 
 
 
+<!-- PINNWAND PAGE -->
+<div class="page" id="page-pinnwand">
+<div class="wrap">
+  <div class="card">
+    <div class="card-title">📸 PINNWAND</div>
+    <p style="margin-bottom:1rem;">teile fotos & bilder mit der klasse!! 🖼️</p>
+    <div style="display:flex;flex-direction:column;gap:0.6rem;">
+      <textarea id="pinnwandCaption" placeholder="was ist auf dem bild?? 📝" style="background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:0.7rem;color:var(--text);font-family:'Nunito';font-size:0.95rem;resize:none;height:70px;width:100%;font-size:16px;"></textarea>
+      <label style="display:flex;align-items:center;gap:0.7rem;background:var(--bg);border:1.5px dashed var(--border);border-radius:10px;padding:0.9rem 1rem;cursor:pointer;font-size:0.88rem;color:var(--text2);">
+        <span style="font-size:1.6rem;">🖼️</span><span id="pinnwandFileLabel">bild auswählen...</span>
+        <input type="file" id="pinnwandFile" accept="image/*" onchange="pinnwandFileChanged(this)" style="display:none;"/>
+      </label>
+      <button class="btn" ontouchstart="" onclick="pinnwandPost()" style="align-self:flex-start;">📤 POSTEN</button>
+    </div>
+  </div>
+  <div id="pinnwandFeed"><div style="text-align:center;padding:2rem;color:var(--text2);">⏳ laden...</div></div>
+</div>
+</div>
+
+<!-- SCHWARZES BRETT PAGE -->
+<div class="page" id="page-board">
+<div class="wrap">
+  <div class="card" id="boardAdminCard" style="display:none;border-color:var(--accent);">
+    <div class="card-title">📋 ANKÜNDIGUNG POSTEN</div>
+    <input id="boardTitle" placeholder="Titel 📌" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:0.6rem 0.8rem;color:var(--text);font-family:'Nunito';font-size:16px;margin-bottom:0.6rem;"/>
+    <textarea id="boardBody" placeholder="Text der Ankündigung..." style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:0.6rem 0.8rem;color:var(--text);font-family:'Nunito';font-size:16px;resize:none;height:90px;margin-bottom:0.6rem;"></textarea>
+    <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+      <select id="boardColor" style="background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:0.5rem 0.7rem;color:var(--text);font-size:16px;">
+        <option value="#00ff88">🟢 Grün</option>
+        <option value="#00ccff">🔵 Blau</option>
+        <option value="#ff4444">🔴 Rot</option>
+        <option value="#ffaa00">🟡 Gelb</option>
+        <option value="#ff44cc">🩷 Pink</option>
+      </select>
+      <select id="boardEmoji" style="background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:0.5rem 0.7rem;color:var(--text);font-size:16px;">
+        <option>📌</option><option>🔥</option><option>⚠️</option><option>✅</option><option>🎉</option><option>📅</option><option>❗</option><option>💡</option>
+      </select>
+      <button class="btn" ontouchstart="" onclick="boardPost()" style="flex:1;min-width:100px;">📤 POSTEN</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">📋 SCHWARZES BRETT</div>
+    <p style="margin-bottom:0.8rem;color:var(--text2);">wichtige ankündigungen von admins!! 📣</p>
+    <div id="boardFeed"><div style="text-align:center;padding:2rem;color:var(--text2);">⏳ laden...</div></div>
+  </div>
+</div>
+</div>
+
+<!-- ACHIEVEMENTS PAGE -->
+<div class="page" id="page-achievements">
+<div class="wrap">
+  <div class="card">
+    <div class="card-title">🏅 DEINE BADGES</div>
+    <p style="margin-bottom:0.8rem;color:var(--text2);">schalte badges frei durch aktivität!! 🔓</p>
+    <div id="achievementProgress" style="margin-bottom:1rem;"></div>
+    <div id="achievementGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.7rem;"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">🏆 ALLE BADGES</div>
+    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:0.8rem;">zeigt alle möglichen badges — grau = noch nicht freigeschaltet</p>
+    <div id="allAchievementGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.7rem;"></div>
+  </div>
+</div>
+</div>
+
+<!-- GAMES PAGE: add Flappy + Tetris -->
+
 <footer>made by <span>halil 🐱</span> & <span>roman 🦫</span></footer>
 
 <!-- BOTTOM NAV -->
@@ -1182,6 +1340,9 @@ footer span{color:var(--accent);}
     <button onclick="goPageFromMore('wordle')" class="more-btn"><span style="font-size:1.5rem;">🟩</span><span>Wordle</span></button>
     <button onclick="goPageFromMore('challenges')" class="more-btn"><span style="font-size:1.5rem;">🏆</span><span>Challenges</span></button>
     <button onclick="goPageFromMore('leaderboard')" class="more-btn"><span style="font-size:1.5rem;">📊</span><span>Rangliste</span></button>
+    <button onclick="goPageFromMore('pinnwand')" class="more-btn"><span style="font-size:1.5rem;">📸</span><span>Pinnwand</span></button>
+    <button onclick="goPageFromMore('board')" class="more-btn"><span style="font-size:1.5rem;">📋</span><span>Brett</span></button>
+    <button onclick="goPageFromMore('achievements')" class="more-btn"><span style="font-size:1.5rem;">🏅</span><span>Badges</span></button>
     <button onclick="goPageFromMore('settings')" class="more-btn"><span style="font-size:1.5rem;">⚙️</span><span>Settings</span></button>
     <button onclick="goPageFromMore('admin')" class="more-btn" id="bn-admin" style="display:none;color:#ff4444;"><span style="font-size:1.5rem;">👑</span><span>Admin</span></button>
   </div>
@@ -1428,6 +1589,9 @@ function goPage(name,btn,bnavBtn){
   if(name==='chat'&&currentUser) initChat();
   if(name==='leaderboard') loadXpLeaderboard();
   if(name==='admin') setTimeout(fixAdminTouches, 100);
+  if(name==='pinnwand') loadPinnwand();
+  if(name==='board') loadBoard();
+  if(name==='achievements') loadAchievements();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function goPageByName(name){goPage(name,null,null);}
@@ -1613,11 +1777,14 @@ function toggleMusic(){
 function setVol(v){currentVol=parseFloat(v);if(audioCtx&&musicOn&&musicNodes[0])musicNodes[0].gain.setTargetAtTime(currentVol,audioCtx.currentTime,0.1);}
 
 function showGame(name){
-  document.getElementById('game-catch').style.display=name==='catch'?'block':'none';
-  document.getElementById('game-snake').style.display=name==='snake'?'block':'none';
-  document.getElementById('game-memory').style.display=name==='memory'?'block':'none';
+  ['catch','snake','memory','flappy','tetris'].forEach(g=>{
+    const el=document.getElementById('game-'+g);
+    if(el) el.style.display=g===name?'block':'none';
+  });
   document.querySelectorAll('[id^="gbtn-"]').forEach(b=>b.classList.remove('on'));
-  document.getElementById('gbtn-'+name).classList.add('on');
+  const gb=document.getElementById('gbtn-'+name);if(gb) gb.classList.add('on');
+  if(name==='flappy') setTimeout(resetFlappy,50);
+  if(name==='tetris') setTimeout(resetTetris,50);
 }
 document.getElementById('gbtn-snake').classList.add('on');
 
@@ -3314,6 +3481,527 @@ window.sendChat=sendChat;
 window.wordleShare=wordleShare;
 window.renderChallenges=renderChallenges;
 window.initChat=initChat;
+
+
+// ============================================================
+// FLAPPY BIRD
+// ============================================================
+let flappyRunning=false,flappyAF=null,flappyScore=0,flappyBestScore=0;
+let flappyBird={x:80,y:200,vy:0},flappyPipes=[],flappyFrame=0,flappyStarted=false;
+const FC=()=>document.getElementById('flappyCanvas');
+const FCTX=()=>FC().getContext('2d');
+const FG=0.45,FJUMP=-7.5,FPIPE_W=55,FPIPE_GAP=130,FPIPE_SPEED=2.5;
+
+function flappyDraw(){
+  const c=FC(),ctx=FCTX(),W=c.width,H=c.height;
+  // sky gradient
+  const sky=ctx.createLinearGradient(0,0,0,H);
+  sky.addColorStop(0,'#87CEEB');sky.addColorStop(1,'#c9e8f7');
+  ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+  // clouds
+  ctx.fillStyle='rgba(255,255,255,0.8)';
+  [[60,60,30],[150,40,20],[250,70,25],[300,50,18]].forEach(([x,y,r])=>{
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc(x+r*0.8,y,r*0.7,0,Math.PI*2);ctx.fill();
+  });
+  // pipes
+  flappyPipes.forEach(p=>{
+    ctx.fillStyle='#2ecc40';
+    ctx.fillRect(p.x,0,FPIPE_W,p.top);
+    ctx.fillRect(p.x,p.top+FPIPE_GAP,FPIPE_W,H-(p.top+FPIPE_GAP));
+    ctx.fillStyle='#27ae60';
+    ctx.fillRect(p.x-4,p.top-20,FPIPE_W+8,22);
+    ctx.fillRect(p.x-4,p.top+FPIPE_GAP,FPIPE_W+8,22);
+  });
+  // ground
+  ctx.fillStyle='#8B6914';ctx.fillRect(0,H-30,W,30);
+  ctx.fillStyle='#5a8a00';ctx.fillRect(0,H-32,W,6);
+  // bird
+  const b=flappyBird;
+  ctx.save();ctx.translate(b.x,b.y);
+  const rot=Math.max(-0.5,Math.min(1,b.vy/12));
+  ctx.rotate(rot);
+  ctx.font='26px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('🐦',0,0);
+  ctx.restore();
+  // score
+  ctx.fillStyle='white';ctx.strokeStyle='rgba(0,0,0,0.5)';
+  ctx.font='bold 28px Nunito';ctx.lineWidth=3;ctx.textAlign='center';
+  ctx.strokeText(flappyScore,W/2,50);ctx.fillText(flappyScore,W/2,50);
+  if(!flappyStarted&&!flappyRunning){
+    ctx.fillStyle='rgba(0,0,0,0.45)';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='white';ctx.font="bold 20px 'Press Start 2P'";
+    ctx.textAlign='center';ctx.fillText('TAP TO FLY!',W/2,H/2);
+  }
+}
+
+function flappyUpdate(){
+  if(!flappyRunning) return;
+  flappyFrame++;
+  flappyBird.vy+=FG;
+  flappyBird.y+=flappyBird.vy;
+  // spawn pipes
+  if(flappyFrame%90===0){
+    const top=60+Math.random()*(FC().height-FPIPE_GAP-120);
+    flappyPipes.push({x:FC().width,top,scored:false});
+  }
+  flappyPipes.forEach(p=>{p.x-=FPIPE_SPEED;});
+  flappyPipes=flappyPipes.filter(p=>p.x>-FPIPE_W-10);
+  // score
+  flappyPipes.forEach(p=>{
+    if(!p.scored&&p.x+FPIPE_W<flappyBird.x){p.scored=true;flappyScore++;document.getElementById('flappyScore').textContent=flappyScore;showEgg('+1 🐦');}
+  });
+  // collision: ground/ceiling
+  const H=FC().height;
+  if(flappyBird.y>H-40||flappyBird.y<0) return flappyGameOver();
+  // collision: pipes
+  for(const p of flappyPipes){
+    if(flappyBird.x+10>p.x&&flappyBird.x-10<p.x+FPIPE_W){
+      if(flappyBird.y-12<p.top||flappyBird.y+12>p.top+FPIPE_GAP) return flappyGameOver();
+    }
+  }
+  flappyDraw();
+  flappyAF=requestAnimationFrame(flappyUpdate);
+}
+
+function flappyJump(){
+  if(!flappyRunning&&flappyStarted) return;
+  if(!flappyStarted){flappyStarted=true;flappyRunning=true;flappyAF=requestAnimationFrame(flappyUpdate);}
+  flappyBird.vy=FJUMP;
+}
+
+function flappyGameOver(){
+  flappyRunning=false;
+  cancelAnimationFrame(flappyAF);
+  if(flappyScore>flappyBestScore){flappyBestScore=flappyScore;document.getElementById('flappyBest').textContent=flappyBestScore;try{localStorage.setItem('flappyBest',flappyBestScore);}catch(e){}}
+  flappyDraw();
+  const ctx=FCTX(),W=FC().width,H=FC().height;
+  ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='white';ctx.textAlign='center';
+  ctx.font="bold 18px 'Press Start 2P'";ctx.fillText('GAME OVER!!',W/2,H/2-30);
+  ctx.font='bold 14px Nunito';ctx.fillText('Score: '+flappyScore,W/2,H/2+5);
+  ctx.font='12px Nunito';ctx.fillText('tap to restart',W/2,H/2+35);
+  if(flappyScore>=5) giveXP(flappyScore*2,'Flappy Bird');
+  document.getElementById('flappyMsg').textContent='game over!! score: '+flappyScore;
+}
+
+function startFlappy(){flappyJump();}
+function resetFlappy(){
+  cancelAnimationFrame(flappyAF);
+  flappyRunning=false;flappyStarted=false;flappyScore=0;flappyFrame=0;
+  flappyBird={x:80,y:200,vy:0};flappyPipes=[];
+  document.getElementById('flappyScore').textContent=0;
+  document.getElementById('flappyMsg').textContent='tippe zum starten!!';
+  try{const b=localStorage.getItem('flappyBest');if(b){flappyBestScore=+b;document.getElementById('flappyBest').textContent=b;}}catch(e){}
+  flappyDraw();
+}
+
+// Tap / click to jump
+(function(){
+  function setupFlappyInput(){
+    const c=FC();if(!c)return;
+    c.addEventListener('click',flappyJump);
+    c.addEventListener('touchstart',e=>{e.preventDefault();flappyJump();},{passive:false});
+  }
+  document.addEventListener('DOMContentLoaded',setupFlappyInput);
+  setTimeout(setupFlappyInput,500);
+})();
+
+// ============================================================
+// TETRIS
+// ============================================================
+const T_COLS=10,T_ROWS=20,T_SIZE=20;
+let tetBoard=[],tetPiece=null,tetNext=null,tetInterval=null,tetRunning=false;
+let tetScore=0,tetLines=0,tetLevel=1,tetBest=0;
+const TETROMINOES=[
+  {shape:[[1,1,1,1]],color:'#00f0f0'},           // I
+  {shape:[[1,1],[1,1]],color:'#f0f000'},           // O
+  {shape:[[0,1,0],[1,1,1]],color:'#a000f0'},       // T
+  {shape:[[0,1,1],[1,1,0]],color:'#00f000'},       // S
+  {shape:[[1,1,0],[0,1,1]],color:'#f00000'},       // Z
+  {shape:[[1,0,0],[1,1,1]],color:'#0000f0'},       // J
+  {shape:[[0,0,1],[1,1,1]],color:'#f0a000'},       // L
+];
+
+function tetNewBoard(){return Array.from({length:T_ROWS},()=>Array(T_COLS).fill(0));}
+function tetRandPiece(){const t=TETROMINOES[Math.floor(Math.random()*TETROMINOES.length)];return{shape:t.shape,color:t.color,x:Math.floor(T_COLS/2)-Math.floor(t.shape[0].length/2),y:0};}
+function tetRotate(s){return s[0].map((_,i)=>s.map(r=>r[i]).reverse());}
+function tetValid(b,p,dx=0,dy=0,shape=p.shape){
+  for(let r=0;r<shape.length;r++) for(let c=0;c<shape[r].length;c++){
+    if(!shape[r][c]) continue;
+    const nx=p.x+c+dx,ny=p.y+r+dy;
+    if(nx<0||nx>=T_COLS||ny>=T_ROWS) return false;
+    if(ny>=0&&b[ny][nx]) return false;
+  }
+  return true;
+}
+function tetPlace(b,p){
+  const nb=b.map(r=>[...r]);
+  for(let r=0;r<p.shape.length;r++) for(let c=0;c<p.shape[r].length;c++){
+    if(p.shape[r][c]&&p.y+r>=0) nb[p.y+r][p.x+c]=p.color;
+  }
+  return nb;
+}
+function tetClear(b){
+  const cleared=b.filter(r=>r.some(c=>!c));
+  const lines=T_ROWS-cleared.length;
+  const newB=[...Array.from({length:lines},()=>Array(T_COLS).fill(0)),...cleared];
+  return{board:newB,lines};
+}
+function tetDraw(){
+  const c=document.getElementById('tetrisCanvas');if(!c)return;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#111';ctx.fillRect(0,0,c.width,c.height);
+  // grid
+  ctx.strokeStyle='#222';ctx.lineWidth=0.5;
+  for(let r=0;r<T_ROWS;r++) for(let cc=0;cc<T_COLS;cc++){
+    ctx.strokeRect(cc*T_SIZE,r*T_SIZE,T_SIZE,T_SIZE);
+    if(tetBoard[r][cc]){ctx.fillStyle=tetBoard[r][cc];ctx.fillRect(cc*T_SIZE+1,r*T_SIZE+1,T_SIZE-2,T_SIZE-2);}
+  }
+  // ghost piece
+  if(tetPiece&&tetRunning){
+    let ghost={...tetPiece};
+    while(tetValid(tetBoard,ghost,0,1)) ghost={...ghost,y:ghost.y+1};
+    for(let r=0;r<tetPiece.shape.length;r++) for(let cc=0;cc<tetPiece.shape[r].length;cc++){
+      if(!tetPiece.shape[r][cc]) continue;
+      ctx.fillStyle='rgba(255,255,255,0.12)';
+      ctx.fillRect((ghost.x+cc)*T_SIZE+1,(ghost.y+r)*T_SIZE+1,T_SIZE-2,T_SIZE-2);
+    }
+    // active piece
+    for(let r=0;r<tetPiece.shape.length;r++) for(let cc=0;cc<tetPiece.shape[r].length;cc++){
+      if(!tetPiece.shape[r][cc]) continue;
+      ctx.fillStyle=tetPiece.color;
+      ctx.fillRect((tetPiece.x+cc)*T_SIZE+1,(tetPiece.y+r)*T_SIZE+1,T_SIZE-2,T_SIZE-2);
+    }
+  }
+  // next piece preview
+  const nc=document.getElementById('tetrisNext');if(!nc) return;
+  const nctx=nc.getContext('2d');
+  nctx.fillStyle='#111';nctx.fillRect(0,0,nc.width,nc.height);
+  if(tetNext){const sz=16;tetNext.shape.forEach((row,r)=>row.forEach((v,cc)=>{if(v){nctx.fillStyle=tetNext.color;nctx.fillRect(cc*sz+8,r*sz+8,sz-2,sz-2);}}));}
+}
+function tetTick(){
+  if(!tetRunning||!tetPiece) return;
+  if(tetValid(tetBoard,tetPiece,0,1)){tetPiece={...tetPiece,y:tetPiece.y+1};}
+  else{
+    tetBoard=tetPlace(tetBoard,tetPiece);
+    const {board,lines}=tetClear(tetBoard);
+    tetBoard=board;
+    if(lines>0){
+      const pts=[0,100,300,500,800][lines]*tetLevel;
+      tetScore+=pts;tetLines+=lines;
+      tetLevel=Math.floor(tetLines/10)+1;
+      document.getElementById('tetrisScore').textContent=tetScore;
+      document.getElementById('tetrisLines').textContent=tetLines;
+      document.getElementById('tetrisLevel').textContent=tetLevel;
+      clearInterval(tetInterval);tetInterval=setInterval(tetTick,Math.max(100,500-tetLevel*40));
+    }
+    tetPiece=tetNext;tetNext=tetRandPiece();
+    if(!tetValid(tetBoard,tetPiece)){
+      tetRunning=false;clearInterval(tetInterval);
+      if(tetScore>tetBest){tetBest=tetScore;document.getElementById('tetrisBest').textContent=tetBest;try{localStorage.setItem('tetrisBest',tetBest);}catch(e){}}
+      if(tetScore>=100) giveXP(Math.floor(tetScore/10),'Tetris');
+      document.getElementById('tetrisMsg').textContent='game over!! score: '+tetScore;
+    }
+  }
+  tetDraw();
+}
+function tetrisMove(dir){
+  if(!tetRunning||!tetPiece) return;
+  if(dir==='left'&&tetValid(tetBoard,tetPiece,-1,0)) tetPiece={...tetPiece,x:tetPiece.x-1};
+  else if(dir==='right'&&tetValid(tetBoard,tetPiece,1,0)) tetPiece={...tetPiece,x:tetPiece.x+1};
+  else if(dir==='down'&&tetValid(tetBoard,tetPiece,0,1)) tetPiece={...tetPiece,y:tetPiece.y+1};
+  else if(dir==='up'){const r=tetRotate(tetPiece.shape);if(tetValid(tetBoard,tetPiece,0,0,r)) tetPiece={...tetPiece,shape:r};}
+  else if(dir==='drop'){while(tetValid(tetBoard,tetPiece,0,1)) tetPiece={...tetPiece,y:tetPiece.y+1};tetTick();}
+  tetDraw();
+}
+function startTetris(){
+  if(tetRunning) return;
+  tetBoard=tetNewBoard();tetScore=0;tetLines=0;tetLevel=1;tetRunning=true;
+  tetPiece=tetRandPiece();tetNext=tetRandPiece();
+  document.getElementById('tetrisScore').textContent=0;
+  document.getElementById('tetrisLines').textContent=0;
+  document.getElementById('tetrisLevel').textContent=1;
+  document.getElementById('tetrisMsg').textContent='';
+  clearInterval(tetInterval);tetInterval=setInterval(tetTick,500);
+  tetDraw();
+}
+function resetTetris(){
+  clearInterval(tetInterval);tetRunning=false;
+  tetBoard=tetNewBoard();tetPiece=null;tetNext=null;
+  tetScore=0;tetLines=0;tetLevel=1;
+  document.getElementById('tetrisScore').textContent=0;
+  document.getElementById('tetrisLines').textContent=0;
+  document.getElementById('tetrisLevel').textContent=1;
+  document.getElementById('tetrisMsg').textContent='drück start!!';
+  try{const b=localStorage.getItem('tetrisBest');if(b){tetBest=+b;document.getElementById('tetrisBest').textContent=b;}}catch(e){}
+  tetDraw();
+}
+document.addEventListener('keydown',e=>{
+  if(!tetRunning) return;
+  const map={ArrowLeft:'left',ArrowRight:'right',ArrowDown:'down',ArrowUp:'up',' ':'drop'};
+  if(map[e.key]){e.preventDefault();tetrisMove(map[e.key]);}
+});
+// Tetris swipe
+(function(){
+  let tx=0,ty=0;
+  function getTetCanvas(){return document.getElementById('tetrisCanvas');}
+  function setup(){
+    const c=getTetCanvas();if(!c||c._swipe) return;c._swipe=true;
+    c.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+    c.addEventListener('touchend',e=>{
+      const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
+      if(Math.abs(dx)>Math.abs(dy)){tetrisMove(dx>0?'right':'left');}
+      else{tetrisMove(dy>0?'drop':'up');}
+    },{passive:true});
+  }
+  document.addEventListener('DOMContentLoaded',setup);setTimeout(setup,500);
+})();
+
+// ============================================================
+// PINNWAND
+// ============================================================
+function pinnwandFileChanged(inp){
+  const f=inp.files[0];
+  document.getElementById('pinnwandFileLabel').textContent=f?f.name:'bild auswählen...';
+}
+async function pinnwandPost(){
+  if(!currentUser){showEgg('❌ nicht eingeloggt!!');return;}
+  const caption=document.getElementById('pinnwandCaption').value.trim();
+  const file=document.getElementById('pinnwandFile').files[0];
+  if(!file&&!caption){showEgg('❌ schreib was oder wähle ein bild!!');return;}
+  if(file&&file.size>3*1024*1024){showEgg('❌ bild zu groß!! max 3MB');return;}
+  let imgData=null;
+  if(file){
+    imgData=await new Promise((res,rej)=>{
+      const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);
+    });
+  }
+  const post={uid:currentUser.uid,username:currentUser.username,caption,imgData:imgData||null,ts:Date.now(),avatarUrl:currentUser.avatarUrl||null};
+  await fbDb.ref('pinnwand').push(post);
+  document.getElementById('pinnwandCaption').value='';
+  document.getElementById('pinnwandFile').value='';
+  document.getElementById('pinnwandFileLabel').textContent='bild auswählen...';
+  showEgg('📸 gepostet!!');
+  giveXP(10,'Pinnwand Post');
+  loadPinnwand();
+}
+async function loadPinnwand(){
+  const feed=document.getElementById('pinnwandFeed');if(!feed)return;
+  feed.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">⏳ laden...</div>';
+  try{
+    const snap=await fbDb.ref('pinnwand').orderByChild('ts').limitToLast(30).once('value');
+    const posts=snap.val();
+    if(!posts){feed.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">noch keine posts!! sei der erste 📸</div>';return;}
+    const arr=Object.entries(posts).reverse();
+    feed.innerHTML=arr.map(([key,p])=>{
+      const isOwn=currentUser&&p.uid===currentUser.uid;
+      const isAdm=currentUser&&currentUser.isAdmin;
+      const time=new Date(p.ts).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+      const av=p.avatarUrl?`<img src="${p.avatarUrl}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;margin-right:0.4rem;vertical-align:middle;">`:`<span style="margin-right:0.4rem;">👤</span>`;
+      return `<div class="pinnwand-post">
+        ${p.imgData?`<img class="pinnwand-img" src="${p.imgData}" loading="lazy"/>`:''}
+        <div class="pinnwand-meta">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div>${av}<span class="pinnwand-user">${p.username}</span></div>
+            ${(isOwn||isAdm)?`<button class="pinnwand-del" ontouchstart="" onclick="pinnwandDelete('${key}')">🗑️</button>`:''}
+          </div>
+          ${p.caption?`<div class="pinnwand-caption">${p.caption}</div>`:''}
+          <div class="pinnwand-time">${time}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){feed.innerHTML='<div style="color:#ff4444;padding:1rem;">❌ '+e.message+'</div>';}
+}
+async function pinnwandDelete(key){
+  if(!confirm('Post löschen?')) return;
+  await fbDb.ref('pinnwand/'+key).remove();
+  showEgg('🗑️ gelöscht!!');loadPinnwand();
+}
+
+// ============================================================
+// SCHWARZES BRETT
+// ============================================================
+async function boardPost(){
+  if(!isAdmin()){showEgg('❌ nur admins!!');return;}
+  const title=document.getElementById('boardTitle').value.trim();
+  const body=document.getElementById('boardBody').value.trim();
+  if(!title||!body){showEgg('❌ titel und text eingeben!!');return;}
+  const color=document.getElementById('boardColor').value;
+  const emoji=document.getElementById('boardEmoji').value;
+  await fbDb.ref('board').push({title,body,color,emoji,author:currentUser.username,ts:Date.now()});
+  document.getElementById('boardTitle').value='';
+  document.getElementById('boardBody').value='';
+  showEgg('📋 gepostet!!');loadBoard();
+}
+async function loadBoard(){
+  const feed=document.getElementById('boardFeed');if(!feed)return;
+  // show admin post card if admin
+  const adminCard=document.getElementById('boardAdminCard');
+  if(adminCard) adminCard.style.display=isAdmin()?'block':'none';
+  feed.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">⏳ laden...</div>';
+  try{
+    const snap=await fbDb.ref('board').orderByChild('ts').limitToLast(20).once('value');
+    const posts=snap.val();
+    if(!posts){feed.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">keine ankündigungen!! 📋</div>';return;}
+    const arr=Object.entries(posts).reverse();
+    feed.innerHTML=arr.map(([key,p])=>{
+      const time=new Date(p.ts).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+      return `<div class="board-item" style="background:${p.color}18;border-color:${p.color};">
+        ${isAdmin()?`<button class="board-del" ontouchstart="" onclick="boardDelete('${key}')">🗑️</button>`:''}
+        <div class="board-item-title" style="color:${p.color};">${p.emoji||'📌'} ${p.title}</div>
+        <div class="board-item-body">${p.body}</div>
+        <div class="board-item-meta">von ${p.author} · ${time}</div>
+      </div>`;
+    }).join('');
+  }catch(e){feed.innerHTML='<div style="color:#ff4444;padding:1rem;">❌ '+e.message+'</div>';}
+}
+async function boardDelete(key){
+  if(!confirm('Ankündigung löschen?')) return;
+  await fbDb.ref('board/'+key).remove();
+  showEgg('🗑️ gelöscht!!');loadBoard();
+}
+
+// ============================================================
+// ACHIEVEMENTS SYSTEM
+// ============================================================
+const ACHIEVEMENTS=[
+  {id:'first_login',icon:'🎉',name:'ERSTER TAG',desc:'zum ersten mal eingeloggt',check:(s)=>s.loginCount>=1},
+  {id:'streak_3',icon:'🔥',name:'STREAK 3',desc:'3 tage in folge eingeloggt',check:(s)=>s.loginStreak>=3},
+  {id:'streak_7',icon:'💎',name:'STREAK 7',desc:'7 tage in folge eingeloggt',check:(s)=>s.loginStreak>=7},
+  {id:'xp_100',icon:'⭐',name:'XP 100',desc:'100 XP verdient',check:(s)=>s.xp>=100},
+  {id:'xp_500',icon:'🌟',name:'XP 500',desc:'500 XP verdient',check:(s)=>s.xp>=500},
+  {id:'xp_1000',icon:'💫',name:'XP 1000',desc:'1000 XP verdient',check:(s)=>s.xp>=1000},
+  {id:'first_vote',icon:'🗳️',name:'WÄHLER',desc:'zum ersten mal gevoted',check:(s)=>s.voteCount>=1},
+  {id:'first_chat',icon:'💬',name:'CHATTER',desc:'erste chatnachricht',check:(s)=>s.chatCount>=1},
+  {id:'chat_50',icon:'📢',name:'VIEL SCHREIBER',desc:'50 chat nachrichten',check:(s)=>s.chatCount>=50},
+  {id:'first_post',icon:'📸',name:'FOTOGRAF',desc:'erstes foto auf pinnwand',check:(s)=>s.postCount>=1},
+  {id:'game_pro',icon:'🎮',name:'GAMER',desc:'100 punkte in einem spiel',check:(s)=>s.gameBest>=100},
+  {id:'flappy_10',icon:'🐦',name:'FLAPPY PRO',desc:'10 punkte in flappy bird',check:(s)=>s.flappyBest>=10},
+  {id:'wordle_win',icon:'🟩',name:'WORDLE SIEGER',desc:'wordle gewonnen',check:(s)=>s.wordleWins>=1},
+  {id:'challenge_5',icon:'🏆',name:'CHALLENGER',desc:'5 challenges abgeschlossen',check:(s)=>s.challengeTotal>=5},
+  {id:'level_5',icon:'👑',name:'LEVEL 5',desc:'level 5 erreicht',check:(s)=>s.level>=5},
+  {id:'level_10',icon:'🔮',name:'LEVEL 10',desc:'level 10 erreicht',check:(s)=>s.level>=10},
+  {id:'pinnwand_5',icon:'🖼️',name:'GALERIE',desc:'5 fotos gepostet',check:(s)=>s.postCount>=5},
+  {id:'quiz_10',icon:'🎲',name:'QUIZ MASTER',desc:'10 quiz fragen richtig',check:(s)=>s.quizRight>=10},
+];
+
+async function loadAchievements(){
+  if(!currentUser) return;
+  const achGrid=document.getElementById('achievementGrid');
+  const allGrid=document.getElementById('allAchievementGrid');
+  const progEl=document.getElementById('achievementProgress');
+  if(!achGrid) return;
+
+  // Load user stats
+  const snap=await fbDb.ref('users/'+currentUser.uid).once('value');
+  const ud=snap.val()||{};
+  const stats={
+    loginCount:ud.loginCount||0,
+    loginStreak:ud.loginStreak||0,
+    xp:ud.xp||0,
+    level:getCurrentLevel(),
+    voteCount:ud.voteCount||0,
+    chatCount:ud.chatCount||0,
+    postCount:ud.postCount||0,
+    gameBest:ud.gameBest||0,
+    flappyBest:parseInt(localStorage.getItem('flappyBest')||0),
+    wordleWins:ud.wordleWins||0,
+    challengeTotal:ud.challengeTotal||0,
+    quizRight:ud.quizRight||0,
+  };
+  const unlocked=ud.achievements||{};
+
+  // Check for newly unlocked
+  const toUnlock=[];
+  for(const a of ACHIEVEMENTS){
+    if(!unlocked[a.id]&&a.check(stats)){
+      toUnlock.push(a.id);
+    }
+  }
+  if(toUnlock.length>0){
+    const updates={};
+    toUnlock.forEach(id=>{updates['users/'+currentUser.uid+'/achievements/'+id]=Date.now();});
+    await fbDb.ref('/').update(updates);
+    toUnlock.forEach(id=>{
+      const a=ACHIEVEMENTS.find(x=>x.id===id);
+      if(a) showEgg('🏅 BADGE FREIGESCHALTET: '+a.name+'!!');
+    });
+    toUnlock.forEach(id=>unlocked[id]=Date.now());
+    giveXP(toUnlock.length*25,'Achievement');
+  }
+
+  const unlockedArr=ACHIEVEMENTS.filter(a=>unlocked[a.id]);
+  const lockedArr=ACHIEVEMENTS.filter(a=>!unlocked[a.id]);
+  const pct=Math.round(unlockedArr.length/ACHIEVEMENTS.length*100);
+
+  progEl.innerHTML=`<div style="margin-bottom:0.4rem;font-size:0.82rem;color:var(--text2);">${unlockedArr.length} / ${ACHIEVEMENTS.length} badges (${pct}%)</div><div style="background:var(--border);border-radius:100px;height:10px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:var(--accent);border-radius:100px;transition:width 0.8s;"></div></div>`;
+
+  achGrid.innerHTML=unlockedArr.length===0
+    ?'<div style="grid-column:1/-1;text-align:center;color:var(--text2);padding:1rem;font-size:0.82rem;">noch keine badges!! mach mehr sachen 🎮</div>'
+    :unlockedArr.map(a=>`<div class="ach-card unlocked"><span class="ach-icon">${a.icon}</span><div class="ach-name">${a.name}</div><div class="ach-desc">${a.desc}</div></div>`).join('');
+
+  allGrid.innerHTML=ACHIEVEMENTS.map(a=>`<div class="ach-card ${unlocked[a.id]?'unlocked':'locked'}"><span class="ach-icon">${a.icon}</span><div class="ach-name">${a.name}</div><div class="ach-desc">${a.desc}</div>${unlocked[a.id]?'<div style="font-size:0.6rem;color:var(--accent);margin-top:0.3rem;">✅ freigeschaltet</div>':''}</div>`).join('');
+}
+
+function getCurrentLevel(){
+  const xpLevels=[0,100,250,450,700,1000,1400,1900,2500,3200,4000,5000,6200,7600,9200,11000,13000,15500,18500,22000];
+  const xp=currentUser?.xp||0;
+  let lv=0;for(let i=0;i<xpLevels.length;i++){if(xp>=xpLevels[i]) lv=i+1;}
+  return lv;
+}
+
+// Check achievements on various actions (called after XP given)
+async function checkAchievements(){
+  if(!currentUser) return;
+  setTimeout(()=>{
+    if(document.getElementById('page-achievements')?.classList.contains('active')) loadAchievements();
+  },500);
+}
+
+// ============================================================
+// THEME ADDITIONS (2 neue themes)
+// ============================================================
+// Add CSS for new themes dynamically
+(function(){
+  const style=document.createElement('style');
+  style.textContent=`
+body.cyberpunk,[data-theme="cyberpunk"]{--bg:#0a0015;--card:#12002a;--border:#4400aa;--accent:#ff00aa;--accent2:#ffee00;--text:#fff0ff;--text2:#aa88cc;--glow:rgba(255,0,170,0.3);}
+[data-theme="cyberpunk"] .logo{font-family:'Orbitron',sans-serif;background:linear-gradient(90deg,#ff00aa,#ffee00,#ff00aa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:cyberShift 2s linear infinite;background-size:200%;}
+@keyframes cyberShift{0%{background-position:0%}100%{background-position:200%}}
+[data-theme="cyberpunk"] .card{border-radius:0;border-width:1px;border-top:2px solid var(--accent);border-right:2px solid var(--accent2);}
+[data-theme="cyberpunk"] .btn{border-radius:0;text-transform:uppercase;letter-spacing:0.1em;border-color:var(--accent2);color:var(--accent2);}
+[data-theme="cyberpunk"] .theme-bar{background:rgba(10,0,21,0.97);border-bottom:1px solid #4400aa;}
+
+body.midnight,[data-theme="midnight"]{--bg:#080818;--card:#10102a;--border:#252550;--accent:#7c83fd;--accent2:#fd7cce;--text:#e8e8ff;--text2:#6666aa;--glow:rgba(124,131,253,0.25);}
+[data-theme="midnight"] .logo{font-family:'Righteous',cursive;font-size:clamp(2rem,7vw,3.5rem);background:linear-gradient(135deg,#7c83fd,#fd7cce);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+[data-theme="midnight"] .card{border-radius:20px;background:linear-gradient(135deg,rgba(16,16,42,0.9),rgba(20,10,40,0.6));}
+[data-theme="midnight"] .btn{border-radius:100px;background:linear-gradient(135deg,rgba(124,131,253,0.15),rgba(253,124,206,0.1));}
+`;
+  document.head.appendChild(style);
+})();
+
+// ============================================================
+// PAGE NAVIGATION - updated
+// ============================================================
+// goPage already exists, just make sure new pages load their data
+const _origGoPage=goPage;
+
+// ============================================================
+// EXPOSE NEW FUNCTIONS
+// ============================================================
+window.pinnwandPost=pinnwandPost;
+window.pinnwandDelete=pinnwandDelete;
+window.boardPost=boardPost;
+window.boardDelete=boardDelete;
+window.startFlappy=startFlappy;
+window.resetFlappy=resetFlappy;
+window.startTetris=startTetris;
+window.resetTetris=resetTetris;
+window.tetrisMove=tetrisMove;
+window.loadAchievements=loadAchievements;
+window.pinnwandFileChanged=pinnwandFileChanged;
+window.showGame=showGame;
 
 } // end initApp
 </script></body></html>
