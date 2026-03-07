@@ -826,6 +826,10 @@ function setTheme(name,btn){
   document.body.setAttribute('data-theme',name);
   currentTheme=name;
   initParticles(name);
+  if(musicOn){
+    stopAllMusic();
+    setTimeout(()=>buildMusicForTheme(name),100);
+  }
 }
 
 function goPage(name,btn,bnavBtn){
@@ -843,64 +847,149 @@ function goPage(name,btn,bnavBtn){
 }
 function goPageByName(name){goPage(name,null,null);}
 
-let audioCtx=null,musicNodes=[],musicOn=false,currentVol=0.2;
-function buildMusic(){
-  if(audioCtx)return;
-  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-  const master=audioCtx.createGain();master.gain.value=currentVol;
+let audioCtx=null,musicNodes=[],musicOn=false,currentVol=0.2,currentMusicTheme='';
+
+function stopAllMusic(){
+  musicNodes.forEach(n=>{try{if(n.stop)n.stop();}catch(e){}});
+  musicNodes=[];
+  if(audioCtx){try{audioCtx.close();}catch(e){}}
+  audioCtx=null;
+}
+
+function buildMusicForTheme(theme){
+  stopAllMusic();
+  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  const master=audioCtx.createGain();
+  master.gain.value=musicOn?currentVol:0;
   const comp=audioCtx.createDynamicsCompressor();
   comp.threshold.value=-24;comp.knee.value=30;comp.ratio.value=4;
   master.connect(comp);comp.connect(audioCtx.destination);
   musicNodes.push(master);
-  function makeBass(){
-    const bassNotes=[55,55,82.5,55,73.4,55,82.5,55];let bi=0;
-    const bassInterval=setInterval(()=>{
-      const now=audioCtx.currentTime;const o=audioCtx.createOscillator();const g=audioCtx.createGain();const f=audioCtx.createBiquadFilter();
-      f.type='lowpass';f.frequency.value=200;o.type='sawtooth';o.frequency.value=bassNotes[bi%bassNotes.length];
-      g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(0.12,now+0.02);g.gain.exponentialRampToValueAtTime(0.001,now+0.3);
-      o.connect(f);f.connect(g);g.connect(master);o.start(now);o.stop(now+0.35);bi++;
-    },250);
-    musicNodes.push({stop:()=>clearInterval(bassInterval)});
+
+  function osc(type,freq,gainVal,duration,startTime,dest){
+    const o=audioCtx.createOscillator();const g=audioCtx.createGain();
+    o.type=type;o.frequency.value=freq;
+    g.gain.setValueAtTime(0,startTime);g.gain.linearRampToValueAtTime(gainVal,startTime+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,startTime+duration);
+    o.connect(g);g.connect(dest||master);o.start(startTime);o.stop(startTime+duration+0.05);
   }
-  const chords=[[220,277,330],[196,247,294],[174,220,261],[185,233,277]];let ci=0;
-  function playChord(){
-    const now=audioCtx.currentTime;
-    chords[ci%chords.length].forEach(f=>{
-      const o=audioCtx.createOscillator();const g=audioCtx.createGain();
-      o.type='sine';o.frequency.value=f;o.detune.value=(Math.random()-0.5)*10;
-      g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(0.018,now+0.8);g.gain.linearRampToValueAtTime(0.015,now+3);g.gain.linearRampToValueAtTime(0,now+4.5);
-      o.connect(g);g.connect(master);o.start(now);o.stop(now+5);
-    });ci++;
-  }
-  playChord();const chordTimer=setInterval(playChord,4000);musicNodes.push({stop:()=>clearInterval(chordTimer)});
-  function hihat(){
-    const now=audioCtx.currentTime;const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*0.04,audioCtx.sampleRate);
-    const d=buf.getChannelData(0);for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/200);
+  function noise(gainVal,duration,startTime,hpFreq){
+    const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*duration,audioCtx.sampleRate);
+    const d=buf.getChannelData(0);for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/(audioCtx.sampleRate*duration*0.3));
     const src=audioCtx.createBufferSource();const g=audioCtx.createGain();const f=audioCtx.createBiquadFilter();
-    f.type='highpass';f.frequency.value=8000;g.gain.value=0.06;
-    src.buffer=buf;src.connect(f);f.connect(g);g.connect(master);src.start(now);
+    f.type='highpass';f.frequency.value=hpFreq||6000;g.gain.value=gainVal;
+    src.buffer=buf;src.connect(f);f.connect(g);g.connect(master);src.start(startTime);
   }
-  const hhTimer=setInterval(hihat,250);musicNodes.push({stop:()=>clearInterval(hhTimer)});
-  function kick(){
-    const now=audioCtx.currentTime;const o=audioCtx.createOscillator();const g=audioCtx.createGain();
-    o.type='sine';o.frequency.setValueAtTime(150,now);o.frequency.exponentialRampToValueAtTime(0.001,now+0.3);
-    g.gain.setValueAtTime(0.5,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.3);
-    o.connect(g);g.connect(master);o.start(now);o.stop(now+0.35);
+
+  if(theme===''){ // DEFAULT — lofi chill
+    const bassNotes=[55,55,82.5,55,73.4,55,82.5,55];let bi=0;
+    const bi1=setInterval(()=>{const now=audioCtx.currentTime;const f=audioCtx.createBiquadFilter();f.type='lowpass';f.frequency.value=200;const o=audioCtx.createOscillator();const g=audioCtx.createGain();o.type='sawtooth';o.frequency.value=bassNotes[bi%bassNotes.length];g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(0.12,now+0.02);g.gain.exponentialRampToValueAtTime(0.001,now+0.3);o.connect(f);f.connect(g);g.connect(master);o.start(now);o.stop(now+0.35);bi++;},250);
+    const chords=[[220,277,330],[196,247,294],[174,220,261],[185,233,277]];let ci=0;
+    const ci1=setInterval(()=>{const now=audioCtx.currentTime;chords[ci%chords.length].forEach(f=>{osc('sine',f,0.018,4.5,now);});ci++;},4000);
+    const hi1=setInterval(()=>{noise(0.06,0.04,audioCtx.currentTime,8000);},250);
+    const ki1=setInterval(()=>{osc('sine',150,0.5,0.3,audioCtx.currentTime);},500);
+    const arpNotes=[440,523,659,784,659,523,440,392];let ai=0;
+    const ai1=setInterval(()=>{osc('triangle',arpNotes[ai%arpNotes.length],0.04,0.2,audioCtx.currentTime);ai++;},125);
+    musicNodes.push({stop:()=>{clearInterval(bi1);clearInterval(ci1);clearInterval(hi1);clearInterval(ki1);clearInterval(ai1);}});
+
+  } else if(theme==='neon'){ // NEON — synthwave
+    const bassline=[55,55,73.4,55,82.5,55,65.4,55];let bi=0;
+    const b1=setInterval(()=>{const now=audioCtx.currentTime;osc('sawtooth',bassline[bi%bassline.length]*2,0.15,0.18,now);bi++;},187);
+    const lead=[523,659,784,880,784,659,523,440];let li=0;
+    const l1=setInterval(()=>{const now=audioCtx.currentTime;osc('sawtooth',lead[li%lead.length],0.06,0.22,now);li++;},250);
+    const pad=[[196,247,311],[220,277,349],[174,220,261],[185,233,293]];let pi=0;
+    const p1=setInterval(()=>{const now=audioCtx.currentTime;pad[pi%pad.length].forEach(f=>{osc('sawtooth',f,0.025,3.8,now);});pi++;},4000);
+    const k1=setInterval(()=>{osc('sine',80,0.6,0.25,audioCtx.currentTime);},500);
+    const h1=setInterval(()=>{noise(0.08,0.03,audioCtx.currentTime,10000);},250);
+    musicNodes.push({stop:()=>{clearInterval(b1);clearInterval(l1);clearInterval(p1);clearInterval(k1);clearInterval(h1);}});
+
+  } else if(theme==='retro'){ // RETRO — 8-bit chiptune
+    const melody=[523,523,659,784,784,659,523,440,392,392,440,523,523,440,440];let mi=0;
+    const m1=setInterval(()=>{const now=audioCtx.currentTime;osc('square',melody[mi%melody.length],0.08,0.18,now);mi++;},150);
+    const bass8=[130,130,196,130,174,130,196,130];let bi=0;
+    const b1=setInterval(()=>{const now=audioCtx.currentTime;osc('square',bass8[bi%bass8.length],0.1,0.12,now);bi++;},300);
+    const k1=setInterval(()=>{noise(0.12,0.05,audioCtx.currentTime,4000);},600);
+    const h1=setInterval(()=>{noise(0.07,0.02,audioCtx.currentTime,12000);},150);
+    musicNodes.push({stop:()=>{clearInterval(m1);clearInterval(b1);clearInterval(k1);clearInterval(h1);}});
+
+  } else if(theme==='anime'){ // ANIME — kawaii jpop
+    const mel=[659,784,880,1047,880,784,659,587,523,587,659,784];let mi=0;
+    const m1=setInterval(()=>{const now=audioCtx.currentTime;osc('sine',mel[mi%mel.length],0.07,0.35,now);osc('triangle',mel[mi%mel.length]*2,0.02,0.35,now);mi++;},200);
+    const chords=[[261,329,392],[293,369,440],[329,415,494],[246,311,369]];let ci=0;
+    const c1=setInterval(()=>{const now=audioCtx.currentTime;chords[ci%chords.length].forEach(f=>{osc('sine',f,0.022,1.8,now);});ci++;},2000);
+    const k1=setInterval(()=>{osc('sine',120,0.3,0.15,audioCtx.currentTime);},500);
+    const h1=setInterval(()=>{noise(0.04,0.025,audioCtx.currentTime,11000);},250);
+    const bell=[1047,1319,1568,2093];let beli=0;
+    const bell1=setInterval(()=>{osc('sine',bell[beli%bell.length],0.04,0.6,audioCtx.currentTime);beli++;},600);
+    musicNodes.push({stop:()=>{clearInterval(m1);clearInterval(c1);clearInterval(k1);clearInterval(h1);clearInterval(bell1);}});
+
+  } else if(theme==='ocean'){ // OCEAN — ambient waves
+    const amb=[[110,138,165],[123,155,184],[98,123,146],[130,164,195]];let ai=0;
+    const a1=setInterval(()=>{const now=audioCtx.currentTime;amb[ai%amb.length].forEach(f=>{osc('sine',f,0.02,5,now);});ai++;},5000);
+    const wave1=setInterval(()=>{
+      const now=audioCtx.currentTime;const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*2,audioCtx.sampleRate);
+      const d=buf.getChannelData(0);for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.sin(i/audioCtx.sampleRate*2)*Math.exp(-i/(audioCtx.sampleRate*1.5));
+      const src=audioCtx.createBufferSource();const g=audioCtx.createGain();const f=audioCtx.createBiquadFilter();
+      f.type='lowpass';f.frequency.value=600;g.gain.value=0.08;
+      src.buffer=buf;src.connect(f);f.connect(g);g.connect(master);src.start(now);
+    },3000);
+    const mel=[329,369,440,493,440,369,329,293];let mi=0;
+    const m1=setInterval(()=>{osc('sine',mel[mi%mel.length],0.025,1.2,audioCtx.currentTime);mi++;},700);
+    musicNodes.push({stop:()=>{clearInterval(a1);clearInterval(wave1);clearInterval(m1);}});
+
+  } else if(theme==='lava'){ // LAVA — heavy bass/metal
+    const bass=[41,41,55,41,46,41,55,41];let bi=0;
+    const b1=setInterval(()=>{const now=audioCtx.currentTime;osc('sawtooth',bass[bi%bass.length],0.2,0.1,now);bi++;},125);
+    const k1=setInterval(()=>{const now=audioCtx.currentTime;osc('sine',60,0.8,0.3,now);osc('sine',120,0.4,0.15,now);},250);
+    const snare=setInterval(()=>{noise(0.15,0.08,audioCtx.currentTime,2000);},500);
+    const h1=setInterval(()=>{noise(0.06,0.02,audioCtx.currentTime,9000);},125);
+    const riff=[220,220,293,220,261,220,293,196];let ri=0;
+    const r1=setInterval(()=>{osc('sawtooth',riff[ri%riff.length],0.08,0.1,audioCtx.currentTime);ri++;},125);
+    musicNodes.push({stop:()=>{clearInterval(b1);clearInterval(k1);clearInterval(snare);clearInterval(h1);clearInterval(r1);}});
+
+  } else if(theme==='galaxy'){ // GALAXY — space ambient
+    const pads=[[55,69,82],[61,77,92],[52,65,77],[58,73,87]];let pi=0;
+    const p1=setInterval(()=>{const now=audioCtx.currentTime;pads[pi%pads.length].forEach(f=>{osc('sine',f,0.025,7,now);osc('sine',f*2,0.012,7,now);});pi++;},7000);
+    const sparkle=[2093,2349,2637,3136,2637,2349];let si=0;
+    const s1=setInterval(()=>{if(Math.random()>0.4){osc('sine',sparkle[si%sparkle.length],0.015,1.5,audioCtx.currentTime);}si++;},800);
+    const sweep=setInterval(()=>{
+      const now=audioCtx.currentTime;const o=audioCtx.createOscillator();const g=audioCtx.createGain();
+      o.type='sine';o.frequency.setValueAtTime(80,now);o.frequency.linearRampToValueAtTime(200,now+4);
+      g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(0.03,now+1);g.gain.linearRampToValueAtTime(0,now+4);
+      o.connect(g);g.connect(master);o.start(now);o.stop(now+4.1);
+    },8000);
+    musicNodes.push({stop:()=>{clearInterval(p1);clearInterval(s1);clearInterval(sweep);}});
+
+  } else if(theme==='matrix'){ // MATRIX — glitchy industrial
+    const bass=[36,36,43,36,40,36,48,36];let bi=0;
+    const b1=setInterval(()=>{const now=audioCtx.currentTime;osc('square',bass[bi%bass.length],0.15,0.08,now);bi++;},125);
+    const glitch=setInterval(()=>{
+      if(Math.random()>0.6){const now=audioCtx.currentTime;osc('square',Math.random()>0.5?1200:800,0.05,0.05,now);}
+    },100);
+    const k1=setInterval(()=>{const now=audioCtx.currentTime;osc('sine',55,0.7,0.2,now);noise(0.1,0.04,now,3000);},500);
+    const h1=setInterval(()=>{noise(0.09,0.02,audioCtx.currentTime,8000);},125);
+    const seq=[220,0,293,0,220,261,0,220];let qi=0;
+    const q1=setInterval(()=>{if(seq[qi%seq.length]>0){osc('square',seq[qi%seq.length],0.06,0.1,audioCtx.currentTime);}qi++;},150);
+    musicNodes.push({stop:()=>{clearInterval(b1);clearInterval(glitch);clearInterval(k1);clearInterval(h1);clearInterval(q1);}});
   }
-  kick();const kickTimer=setInterval(kick,500);musicNodes.push({stop:()=>clearInterval(kickTimer)});
-  const arpNotes=[440,523,659,784,659,523,440,392];let ai=0;
-  function arp(){
-    const now=audioCtx.currentTime;const o=audioCtx.createOscillator();const g=audioCtx.createGain();
-    o.type='triangle';o.frequency.value=arpNotes[ai%arpNotes.length];
-    g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(0.04,now+0.02);g.gain.exponentialRampToValueAtTime(0.001,now+0.2);
-    o.connect(g);g.connect(master);o.start(now);o.stop(now+0.25);ai++;
-  }
-  const arpTimer=setInterval(arp,125);musicNodes.push({stop:()=>clearInterval(arpTimer)});
-  makeBass();
 }
+
 function toggleMusic(){
-  if(!audioCtx){buildMusic();musicOn=true;}
-  else{musicOn=!musicOn;if(audioCtx.state==='suspended')audioCtx.resume();const m=musicNodes[0];m.gain.setTargetAtTime(musicOn?currentVol:0,audioCtx.currentTime,0.3);}
+  if(!audioCtx){
+    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    musicOn=true;
+    buildMusicForTheme(currentTheme);
+  } else {
+    musicOn=!musicOn;
+    if(musicOn){
+      if(audioCtx.state==='suspended') audioCtx.resume();
+      buildMusicForTheme(currentTheme);
+    } else {
+      if(musicNodes[0]) musicNodes[0].gain.setTargetAtTime(0,audioCtx.currentTime,0.3);
+      setTimeout(()=>stopAllMusic(),500);
+    }
+  }
   document.getElementById('musicIcon').textContent=musicOn?'🔊':'🔇';
   document.getElementById('musicLabel').textContent=musicOn?'MUSIK AN':'MUSIK AUS';
 }
@@ -1487,9 +1576,31 @@ function getNextMonday(){
   const d=new Date();const day=d.getDay();const daysUntilMon=day===0?1:8-day;
   const mon=new Date(d.getFullYear(),d.getMonth(),d.getDate()+daysUntilMon);mon.setHours(0,0,0,0);return mon;
 }
+let weekResetDone=false;
 async function checkWeeklyReset(){
-  const thisWeek=getWeekKey();const lastWeek=localStorage.getItem('voteWeek7d');
-  if(lastWeek!==thisWeek){await fbDb.ref('votes7d').remove().catch(()=>{});localStorage.setItem('voteWeek7d',thisWeek);hofVoted=null;if(currentUser) await fbDb.ref('users/'+currentUser.uid+'/voted/'+thisWeek).remove();}
+  const thisWeek=getWeekKey();
+  // Only reset if we were previously on a different week AND it's actually a new week
+  const lastWeek=localStorage.getItem('voteWeek7d');
+  if(!lastWeek){
+    // First time on this device — just save week, don't wipe Firebase
+    localStorage.setItem('voteWeek7d',thisWeek);
+    return;
+  }
+  if(lastWeek!==thisWeek&&!weekResetDone){
+    weekResetDone=true;
+    // Check Firebase for a week marker before wiping
+    const marker=await fbDb.ref('voteWeekMarker').once('value').catch(()=>null);
+    const fbWeek=marker?marker.val():null;
+    if(fbWeek&&fbWeek!==thisWeek){
+      // New week confirmed by Firebase too — safe to reset
+      await fbDb.ref('votes7d').remove().catch(()=>{});
+      await fbDb.ref('voteWeekMarker').set(thisWeek).catch(()=>{});
+    } else if(!fbWeek){
+      await fbDb.ref('voteWeekMarker').set(thisWeek).catch(()=>{});
+    }
+    localStorage.setItem('voteWeek7d',thisWeek);
+    hofVoted=null;
+  }
 }
 function formatCountdown(ms){
   if(ms<=0)return'00:00:00:00';
@@ -1499,12 +1610,13 @@ function formatCountdown(ms){
 let countdownInterval=null;
 function startCountdown(){
   if(countdownInterval)clearInterval(countdownInterval);
+  let resetTriggered=false;
   countdownInterval=setInterval(async()=>{
     const el=document.getElementById('voteCountdown');if(!el){clearInterval(countdownInterval);return;}
     const now=new Date();const nextMon=getNextMonday();let diff=nextMon-now;
     if(now.getDay()===6){const endOfSat=new Date(now.getFullYear(),now.getMonth(),now.getDate(),23,59,59,999);if(now>=endOfSat) diff=1000;}
     el.textContent=formatCountdown(diff);
-    if(diff<=0){await checkWeeklyReset();renderVotePage();}
+    if(diff<=0&&!resetTriggered){resetTriggered=true;clearInterval(countdownInterval);await checkWeeklyReset();renderVotePage();}
   },1000);
 }
 
@@ -1512,8 +1624,24 @@ let hofVoted=null,hofSelected=[],liveVotes={};
 
 async function fbGet(){try{const snap=await fbDb.ref('votes7d').once('value');return snap.val()||{};}catch{return {};}}
 function voteKey(name){return name.replace(/[^a-zA-Z]/g,'').toLowerCase();}
-async function fbIncrement(names){const promises=names.map(n=>{const k=voteKey(n);return fbDb.ref('votes7d/'+k).transaction(cur=>(cur||0)+1);});await Promise.all(promises).catch(()=>{});}
-function fbListen(cb){const poll=async()=>{const d=await fbGet();cb(d);};poll();return setInterval(poll,5000);}
+let voteSubmitting=false;
+async function fbIncrement(names){
+  if(voteSubmitting)return;
+  voteSubmitting=true;
+  try{
+    const snap=await fbDb.ref('votes7d').once('value');
+    const current=snap.val()||{};
+    const updates={};
+    names.forEach(n=>{const k=voteKey(n);updates['votes7d/'+k]=(current[k]||0)+1;});
+    await fbDb.ref().update(updates);
+  }catch(e){console.error('vote error',e);}
+  finally{voteSubmitting=false;}
+}
+function fbListen(cb){
+  const ref=fbDb.ref('votes7d');
+  ref.on('value',snap=>{cb(snap.val()||{});});
+  return ref; // return ref so we can call ref.off() to stop
+}
 
 let voteInterval=null;
 
@@ -1538,7 +1666,7 @@ function voteCountdownBlock(){
 
 async function renderVotePage(){
   await checkWeeklyReset();const area=document.getElementById('votePageArea');if(!area)return;
-  if(voteInterval) clearInterval(voteInterval);
+  if(voteInterval){try{voteInterval.off();}catch(e){clearInterval(voteInterval);}voteInterval=null;}
   voteInterval=fbListen(data=>{liveVotes=data||{};updateLeaderboard();});
   if(hofVoted){
     area.innerHTML=`<div style="text-align:center;padding:1rem 0 0.3rem;"><div style="font-size:2.5rem;margin-bottom:0.5rem;">✅</div><div style="font-family:'Press Start 2P';font-size:0.55rem;color:var(--accent);margin-bottom:0.5rem;">DANKE FÜR DEINEN VOTE!!</div><div style="font-size:0.85rem;color:var(--text2);margin-bottom:0.6rem;">du hast gewählt: <b style="color:var(--accent)">${hofVoted}</b></div><button class="btn red" onclick="resetMyVote()" style="font-size:0.42rem;margin-bottom:0.4rem;">🔄 stimme zurücksetzen</button></div>${voteCountdownBlock()}<div style="font-family:'Press Start 2P';font-size:0.5rem;color:var(--accent);margin:1.1rem 0 0.6rem;text-align:center;">🏆 LIVE LEADERBOARD</div><div id="liveLeaderboard"><div style="color:var(--text2);text-align:center;padding:1rem;">laden... ⏳</div></div>`;
@@ -1551,7 +1679,28 @@ async function renderVotePage(){
 
 async function resetMyVote(){
   if(!confirm('Vote wirklich zurücksetzen? Du kannst dann neu abstimmen 🗳️'))return;
-  hofVoted=null;hofSelected=[];if(currentUser) await fbDb.ref('users/'+currentUser.uid+'/voted/'+getWeekKey()).remove();
+  if(!currentUser)return;
+  const week=getWeekKey();
+  // Get the names this user voted for
+  const snap=await fbDb.ref('users/'+currentUser.uid+'/voted/'+week).once('value').catch(()=>null);
+  const votedStr=snap?snap.val():null;
+  if(votedStr&&votedStr!=='pending'){
+    // Parse voted names and decrement each one in Firebase
+    const votedNames=votedStr.split(', ');
+    const currentSnap=await fbDb.ref('votes7d').once('value').catch(()=>null);
+    const current=currentSnap?currentSnap.val()||{}:{};
+    const updates={};
+    votedNames.forEach(n=>{
+      const k=voteKey(n);
+      const newVal=(current[k]||0)-1;
+      if(newVal<=0) updates['votes7d/'+k]=null; // delete from DB if 0 or less
+      else updates['votes7d/'+k]=newVal;
+    });
+    await fbDb.ref().update(updates).catch(()=>{});
+  }
+  // Remove user's vote record
+  await fbDb.ref('users/'+currentUser.uid+'/voted/'+week).remove().catch(()=>{});
+  hofVoted=null;hofSelected=[];
   renderVotePage();showEgg('🔄 Vote zurückgesetzt!! neu abstimmen!!');
 }
 
@@ -1576,11 +1725,14 @@ function toggleVoteSelectPage(name,btn){
 }
 
 async function submitVotePage(){
-  if(hofSelected.length<1||hofVoted||!currentUser)return;
+  if(hofSelected.length<1||hofVoted||!currentUser||voteSubmitting)return;
+  hofVoted='pending'; // lock immediately to prevent double submit
   const choiceStr=hofSelected.join(', ');const sb=document.getElementById('submitVotePageBtn');
-  sb.textContent='⏳ wird gespeichert...';sb.style.opacity='0.6';sb.style.pointerEvents='none';
-  await fbIncrement(hofSelected);hofVoted=choiceStr;
-  await fbDb.ref('users/'+currentUser.uid+'/voted/'+getWeekKey()).set(choiceStr);renderVotePage();
+  if(sb){sb.textContent='⏳ wird gespeichert...';sb.style.opacity='0.6';sb.style.pointerEvents='none';}
+  await fbIncrement(hofSelected);
+  hofVoted=choiceStr;
+  await fbDb.ref('users/'+currentUser.uid+'/voted/'+getWeekKey()).set(choiceStr);
+  renderVotePage();
 }
 
 const classMembers=[{emoji:'🐱',name:'Halil'},{emoji:'🦫',name:'Roman'},{emoji:'⭐',name:'7D Gang'},{emoji:'🎮',name:'Gamer'},{emoji:'🔥',name:'Legend'},{emoji:'👑',name:'Klasse'}];
