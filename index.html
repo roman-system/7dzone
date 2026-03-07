@@ -1700,10 +1700,11 @@ async function adminResetVotes(){
   const voteArea=document.getElementById('votePageArea');if(voteArea)renderVotePage();
 }
 async function adminLoadUsers(){
+  if(!currentUser?.isAdmin)return;
   const card=document.getElementById('adminUsersCard');const list=document.getElementById('adminUsersList');
   card.style.display='';list.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">⏳ laden...</div>';
   try{
-    const snap=await Promise.race([fbDb.ref('users').once('value'),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000))]);
+    const snap=await fbDb.ref('users').once('value');
     const users=snap.val()||{};const week=getWeekKey();const isOwner=currentUser&&currentUser.username===ADMIN_USERNAME;
     const entries=Object.entries(users);
     if(entries.length===0){list.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">keine accounts</div>';return;}
@@ -1713,7 +1714,7 @@ async function adminLoadUsers(){
       return `<div style="display:flex;justify-content:space-between;align-items:center;padding:0.45rem 0;border-bottom:1px solid var(--border);font-size:0.82rem;flex-wrap:wrap;gap:0.3rem;"><span style="font-weight:700;color:${u.banned?'#ff4444':'var(--text)'};">👤 ${u.username||'?'}${isAdm?' 👑':''}${u.banned?' 🚫':''}</span><span style="color:var(--text2);">${voted}</span>${adminBtn}</div>`;
     });
     list.innerHTML=rows.join('');
-  }catch(e){list.innerHTML='<div style="color:#ff4444;font-size:0.82rem;">fehler!!</div>';}
+  }catch(e){list.innerHTML=`<div style="color:#ff4444;font-size:0.82rem;">❌ Fehler: ${e.message||e}</div>`;}
 }
 async function adminGiveVotes(dir){
   if(!currentUser||!currentUser.isAdmin)return;
