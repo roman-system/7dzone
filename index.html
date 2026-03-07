@@ -367,6 +367,21 @@ header{text-align:center;padding:2rem 1rem 0.8rem;}
 .ann-input:focus{border-color:var(--accent);}
 .admin-section{background:var(--bg);border:1.5px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:0.8rem;}
 .admin-section-title{font-family:'Press Start 2P';font-size:0.5rem;color:var(--accent);margin-bottom:0.7rem;}
+.mute-badge{display:inline-block;background:rgba(255,170,0,0.15);border:1px solid #ffaa00;border-radius:100px;padding:0.1rem 0.5rem;font-size:0.6rem;color:#ffaa00;margin-left:0.3rem;}
+.mute-timer{font-size:0.6rem;color:#ffaa00;display:block;margin-top:0.15rem;}
+#chatMutedBar{display:none;background:rgba(255,170,0,0.12);border:1.5px solid #ffaa00;border-radius:10px;padding:0.5rem 1rem;margin-bottom:0.6rem;font-size:0.78rem;color:#ffaa00;text-align:center;}
+.mute-modal-overlay{position:fixed;inset:0;z-index:20000;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;}
+.mute-modal{background:var(--card);border:2px solid #ffaa00;border-radius:18px;padding:1.6rem;max-width:340px;width:92%;box-shadow:0 0 40px rgba(255,170,0,0.3);}
+.mute-modal-title{font-family:'Press Start 2P';font-size:0.6rem;color:#ffaa00;margin-bottom:1rem;}
+.mute-time-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-bottom:1rem;}
+.mute-time-btn{padding:0.5rem 0.3rem;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;text-align:center;}
+.mute-time-btn:hover,.mute-time-btn.sel{border-color:#ffaa00;color:#ffaa00;background:rgba(255,170,0,0.08);}
+.mute-custom-row{display:flex;gap:0.5rem;align-items:center;margin-bottom:1rem;}
+.mute-custom-row input{flex:1;padding:0.45rem 0.8rem;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);color:var(--text);font-size:0.88rem;outline:none;}
+.mute-custom-row input:focus{border-color:#ffaa00;}
+.mute-custom-row span{font-size:0.82rem;color:var(--text2);}
+.mute-btns{display:flex;gap:0.5rem;}
+.mute-btns button{flex:1;}
 
 /* BANNED OVERLAY */
 #bannedOverlay{position:fixed;inset:0;z-index:999999;background:var(--bg);display:none;align-items:center;justify-content:center;padding:1rem;}
@@ -803,10 +818,34 @@ body.konami-active{animation:konamiFlash 0.4s linear 5;}
   <!-- BAN MANAGEMENT -->
   <div class="card">
     <div class="card-title">🚫 BAN MANAGEMENT</div>
-    <p>sperr oder entsperre User!!</p>
+    <p>sperr, entsperre oder stumm schalte User im Chat!!</p>
     <div id="banUserList"><div style="color:var(--text2);font-size:0.82rem;">⏳ User laden...</div></div>
     <div class="btn-row" style="margin-top:0.8rem;">
       <button class="btn" onclick="adminLoadBanList()">🔄 Liste laden</button>
+    </div>
+  </div>
+
+  <!-- MUTE MODAL -->
+  <div id="muteModalOverlay" style="display:none;" class="mute-modal-overlay" onclick="if(event.target===this)closeMuteModal()">
+    <div class="mute-modal">
+      <div class="mute-modal-title">🔇 CHAT STUMM — <span id="muteModalName"></span></div>
+      <div class="mute-time-grid">
+        <div class="mute-time-btn" onclick="selectMuteTime(5)">5 Min</div>
+        <div class="mute-time-btn" onclick="selectMuteTime(15)">15 Min</div>
+        <div class="mute-time-btn" onclick="selectMuteTime(30)">30 Min</div>
+        <div class="mute-time-btn" onclick="selectMuteTime(60)">1 Std</div>
+        <div class="mute-time-btn" onclick="selectMuteTime(360)">6 Std</div>
+        <div class="mute-time-btn" onclick="selectMuteTime(1440)">24 Std</div>
+      </div>
+      <div class="mute-custom-row">
+        <input type="number" id="muteCustomMin" min="1" max="99999" placeholder="eigene Zeit..." oninput="selectMuteTime(null)"/>
+        <span>Minuten</span>
+      </div>
+      <div style="font-size:0.78rem;color:var(--text2);margin-bottom:0.8rem;">Ausgewählt: <span id="muteSelectedLabel" style="color:#ffaa00;font-weight:700;">–</span></div>
+      <div class="mute-btns">
+        <button class="btn orange" onclick="confirmMuteUser()">🔇 STUMM SCHALTEN</button>
+        <button class="btn" onclick="closeMuteModal()">ABBRECHEN</button>
+      </div>
     </div>
   </div>
 
@@ -887,6 +926,7 @@ body.konami-active{animation:konamiFlash 0.4s linear 5;}
       <div style="text-align:center;color:var(--text2);font-size:0.82rem;padding:2rem 0;">lade nachrichten... ⏳</div>
     </div>
     <div class="chat-input-row">
+      <div id="chatMutedBar">🔇 Du bist im Chat stumm geschaltet — noch <span id="chatMuteCountdown">?</span></div>
       <input class="chat-input" id="chatInput" type="text" placeholder="schreib was... 💬" maxlength="200" onkeydown="if(event.key==='Enter')sendChat()"/>
       <button class="chat-send" onclick="sendChat()">📤</button>
     </div>
@@ -1087,6 +1127,7 @@ fbAuth.onAuthStateChanged(async user=>{
     await checkLoginBonus();
     await loadChallenges();
     startChallengeTimer();
+    startMuteCheck();
     initWordle();
     // Listen for announcements
     listenAnnouncements();
@@ -1520,25 +1561,42 @@ async function adminLoadBanList(){
   try{
     const snap=await fbDb.ref('users').once('value');
     const users=snap.val()||{};
+    const now=Date.now();
     const entries=Object.entries(users).filter(([_,u])=>u.username&&u.username!==ADMIN_USERNAME);
     if(entries.length===0){el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">keine user</div>';return;}
     el.innerHTML=entries.map(([uid,u])=>{
       const banned=u.banned===true;
+      const muteUntil=u.chatMutedUntil||0;
+      const muted=muteUntil>now;
+      const muteRemain=muted?formatMuteRemain(muteUntil-now):'';
       return `<div class="ban-row${banned?' banned-user':''}">
         <div>
           <span class="ban-name">${u.username}</span>
           ${banned?'<span class="ban-badge">GESPERRT</span>':''}
+          ${muted?`<span class="mute-badge">🔇 MUTED</span>`:''}
           ${u.admin?'<span style="font-size:0.6rem;color:var(--accent);margin-left:0.3rem;">👑 ADMIN</span>':''}
+          ${muted?`<span class="mute-timer">stumm noch: ${muteRemain}</span>`:''}
         </div>
-        <div style="display:flex;gap:0.4rem;align-items:center;">
+        <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">
           ${!banned
-            ?`<button class="btn red" style="font-size:0.4rem;padding:0.3rem 0.6rem;" onclick="adminBanUser('${uid}','${u.username}')">🚫 BANNEN</button>`
-            :`<button class="btn" style="font-size:0.4rem;padding:0.3rem 0.6rem;" onclick="adminUnbanUser('${uid}','${u.username}')">✅ ENTBANNEN</button>`
+            ?`<button class="btn red" style="font-size:0.4rem;padding:0.3rem 0.6rem;" onclick="adminBanUser('${uid}','${u.username}')">🚫 BAN</button>`
+            :`<button class="btn" style="font-size:0.4rem;padding:0.3rem 0.6rem;" onclick="adminUnbanUser('${uid}','${u.username}')">✅ UNBAN</button>`
+          }
+          ${!muted
+            ?`<button class="btn orange" style="font-size:0.4rem;padding:0.3rem 0.6rem;" onclick="openMuteModal('${uid}','${u.username}')">🔇 MUTEN</button>`
+            :`<button class="btn" style="font-size:0.4rem;padding:0.3rem 0.6rem;" onclick="adminUnmuteUser('${uid}','${u.username}')">🔊 UNMUTEN</button>`
           }
         </div>
       </div>`;
     }).join('');
   }catch(e){el.innerHTML='<div style="color:#ff4444;font-size:0.82rem;">fehler!!</div>';}
+}
+
+function formatMuteRemain(ms){
+  const m=Math.floor(ms/60000);
+  if(m<60)return m+'min';
+  const h=Math.floor(m/60),rm=m%60;
+  return h+'h '+(rm>0?rm+'min':'');
 }
 
 async function adminBanUser(uid,username){
@@ -1559,6 +1617,68 @@ async function adminUnbanUser(uid,username){
   await fbDb.ref('users/'+uid+'/banReason').remove();
   showEgg('✅ '+username+' wurde entsperrt!!');
   adminLoadBanList();
+}
+
+// ===== CHAT MUTE =====
+let muteTargetUid=null,muteTargetName='',muteSelectedMinutes=0;
+function openMuteModal(uid,username){
+  muteTargetUid=uid;muteTargetName=username;muteSelectedMinutes=0;
+  document.getElementById('muteModalName').textContent=username;
+  document.getElementById('muteSelectedLabel').textContent='–';
+  document.getElementById('muteCustomMin').value='';
+  document.querySelectorAll('.mute-time-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('muteModalOverlay').style.display='flex';
+}
+function closeMuteModal(){document.getElementById('muteModalOverlay').style.display='none';}
+function selectMuteTime(min){
+  if(min!==null){
+    muteSelectedMinutes=min;
+    document.getElementById('muteCustomMin').value='';
+    document.querySelectorAll('.mute-time-btn').forEach(b=>b.classList.remove('sel'));
+    // highlight clicked button
+    document.querySelectorAll('.mute-time-btn').forEach(b=>{if(b.textContent.trim()===formatMinLabel(min))b.classList.add('sel');});
+  }else{
+    const v=parseInt(document.getElementById('muteCustomMin').value)||0;
+    muteSelectedMinutes=v;
+    document.querySelectorAll('.mute-time-btn').forEach(b=>b.classList.remove('sel'));
+  }
+  document.getElementById('muteSelectedLabel').textContent=muteSelectedMinutes>0?formatMinLabel(muteSelectedMinutes):'–';
+}
+function formatMinLabel(min){if(min<60)return min+' Min';const h=Math.floor(min/60),m=min%60;return h+'h'+(m>0?' '+m+'min':'');}
+async function confirmMuteUser(){
+  if(!muteTargetUid||muteSelectedMinutes<1){showEgg('⚠️ Zeit auswählen!!');return;}
+  const until=Date.now()+(muteSelectedMinutes*60000);
+  await fbDb.ref('users/'+muteTargetUid+'/chatMutedUntil').set(until);
+  showEgg('🔇 '+muteTargetName+' für '+formatMinLabel(muteSelectedMinutes)+' stumm!!');
+  closeMuteModal();
+  adminLoadBanList();
+}
+async function adminUnmuteUser(uid,username){
+  if(!currentUser?.isAdmin)return;
+  await fbDb.ref('users/'+uid+'/chatMutedUntil').remove();
+  showEgg('🔊 '+username+' ist wieder aktiv!!');
+  adminLoadBanList();
+}
+// mute countdown for logged-in user
+let muteCheckInterval=null;
+function startMuteCheck(){
+  if(muteCheckInterval)clearInterval(muteCheckInterval);
+  muteCheckInterval=setInterval(async()=>{
+    if(!currentUser)return;
+    const snap=await fbDb.ref('users/'+currentUser.uid+'/chatMutedUntil').once('value');
+    const until=snap.val()||0;
+    const bar=document.getElementById('chatMutedBar');
+    const input=document.getElementById('chatInput');
+    if(until>Date.now()){
+      const remain=formatMuteRemain(until-Date.now());
+      document.getElementById('chatMuteCountdown').textContent=remain;
+      bar.style.display='block';
+      if(input){input.disabled=true;input.placeholder='🔇 Du bist stumm geschaltet...';}
+    }else{
+      bar.style.display='none';
+      if(input){input.disabled=false;input.placeholder='schreib was... 💬';}
+    }
+  },5000);
 }
 
 async function adminClearChat(){
@@ -1618,7 +1738,7 @@ const XP_LEVELS=[0,100,250,450,700,1000,1400,1900,2500,3200,4000,5000,6200,7600,
 const LEVEL_TITLES=['Neuling','Lehrling','Aufsteiger','Fortgeschrittener','Kämpfer','Profi','Elite','Meister','Großmeister','Legende','GOAT 🐐','Mythisch','Unsterblich','Göttlich','Transzendent','Absolut','Jenseits','Unbegreiflich','Omnipotent','7D GOTT 👑'];
 const LEVEL_EMOJIS=['😶','🙂','😊','😎','💪','🔥','⚡','🏆','👑','🌟','🐐','💎','🌌','🌠','🔮','⚔️','🧬','🌀','♾️','👑'];
 let userXP=0,userLevel=1,totalXP=0;
-function getXpForLevel(lvl){return XP_LEVELS[Math.min(lvl,XP_LEVELS.length-1)]||XP_LEVELS[XP_LEVELS.length-1];}
+function getXpForLevel(lvl){const v=XP_LEVELS[Math.min(lvl,XP_LEVELS.length-1)];return v!==undefined?v:XP_LEVELS[XP_LEVELS.length-1];}
 function getLevelFromXp(xp){let lvl=1;for(let i=1;i<XP_LEVELS.length;i++){if(xp>=XP_LEVELS[i])lvl=i+1;else break;}return Math.min(lvl,LEVEL_TITLES.length);}
 function getCurrentXpInLevel(xp){const lvl=getLevelFromXp(xp);const base=getXpForLevel(lvl-1)||0;return xp-base;}
 function getXpNeededForNextLevel(xp){const lvl=getLevelFromXp(xp);const next=getXpForLevel(lvl);const base=getXpForLevel(lvl-1)||0;return next-base;}
@@ -1741,6 +1861,13 @@ async function deleteChatMsg(key,msgUid){
 
 async function sendChat(){
   if(!currentUser)return;
+  // check mute
+  const muteSnap=await fbDb.ref('users/'+currentUser.uid+'/chatMutedUntil').once('value');
+  const muteUntil=muteSnap.val()||0;
+  if(muteUntil>Date.now()){
+    showEgg('🔇 Du bist noch '+formatMuteRemain(muteUntil-Date.now())+' stumm!!');
+    return;
+  }
   const input=document.getElementById('chatInput');
   const text=input.value.trim();
   if(!text||text.length>200)return;
@@ -1790,6 +1917,7 @@ window.adminResetVotes=adminResetVotes;window.adminToggle=adminToggle;window.adm
 window.closeHoF=closeHoF;window.closeSurprise=closeSurprise;window.goPage=goPage;window.goPageByName=goPageByName;window.hofTab=hofTab;window.newJoke=newJoke;window.rateJoke=rateJoke;window.resetGame=resetGame;window.resetSnake=resetSnake;
 window.dpadDir=function(x,y){if(!snakeRunning)return;if(x===0&&y===0)return;const nd={x,y};if(nd.x===-snakeDir.x&&nd.y===-snakeDir.y)return;snakeDirQueue.push(nd);};
 window.resetStats=resetStats;window.setJokeCat=setJokeCat;window.setMemLevel=setMemLevel;window.setQuizLen=setQuizLen;window.setTheme=setTheme;window.setVol=setVol;window.showGame=showGame;window.showPunch=showPunch;window.startGame=startGame;window.startMemory=startMemory;window.startQuiz=startQuiz;window.answerQuiz=answerQuiz;window.setQuizCat=setQuizCat;window.startSnake=startSnake;window.toggleMusic=toggleMusic;window.toggleVoteSelectPage=toggleVoteSelectPage;window.submitVotePage=submitVotePage;window.resetMyVote=resetMyVote;window.openSurprise=openSurprise;window.openHoF=openHoF;window.renderVotePage=renderVotePage;window.showEgg=showEgg;window.closeLoginBonus=closeLoginBonus;window.closeLevelUp=closeLevelUp;window.sendChat=sendChat;window.deleteChatMsg=deleteChatMsg;window.wordleShare=wordleShare;window.renderChallenges=renderChallenges;window.initChat=initChat;
+window.openMuteModal=openMuteModal;window.closeMuteModal=closeMuteModal;window.selectMuteTime=selectMuteTime;window.confirmMuteUser=confirmMuteUser;window.adminUnmuteUser=adminUnmuteUser;
 
 } // end initApp
 </script>
