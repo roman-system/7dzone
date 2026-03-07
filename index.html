@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>7D ZONE 🎮 v4</title>
+<title>7D ZONE 🎮 v5</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700;900&family=Orbitron:wght@700;900&family=Bangers&family=Satisfy&family=Permanent+Marker&family=Righteous&family=Bungee+Shade&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -283,9 +283,111 @@ footer span{color:var(--accent);}
 #userBar .uname{font-family:'Press Start 2P';font-size:0.42rem;color:var(--accent);}
 #userBar .ulogout{background:none;border:1px solid var(--border);border-radius:100px;color:var(--text2);font-size:0.68rem;padding:0.15rem 0.5rem;cursor:pointer;transition:all 0.2s;}
 #userBar .ulogout:hover{border-color:#ff4444;color:#ff4444;}
+
+/* ===== XP / LEVEL ===== */
+#xpBar{position:fixed;top:0;left:0;right:0;z-index:199;height:4px;background:var(--border);}
+#xpFill{height:100%;background:var(--accent);transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 0 8px var(--accent);}
+#xpPopup{position:fixed;top:52px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--card);border:2px solid var(--accent);border-radius:14px;padding:0.6rem 1.2rem;font-family:'Press Start 2P';font-size:0.52rem;color:var(--accent);box-shadow:0 0 24px var(--glow);z-index:9998;opacity:0;pointer-events:none;transition:all 0.35s;text-align:center;white-space:nowrap;}
+#xpPopup.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.xp-badge{display:inline-flex;align-items:center;gap:0.3rem;background:var(--bg);border:1.5px solid var(--accent);border-radius:100px;padding:0.15rem 0.6rem;font-family:'Press Start 2P';font-size:0.42rem;color:var(--accent);cursor:pointer;}
+#levelUpOverlay{position:fixed;inset:0;z-index:10002;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0);pointer-events:none;transition:background 0.4s;}
+#levelUpOverlay.show{background:rgba(0,0,0,0.88);pointer-events:all;}
+#levelUpBox{position:relative;background:var(--card);border:3px solid var(--accent);border-radius:24px;padding:2.5rem 2rem;max-width:360px;width:92%;text-align:center;box-shadow:0 0 60px var(--glow);transform:scale(0) rotate(-10deg);opacity:0;transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s;}
+#levelUpOverlay.show #levelUpBox{transform:scale(1) rotate(0deg);opacity:1;}
+.lvlup-emoji{font-size:4rem;display:block;animation:sBounce 0.6s ease infinite alternate;margin-bottom:0.5rem;}
+.lvlup-title{font-family:'Press Start 2P';font-size:clamp(0.7rem,3vw,1.1rem);color:var(--accent);text-shadow:0 0 20px var(--glow);margin-bottom:0.3rem;}
+.lvlup-sub{font-size:0.9rem;color:var(--text2);margin-bottom:1.2rem;}
+
+/* ===== LOGIN BONUS ===== */
+#loginBonusOverlay{position:fixed;inset:0;z-index:10003;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0);pointer-events:none;transition:background 0.4s;}
+#loginBonusOverlay.show{background:rgba(0,0,0,0.88);pointer-events:all;}
+#loginBonusBox{background:var(--card);border:3px solid var(--accent2);border-radius:24px;padding:2rem 1.8rem;max-width:360px;width:92%;text-align:center;box-shadow:0 0 60px rgba(0,204,255,0.4);transform:scale(0);opacity:0;transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s;}
+#loginBonusOverlay.show #loginBonusBox{transform:scale(1);opacity:1;}
+.streak-row{display:flex;justify-content:center;gap:0.5rem;margin:1rem 0;flex-wrap:wrap;}
+.streak-day{width:38px;height:38px;border-radius:10px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:all 0.3s;}
+.streak-day.done{border-color:var(--accent);background:rgba(0,255,136,0.15);box-shadow:0 0 8px var(--glow);}
+.streak-day.today{border-color:var(--accent2);background:rgba(0,204,255,0.2);animation:surprisePulse 1s ease-in-out infinite;transform:scale(1.15);}
+
+/* ===== CHALLENGES ===== */
+.challenge-card{background:var(--bg);border:1.5px solid var(--border);border-radius:14px;padding:0.9rem 1rem;margin-bottom:0.6rem;display:flex;align-items:center;gap:0.8rem;transition:all 0.2s;}
+.challenge-card.done{border-color:#00ff88;opacity:0.6;}
+.challenge-card:hover:not(.done){border-color:var(--accent);}
+.ch-icon{font-size:1.8rem;flex-shrink:0;}
+.ch-info{flex:1;}
+.ch-title{font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;}
+.ch-desc{font-size:0.75rem;color:var(--text2);}
+.ch-xp{font-family:'Press Start 2P';font-size:0.5rem;color:var(--accent);white-space:nowrap;}
+.ch-progress{height:5px;background:var(--border);border-radius:100px;margin-top:0.35rem;overflow:hidden;}
+.ch-progress-fill{height:100%;background:var(--accent);border-radius:100px;transition:width 0.5s;}
+
+/* ===== CHAT ===== */
+#chatMessages{height:320px;overflow-y:auto;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:0.8rem;margin-bottom:0.6rem;display:flex;flex-direction:column;gap:0.5rem;scroll-behavior:smooth;}
+.chat-msg{display:flex;gap:0.5rem;align-items:flex-start;animation:fadeIn 0.2s ease;}
+.chat-msg.own{flex-direction:row-reverse;}
+.chat-avatar{font-size:1.1rem;flex-shrink:0;margin-top:0.1rem;}
+.chat-bubble{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0.4rem 0.7rem;max-width:75%;word-break:break-word;}
+.chat-msg.own .chat-bubble{background:rgba(0,255,136,0.08);border-color:var(--accent);}
+.chat-name{font-size:0.62rem;color:var(--accent);font-weight:700;margin-bottom:0.15rem;}
+.chat-text{font-size:0.88rem;color:var(--text);line-height:1.4;}
+.chat-time{font-size:0.58rem;color:var(--text2);margin-top:0.1rem;}
+.chat-input-row{display:flex;gap:0.5rem;}
+.chat-input{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:0.55rem 0.8rem;color:var(--text);font-family:'Nunito';font-size:0.9rem;outline:none;transition:border 0.2s;}
+.chat-input:focus{border-color:var(--accent);}
+.chat-send{padding:0.55rem 1rem;border-radius:10px;border:2px solid var(--accent);background:transparent;color:var(--accent);font-family:'Press Start 2P';font-size:0.5rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+.chat-send:hover{background:var(--accent);color:var(--bg);}
+.online-dot{width:8px;height:8px;border-radius:50%;background:#00ff88;display:inline-block;margin-right:0.3rem;box-shadow:0 0 6px #00ff88;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+#onlineList{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.7rem;}
+.online-user{font-size:0.72rem;color:var(--text2);background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:0.15rem 0.55rem;display:flex;align-items:center;gap:0.25rem;}
+
+/* ===== WORDLE ===== */
+.wordle-grid{display:grid;grid-template-rows:repeat(6,1fr);gap:0.4rem;width:fit-content;margin:0 auto 1rem;}
+.wordle-row{display:flex;gap:0.4rem;}
+.wordle-tile{width:52px;height:52px;border:2px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Press Start 2P';font-size:1rem;color:var(--text);transition:all 0.3s;text-transform:uppercase;background:var(--bg);}
+.wordle-tile.filled{border-color:var(--text2);animation:wTilePop 0.1s ease;}
+@keyframes wTilePop{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+.wordle-tile.correct{background:#538d4e;border-color:#538d4e;color:#fff;}
+.wordle-tile.present{background:#b59f3b;border-color:#b59f3b;color:#fff;}
+.wordle-tile.absent{background:#3a3a3c;border-color:#3a3a3c;color:#fff;}
+.wordle-tile.shake{animation:wShake 0.4s ease;}
+@keyframes wShake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-6px);}40%,80%{transform:translateX(6px);}}
+.wordle-key{padding:0.5rem 0.4rem;min-width:34px;border-radius:6px;border:none;background:var(--card);color:var(--text);font-family:'Press Start 2P';font-size:0.42rem;cursor:pointer;transition:all 0.2s;text-transform:uppercase;}
+.wordle-key:hover{background:var(--accent);color:var(--bg);}
+.wordle-key.correct{background:#538d4e!important;color:#fff!important;}
+.wordle-key.present{background:#b59f3b!important;color:#fff!important;}
+.wordle-key.absent{background:#3a3a3c!important;color:#888!important;}
+.wordle-key.wide{min-width:56px;font-size:0.38rem;}
+.wordle-keyboard{display:flex;flex-direction:column;gap:0.4rem;align-items:center;}
+.wordle-key-row{display:flex;gap:0.3rem;justify-content:center;flex-wrap:wrap;}
+#wordleMsg{text-align:center;font-family:'Press Start 2P';font-size:0.58rem;color:var(--accent);min-height:1.3rem;margin-bottom:0.5rem;}
+@media(max-width:400px){.wordle-tile{width:42px;height:42px;font-size:0.8rem;}.wordle-key{min-width:28px;}.wordle-key.wide{min-width:46px;}}
 </style>
 </head>
 <body>
+<div id="xpBar"><div id="xpFill" style="width:0%"></div></div>
+<div id="xpPopup">+0 XP</div>
+
+<div id="levelUpOverlay">
+  <div id="levelUpBox">
+    <span class="lvlup-emoji">🎉</span>
+    <div class="lvlup-title" id="lvlupTitle">LEVEL UP!!</div>
+    <div class="lvlup-sub" id="lvlupSub">Du bist jetzt Level 2!!</div>
+    <button class="btn" onclick="closeLevelUp()" style="margin-top:0.5rem;">🔥 LETS GO!!</button>
+  </div>
+</div>
+
+<div id="loginBonusOverlay">
+  <div id="loginBonusBox">
+    <div style="font-size:2.5rem;margin-bottom:0.3rem;">🎁</div>
+    <div style="font-family:'Press Start 2P';font-size:0.65rem;color:var(--accent2);margin-bottom:0.2rem;">TÄGLICHER BONUS!!</div>
+    <div style="font-size:0.82rem;color:var(--text2);margin-bottom:0.8rem;">du bist eingeloggt!! 🔥</div>
+    <div class="streak-row" id="streakRow"></div>
+    <div style="font-family:'Press Start 2P';font-size:0.8rem;color:var(--accent);margin:0.6rem 0;" id="bonusXpText">+50 XP</div>
+    <div style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;" id="streakText">Streak: 1 Tag 🔥</div>
+    <button class="btn" onclick="closeLoginBonus()" style="border-color:var(--accent2);color:var(--accent2);">✨ DANKE!!</button>
+  </div>
+</div>
+
 <div id="authOverlay">
   <div id="authBox">
     <div class="logo" style="font-family:'Press Start 2P';">KLASSE 7D 🎮</div>
@@ -304,6 +406,7 @@ footer span{color:var(--accent);}
 </div>
 
 <div id="userBar" style="display:none;">
+  <span class="xp-badge" id="xpBadge" onclick="goPage('profile',null,null)" title="Profil">⚡ <span id="xpBadgeLvl">Lv1</span> · <span id="xpBadgeXp">0</span>XP</span>
   <span class="uname" id="userBarName" onclick="goPage('settings',null,null)" style="cursor:pointer;" title="Einstellungen">👤 <span id="userBarNameText"></span> ⚙️</span>
 </div>
 
@@ -364,7 +467,7 @@ footer span{color:var(--accent);}
 
 <header>
   <div class="logo" id="logoEl">KLASSE 7D 🎮</div>
-  <div class="header-sub">spiele · witze · quiz — alles hier!! v4 🔥</div>
+  <div class="header-sub">spiele · chat · wordle · xp — v5 🔥</div>
 </header>
 
 <div class="page-tabs">
@@ -372,17 +475,21 @@ footer span{color:var(--accent);}
   <button class="ptab" onclick="goPage('gaming',this)">🎮 Spiele</button>
   <button class="ptab" onclick="goPage('jokes',this)">😂 Witze</button>
   <button class="ptab" onclick="goPage('quiz',this)">🎲 Quiz</button>
+  <button class="ptab" onclick="goPage('wordle',this)">🟩 Wordle</button>
+  <button class="ptab" onclick="goPage('chat',this)">💬 Chat</button>
+  <button class="ptab" onclick="goPage('challenges',this)">🏆 Challenges</button>
   <button class="ptab" onclick="goPage('vote',this)">⭐ Voting</button>
+  <button class="ptab" onclick="goPage('profile',this)">👤 Profil</button>
   <button class="ptab" onclick="goPage('admin',this)" id="adminTab" style="display:none;border-color:#ff4444;color:#ff4444;">👑 Admin</button>
-  <button class="ptab" onclick="goPage('settings',this)" id="settingsTab">⚙️ Einstellungen</button>
+  <button class="ptab" onclick="goPage('settings',this)" id="settingsTab">⚙️ Settings</button>
 </div>
 
 <!-- HOME -->
 <div class="page active" id="page-home">
 <div class="wrap">
   <div style="text-align:center;padding:1.5rem 0 1rem;">
-    <div style="font-family:'Press Start 2P';font-size:clamp(0.65rem,2.5vw,1rem);color:var(--accent);line-height:1.8;">WILLKOMMEN!! v4 🚀</div>
-    <p style="color:var(--text2);margin-top:0.5rem;font-size:0.95rem;">2 neue themes · 3 spiele · 300 quiz-fragen · mehr witze 🔥</p>
+    <div style="font-family:'Press Start 2P';font-size:clamp(0.65rem,2.5vw,1rem);color:var(--accent);line-height:1.8;">WILLKOMMEN!! v5 🚀</div>
+    <p style="color:var(--text2);margin-top:0.5rem;font-size:0.95rem;">XP · Level · Chat · Wordle · Challenges · Login-Bonus 🔥</p>
   </div>
   <div class="home-grid">
     <div class="home-tile" onclick="goPageByName('gaming')">
@@ -397,14 +504,26 @@ footer span{color:var(--accent);}
       <span class="tile-emoji">🎲</span>
       <span class="tile-label">300 fragen-quiz!!</span>
     </div>
+    <div class="home-tile" onclick="goPageByName('wordle')">
+      <span class="tile-emoji">🟩</span>
+      <span class="tile-label">Wordle täglich!!</span>
+    </div>
+    <div class="home-tile" onclick="goPageByName('chat')">
+      <span class="tile-emoji">💬</span>
+      <span class="tile-label">Klassen-Chat!!</span>
+    </div>
+    <div class="home-tile" onclick="goPageByName('challenges')">
+      <span class="tile-emoji">🏆</span>
+      <span class="tile-label">Daily Challenges!!</span>
+    </div>
   </div>
   <div class="card" style="margin-top:1rem;text-align:center;">
-    <div class="card-title">🆕 NEU IN V4</div>
-    <p>🌌 <b>Galaxy</b> & 💚 <b>Matrix</b> Themes neu dazugekommen!!</p>
-    <p>🐍 <b>Snake-Game</b> & 🧠 <b>Memory-Game</b> sind jetzt dabei!!</p>
-    <p>📚 <b>300 Quiz-Fragen</b> in vielen Kategorien!!</p>
-    <p>😂 <b>Noch mehr Witze</b> — sogar noch cringiger!!</p>
-    <p>🎵 <b>Bessere Musik</b> mit mehr Beats!!</p>
+    <div class="card-title">🆕 NEU IN V5</div>
+    <p>⚡ <b>XP & Level System</b> — verdiene XP für alles was du machst!!</p>
+    <p>🎁 <b>Täglicher Login-Bonus</b> — streak aufbauen für mehr XP!!</p>
+    <p>💬 <b>Klassen-Chat</b> — chatte live mit der ganzen Klasse!!</p>
+    <p>🟩 <b>Wordle auf Deutsch</b> — täglich ein neues Wort!!</p>
+    <p>🏆 <b>Daily Challenges</b> — tägliche Aufgaben mit Bonus-XP!!</p>
   </div>
 </div>
 </div>
@@ -642,14 +761,143 @@ footer span{color:var(--accent);}
 </div>
 </div>
 
+<!-- WORDLE -->
+<div class="page" id="page-wordle">
+<div class="wrap">
+  <div class="card">
+    <div class="card-title">🟩 WORDLE — TÄGLICH!!</div>
+    <p>errate das 5-buchstaben-wort in 6 versuchen!! täglich neu!! 🧠</p>
+    <div id="wordleMsg">tipp dein erstes wort!!</div>
+    <div class="wordle-grid" id="wordleGrid"></div>
+    <div class="wordle-keyboard" id="wordleKeyboard"></div>
+    <div class="btn-row" style="margin-top:1rem;justify-content:center;">
+      <button class="btn" id="wordleShareBtn" onclick="wordleShare()" style="display:none;">📤 TEILEN</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">📊 WORDLE STATS</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem;text-align:center;">
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.8rem 0.3rem;">
+        <div style="font-size:1.6rem;font-weight:900;color:var(--accent);" id="wStatPlayed">0</div>
+        <div style="font-size:0.7rem;color:var(--text2);">gespielt</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.8rem 0.3rem;">
+        <div style="font-size:1.6rem;font-weight:900;color:var(--accent);" id="wStatWin">0%</div>
+        <div style="font-size:0.7rem;color:var(--text2);">gewonnen</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.8rem 0.3rem;">
+        <div style="font-size:1.6rem;font-weight:900;color:var(--accent);" id="wStatStreak">0</div>
+        <div style="font-size:0.7rem;color:var(--text2);">streak 🔥</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.8rem 0.3rem;">
+        <div style="font-size:1.6rem;font-weight:900;color:var(--accent);" id="wStatMax">0</div>
+        <div style="font-size:0.7rem;color:var(--text2);">max streak</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- CHAT -->
+<div class="page" id="page-chat">
+<div class="wrap">
+  <div class="card">
+    <div class="card-title">💬 KLASSEN-CHAT!! 🔴 LIVE</div>
+    <p>chatte mit der ganzen Klasse!! sei nett 🙏</p>
+    <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.5rem;">
+      <span class="online-dot"></span>
+      <span style="font-size:0.78rem;color:var(--text2);">online:</span>
+      <div id="onlineList"></div>
+    </div>
+    <div id="chatMessages">
+      <div style="text-align:center;color:var(--text2);font-size:0.82rem;padding:2rem 0;">lade nachrichten... ⏳</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chatInput" type="text" placeholder="schreib was... 💬" maxlength="200" onkeydown="if(event.key==='Enter')sendChat()"/>
+      <button class="chat-send" onclick="sendChat()">📤 SENDEN</button>
+    </div>
+    <div style="font-size:0.7rem;color:var(--text2);margin-top:0.4rem;">max. 200 zeichen · kein spam bitte!!</div>
+  </div>
+</div>
+</div>
+
+<!-- CHALLENGES -->
+<div class="page" id="page-challenges">
+<div class="wrap">
+  <div class="card">
+    <div class="card-title">🏆 TÄGLICHE CHALLENGES!!</div>
+    <p>erledige die aufgaben für bonus-XP!! täglich um mitternacht neu 🌙</p>
+    <div id="challengeTimer" style="font-family:'Press Start 2P';font-size:0.52rem;color:var(--text2);margin-bottom:1rem;">reset in: --:--:--</div>
+    <div id="challengeList"></div>
+    <div class="btn-row"><button class="btn" onclick="renderChallenges()">🔄 AKTUALISIEREN</button></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📈 DEIN FORTSCHRITT</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;text-align:center;">
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.8rem 0.3rem;">
+        <div style="font-size:1.6rem;font-weight:900;color:var(--accent);" id="chStatDone">0</div>
+        <div style="font-size:0.7rem;color:var(--text2);">heute fertig</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.8rem 0.3rem;">
+        <div style="font-size:1.6rem;font-weight:900;color:var(--accent);" id="chStatXp">0</div>
+        <div style="font-size:0.7rem;color:var(--text2);">XP heute</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.8rem 0.3rem;">
+        <div style="font-size:1.6rem;font-weight:900;color:var(--accent);" id="chStatTotal">0</div>
+        <div style="font-size:0.7rem;color:var(--text2);">total fertig</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PROFILE -->
+<div class="page" id="page-profile">
+<div class="wrap">
+  <div class="card" style="text-align:center;">
+    <div style="font-size:4rem;margin-bottom:0.5rem;" id="profileEmoji">🐱</div>
+    <div style="font-family:'Press Start 2P';font-size:0.75rem;color:var(--accent);margin-bottom:0.2rem;" id="profileName">-</div>
+    <div style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;" id="profileTitle">Neuling</div>
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:0.8rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+        <span style="font-family:'Press Start 2P';font-size:0.48rem;color:var(--text2);">LEVEL <span id="profileLevel">1</span></span>
+        <span style="font-family:'Press Start 2P';font-size:0.48rem;color:var(--accent);"><span id="profileXp">0</span> / <span id="profileXpNext">100</span> XP</span>
+      </div>
+      <div style="height:10px;background:var(--border);border-radius:100px;overflow:hidden;">
+        <div id="profileXpBar" style="height:100%;background:var(--accent);border-radius:100px;transition:width 0.6s;width:0%;box-shadow:0 0 8px var(--accent);"></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;">
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.8rem 0.3rem;">
+        <div style="font-size:1.5rem;font-weight:900;color:var(--accent);" id="profileTotalXp">0</div>
+        <div style="font-size:0.7rem;color:var(--text2);">total XP</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.8rem 0.3rem;">
+        <div style="font-size:1.5rem;font-weight:900;color:var(--accent);" id="profileStreak">0</div>
+        <div style="font-size:0.7rem;color:var(--text2);">login streak 🔥</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.8rem 0.3rem;">
+        <div style="font-size:1.5rem;font-weight:900;color:var(--accent);" id="profileChallenges">0</div>
+        <div style="font-size:0.7rem;color:var(--text2);">challenges</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">🎖️ BADGES</div>
+    <div id="badgeGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:0.6rem;"></div>
+  </div>
+</div>
+</div>
+
 <footer>made by <span>halil 🐱</span> & <span>roman 🦫</span></footer>
 
 <nav class="bottom-nav" id="bottomNav">
   <button class="bnav-btn on" onclick="goPage('home',null,this)" id="bn-home"><span class="bnav-icon">🏠</span>Home</button>
   <button class="bnav-btn" onclick="goPage('gaming',null,this)" id="bn-gaming"><span class="bnav-icon">🎮</span>Spiele</button>
-  <button class="bnav-btn" onclick="goPage('jokes',null,this)" id="bn-jokes"><span class="bnav-icon">😂</span>Witze</button>
-  <button class="bnav-btn" onclick="goPage('quiz',null,this)" id="bn-quiz"><span class="bnav-icon">🎲</span>Quiz</button>
-  <button class="bnav-btn" onclick="goPage('vote',null,this)" id="bn-vote"><span class="bnav-icon">⭐</span>Voting</button>
+  <button class="bnav-btn" onclick="goPage('wordle',null,this)" id="bn-wordle"><span class="bnav-icon">🟩</span>Wordle</button>
+  <button class="bnav-btn" onclick="goPage('chat',null,this)" id="bn-chat"><span class="bnav-icon">💬</span>Chat</button>
+  <button class="bnav-btn" onclick="goPage('challenges',null,this)" id="bn-challenges"><span class="bnav-icon">🏆</span>Challenges</button>
+  <button class="bnav-btn" onclick="goPage('profile',null,this)" id="bn-profile"><span class="bnav-icon">👤</span>Profil</button>
   <button class="bnav-btn" onclick="goPage('admin',null,this)" id="bn-admin" style="display:none;color:#ff4444;"><span class="bnav-icon">👑</span>Admin</button>
   <button class="bnav-btn" onclick="goPage('settings',null,this)" id="bn-settings"><span class="bnav-icon">⚙️</span>Settings</button>
 </nav>
@@ -761,6 +1009,12 @@ fbAuth.onAuthStateChanged(async user=>{
     document.getElementById('adminTab').style.display=isAdmin?'':'none';
     document.getElementById('bn-admin').style.display=isAdmin?'':'none';
     if(isAdmin){document.getElementById('adminVoteGivenSection').style.display='';adminFillVoteSelect();}
+    // v5: init new systems
+    await loadUserXP();
+    await checkLoginBonus();
+    await loadChallenges();
+    startChallengeTimer();
+    initWordle();
   } else {
     currentUser=null;hofVoted=null;
     document.getElementById('authOverlay').style.display='flex';
@@ -845,6 +1099,7 @@ function goPage(name,btn,bnavBtn){
   const bnBtn=document.getElementById('bn-'+name);
   if(bnBtn) bnBtn.classList.add('on');
   if(name==='vote'&&currentUser) renderVotePage();
+  if(name==='chat'&&currentUser) initChat();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function goPageByName(name){goPage(name,null,null);}
@@ -1069,6 +1324,9 @@ function endGame(){
   const msg=gscore>=30?`WAHNSINN!! ${gscore} PUNKTE!! 🔥🔥`:gscore>=20?`KRASS!! ${gscore} punkte!! 🔥`:gscore>=10?`nice!! ${gscore} punkte!! 😎`:`${gscore} punkte... üben lol 😅`;
   document.getElementById('gameMsg').textContent=msg+(gscore>gbest?' 🏆 NEUER REKORD!!':'');
   if(gscore>gbest){gbest=gscore;localStorage.setItem('gb7d',gbest);document.getElementById('best').textContent=gbest;}
+  addXP(Math.max(5,Math.floor(gscore/3)),'Catch Emoji gespielt!! 🎮');
+  updateChallengeProgress('catchScore',gscore);
+  if(gscore>=50)checkAndAwardBadge('catch50');
 }
 function resetGame(){
   gRunning=false;clearInterval(gInterval);clearInterval(gSpawn);
@@ -1140,6 +1398,9 @@ function gameOverSnake(){
   sctx.fillStyle='rgba(0,0,0,0.6)';sctx.fillRect(0,0,sc.width,sc.height);
   sctx.fillStyle='#ff4444';sctx.font="bold 24px 'Press Start 2P',monospace";
   sctx.textAlign='center';sctx.fillText('GAME OVER',sc.width/2,sc.height/2);sctx.textAlign='left';
+  addXP(Math.max(3,snakeScore),'Snake gespielt!! 🐍');
+  updateChallengeProgress('snakeLevel',snakeLevel);
+  if(snakeScore>=100)checkAndAwardBadge('snake100');
 }
 document.addEventListener('keydown',e=>{
   if(!snakeRunning)return;
@@ -1299,6 +1560,8 @@ function setJokeCat(cat,btn){curJokeCat=cat;document.querySelectorAll('.jcat').f
 function getFilteredJokes(){return curJokeCat==='alle'?jokes:jokes.filter(j=>j.cat===curJokeCat);}
 function newJoke(){
   const list=getFilteredJokes();curJoke=list[Math.floor(Math.random()*list.length)];jokeCount++;stats.total++;updateStats();
+  addXP(2,'Witz gelesen!! 😂');
+  updateChallengeProgress('joke',1);
   document.getElementById('jokeNum').textContent=`witz #${jokeCount}`;document.getElementById('jokeSetup').textContent=curJoke.s;
   document.getElementById('jokePunchline').style.display='none';document.getElementById('jokePunchline').textContent='';
   document.getElementById('punchBtn').style.display='inline-block';document.getElementById('ratingWrap').style.display='none';document.getElementById('ratingMsg').textContent='';
@@ -1515,8 +1778,12 @@ function showQuestion(){
 }
 function answerQuiz(idx){
   const q=quizQuestions[qIdx];const btns=document.querySelectorAll('.qbtn');btns.forEach(b=>b.disabled=true);btns[q.correct].classList.add('correct');
-  if(idx===q.correct){qScore++;document.getElementById('qScore').textContent=qScore;document.getElementById('quizMsg').textContent='✅ RICHTIG!! +1 Punkt 🔥';}
+  if(idx===q.correct){qScore++;document.getElementById('qScore').textContent=qScore;document.getElementById('quizMsg').textContent='✅ RICHTIG!! +1 Punkt 🔥';
+    addXP(5,'Quiz richtig!! 🧠');
+    updateChallengeProgress('quizCorrect',1);
+  }
   else{btns[idx].classList.add('wrong');document.getElementById('quizMsg').textContent=`❌ Falsch!! Antwort war: ${q.opts[q.correct]}`;}
+  updateChallengeProgress('quiz',1);
   setTimeout(()=>{document.getElementById('quizMsg').textContent='';qIdx++;if(qIdx<quizQuestions.length)showQuestion();else endQuiz();},1500);
 }
 function endQuiz(){
@@ -1525,6 +1792,11 @@ function endQuiz(){
   const grade=pct>=90?'🏆 GENIUS!!':pct>=70?'😎 RICHTIG GUT!!':pct>=50?'👍 NICHT SCHLECHT!':pct>=30?'😅 NOCH ÜBEN LOL':'💀 BRO...';
   document.getElementById('quizArea').innerHTML=`<div style="text-align:center;padding:1.5rem 0;"><div style="font-size:3rem;margin-bottom:0.5rem;">${grade.split(' ')[0]}</div><div style="font-family:'Press Start 2P';font-size:0.7rem;color:var(--accent);margin-bottom:0.5rem;">${grade.slice(2)}</div><div style="font-size:1.5rem;font-weight:900;color:var(--text);margin-bottom:0.3rem;">${qScore}/${total} Punkte</div><div style="font-size:0.85rem;color:var(--text2);margin-bottom:1.5rem;">${pct}% richtig</div><button class="btn" onclick="startQuiz()">🔄 NOCHMAL</button></div>`;
   if(qScore>qBest){qBest=qScore;localStorage.setItem('qb7d',qBest);document.getElementById('qBest').textContent=qBest;showEgg('🏆 Neuer Quiz-Rekord!!\n'+qScore+'/'+total+' Punkte!!');}
+  if(qScore>=10)checkAndAwardBadge('quiz10');
+  if(qScore>=50)checkAndAwardBadge('quiz50');
+  if(userLevel>=5)checkAndAwardBadge('level5');
+  if(userLevel>=10)checkAndAwardBadge('level10');
+  addXP(qScore*3,'Quiz abgeschlossen!! 🎲');
 }
 
 // ===== hofMembers: Melissa ans Ende verschoben =====
@@ -1813,5 +2085,506 @@ async function adminToggle(uid,currentlyAdmin){
 window.authLogout=authLogout;window.authSubmit=authSubmit;window.adminResetVotes=adminResetVotes;window.adminToggle=adminToggle;window.adminGiveVotes=adminGiveVotes;window.adminLoadUsers=adminLoadUsers;window.authSwitch=authSwitch;window.closeHoF=closeHoF;window.closeSurprise=closeSurprise;window.goPage=goPage;window.goPageByName=goPageByName;window.hofTab=hofTab;window.newJoke=newJoke;window.rateJoke=rateJoke;window.resetGame=resetGame;window.resetSnake=resetSnake;
 window.dpadDir=function(x,y){if(!snakeRunning)return;if(x===0&&y===0)return;const nd={x,y};if(nd.x===-snakeDir.x&&nd.y===-snakeDir.y)return;snakeDirQueue.push(nd);};
 window.resetStats=resetStats;window.setJokeCat=setJokeCat;window.setMemLevel=setMemLevel;window.setQuizLen=setQuizLen;window.setTheme=setTheme;window.setVol=setVol;window.showGame=showGame;window.showPunch=showPunch;window.startGame=startGame;window.startMemory=startMemory;window.startQuiz=startQuiz;window.answerQuiz=answerQuiz;window.setQuizCat=setQuizCat;window.startSnake=startSnake;window.toggleMusic=toggleMusic;window.toggleVoteSelectPage=toggleVoteSelectPage;window.submitVotePage=submitVotePage;window.resetMyVote=resetMyVote;window.openSurprise=openSurprise;window.openHoF=openHoF;window.renderVotePage=renderVotePage;window.updateLeaderboard=updateLeaderboard;window.showEgg=showEgg;
+// ============================================================
+// XP & LEVEL SYSTEM
+// ============================================================
+const XP_LEVELS=[0,100,250,450,700,1000,1400,1900,2500,3200,4000,5000,6200,7600,9200,11000,13000,15500,18500,22000];
+const LEVEL_TITLES=['Neuling','Lehrling','Aufsteiger','Fortgeschrittener','Kämpfer','Profi','Elite','Meister','Großmeister','Legende','GOAT 🐐','Mythisch','Unsterblich','Göttlich','Transzendent','Absolut','Jenseits','Unbegreiflich','Omnipotent','7D GOTT 👑'];
+const LEVEL_EMOJIS=['😶','🙂','😊','😎','💪','🔥','⚡','🏆','👑','🌟','🐐','💎','🌌','🌠','🔮','⚔️','🧬','🌀','♾️','👑'];
+
+let userXP=0,userLevel=1,totalXP=0;
+
+function getXpForLevel(lvl){return XP_LEVELS[Math.min(lvl,XP_LEVELS.length-1)]||XP_LEVELS[XP_LEVELS.length-1];}
+function getLevelFromXp(xp){
+  let lvl=1;
+  for(let i=1;i<XP_LEVELS.length;i++){if(xp>=XP_LEVELS[i])lvl=i+1;else break;}
+  return Math.min(lvl,LEVEL_TITLES.length);
+}
+function getCurrentXpInLevel(xp){
+  const lvl=getLevelFromXp(xp);
+  const base=getXpForLevel(lvl-1)||0;
+  return xp-base;
+}
+function getXpNeededForNextLevel(xp){
+  const lvl=getLevelFromXp(xp);
+  const next=getXpForLevel(lvl);
+  const base=getXpForLevel(lvl-1)||0;
+  return next-base;
+}
+
+async function loadUserXP(){
+  if(!currentUser)return;
+  try{
+    const snap=await fbDb.ref('users/'+currentUser.uid+'/xp').once('value');
+    totalXP=snap.val()||0;
+    userLevel=getLevelFromXp(totalXP);
+    updateXPDisplay();
+  }catch(e){}
+}
+
+function updateXPDisplay(){
+  const inLevel=getCurrentXpInLevel(totalXP);
+  const needed=getXpNeededForNextLevel(totalXP);
+  const pct=Math.min((inLevel/needed)*100,100);
+  document.getElementById('xpFill').style.width=pct+'%';
+  document.getElementById('xpBadgeLvl').textContent='Lv'+userLevel;
+  document.getElementById('xpBadgeXp').textContent=totalXP;
+  // profile page
+  document.getElementById('profileLevel').textContent=userLevel;
+  document.getElementById('profileXp').textContent=inLevel;
+  document.getElementById('profileXpNext').textContent=needed;
+  document.getElementById('profileXpBar').style.width=pct+'%';
+  document.getElementById('profileTotalXp').textContent=totalXP;
+  document.getElementById('profileEmoji').textContent=LEVEL_EMOJIS[Math.min(userLevel-1,LEVEL_EMOJIS.length-1)];
+  document.getElementById('profileTitle').textContent=LEVEL_TITLES[Math.min(userLevel-1,LEVEL_TITLES.length-1)];
+  if(document.getElementById('profileName'))document.getElementById('profileName').textContent=currentUser?.username||'';
+  renderBadges();
+}
+
+async function addXP(amount,reason){
+  if(!currentUser||amount<=0)return;
+  const oldLevel=getLevelFromXp(totalXP);
+  totalXP+=amount;
+  userLevel=getLevelFromXp(totalXP);
+  try{await fbDb.ref('users/'+currentUser.uid+'/xp').set(totalXP);}catch(e){}
+  updateXPDisplay();
+  showXpPopup('+'+amount+' XP — '+reason);
+  if(userLevel>oldLevel) showLevelUp(userLevel);
+}
+
+let xpPopTimer=null;
+function showXpPopup(msg){
+  const el=document.getElementById('xpPopup');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(xpPopTimer);xpPopTimer=setTimeout(()=>el.classList.remove('show'),2200);
+}
+
+function showLevelUp(lvl){
+  document.getElementById('lvlupTitle').textContent='LEVEL UP!! 🎉';
+  document.getElementById('lvlupSub').textContent=`Du bist jetzt Level ${lvl} — ${LEVEL_TITLES[Math.min(lvl-1,LEVEL_TITLES.length-1)]}!! ${LEVEL_EMOJIS[Math.min(lvl-1,LEVEL_EMOJIS.length-1)]}`;
+  document.getElementById('levelUpOverlay').classList.add('show');
+  launchConfetti();
+}
+function closeLevelUp(){document.getElementById('levelUpOverlay').classList.remove('show');}
+
+const ALL_BADGES=[
+  {id:'firstLogin',emoji:'🎉',name:'Erster Login',desc:'Zum ersten Mal eingeloggt'},
+  {id:'quiz10',emoji:'🧠',name:'Quiz-Starter',desc:'10 Quiz-Fragen beantwortet'},
+  {id:'quiz50',emoji:'📚',name:'Quiz-Pro',desc:'50 Quiz-Fragen beantwortet'},
+  {id:'snake100',emoji:'🐍',name:'Snake-Meister',desc:'100 Punkte in Snake'},
+  {id:'catch50',emoji:'🎮',name:'Catch-King',desc:'50 Punkte in Catch'},
+  {id:'streak3',emoji:'🔥',name:'Streak x3',desc:'3 Tage Login-Streak'},
+  {id:'streak7',emoji:'💎',name:'Streak x7',desc:'7 Tage Login-Streak'},
+  {id:'wordle1',emoji:'🟩',name:'Wordle-Starter',desc:'Erstes Wordle gelöst'},
+  {id:'chat10',emoji:'💬',name:'Chatter',desc:'10 Nachrichten gesendet'},
+  {id:'level5',emoji:'⚡',name:'Level 5',desc:'Level 5 erreicht'},
+  {id:'level10',emoji:'🏆',name:'Level 10',desc:'Level 10 erreicht'},
+  {id:'challenges5',emoji:'🎯',name:'Challenge-Held',desc:'5 Challenges abgeschlossen'},
+];
+async function checkAndAwardBadge(id){
+  if(!currentUser)return;
+  try{
+    const snap=await fbDb.ref('users/'+currentUser.uid+'/badges/'+id).once('value');
+    if(snap.val())return;
+    await fbDb.ref('users/'+currentUser.uid+'/badges/'+id).set(true);
+    const b=ALL_BADGES.find(x=>x.id===id);
+    if(b)showEgg('🎖️ Badge: '+b.name+'!!');
+  }catch(e){}
+}
+async function renderBadges(){
+  if(!currentUser)return;
+  const grid=document.getElementById('badgeGrid');if(!grid)return;
+  let earnedMap={};
+  try{const snap=await fbDb.ref('users/'+currentUser.uid+'/badges').once('value');earnedMap=snap.val()||{};}catch(e){}
+  grid.innerHTML=ALL_BADGES.map(b=>{
+    const earned=earnedMap[b.id];
+    return `<div style="background:var(--bg);border:1.5px solid ${earned?'var(--accent)':'var(--border)'};border-radius:12px;padding:0.6rem 0.3rem;text-align:center;opacity:${earned?'1':'0.35'};transition:all 0.2s;" title="${b.desc}">
+      <div style="font-size:1.6rem;">${b.emoji}</div>
+      <div style="font-size:0.6rem;color:${earned?'var(--accent)':'var(--text2)'};font-weight:700;margin-top:0.2rem;line-height:1.3;">${b.name}</div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// LOGIN BONUS & STREAK
+// ============================================================
+async function checkLoginBonus(){
+  if(!currentUser)return;
+  const today=new Date().toISOString().split('T')[0];
+  try{
+    const snap=await fbDb.ref('users/'+currentUser.uid+'/loginBonus').once('value');
+    const data=snap.val()||{lastLogin:'',streak:0};
+    const yesterday=new Date(Date.now()-86400000).toISOString().split('T')[0];
+    if(data.lastLogin===today)return; // already claimed
+    let newStreak=1;
+    if(data.lastLogin===yesterday) newStreak=(data.streak||0)+1;
+    const bonusXP=Math.min(50+((newStreak-1)*10),200);
+    await fbDb.ref('users/'+currentUser.uid+'/loginBonus').set({lastLogin:today,streak:newStreak});
+    // show bonus UI
+    showLoginBonusUI(newStreak,bonusXP);
+    await addXP(bonusXP,'Login Bonus 🎁');
+    if(newStreak>=3)checkAndAwardBadge('streak3');
+    if(newStreak>=7)checkAndAwardBadge('streak7');
+    checkAndAwardBadge('firstLogin');
+    document.getElementById('profileStreak').textContent=newStreak;
+  }catch(e){}
+}
+function showLoginBonusUI(streak,xp){
+  const row=document.getElementById('streakRow');
+  const days=['Mo','Di','Mi','Do','Fr','Sa','So'];
+  row.innerHTML=days.map((_,i)=>{
+    const cls=i<streak?(i===streak-1?'today':'done'):'';
+    return `<div class="streak-day ${cls}">${i<streak?'🔥':'⬜'}</div>`;
+  }).join('');
+  document.getElementById('bonusXpText').textContent='+'+xp+' XP';
+  document.getElementById('streakText').textContent='Streak: '+streak+' Tag'+(streak>1?'e':'')+' 🔥';
+  document.getElementById('loginBonusOverlay').classList.add('show');
+  launchConfetti();
+}
+function closeLoginBonus(){document.getElementById('loginBonusOverlay').classList.remove('show');}
+
+// ============================================================
+// WORDLE
+// ============================================================
+const WORDLE_WORDS=['APFEL','BAUCH','DUNKEL','ELFER','FARBE','GABEL','HANDY','INSEL','JAGD','KABEL','LAMPE','MAUER','NACHT','OFFEN','PFERD','QUARK','REGEN','STERN','TIGER','UBOOT','VOGEL','WALD','XENON','YACHT','ZEBRA','BLUME','CREME','DECKE','EBENE','FEUER','GERNE','HERDE','IMPFE','JOKER','KRONE','LICHT','MANGE','NERVE','OCKER','PINNE','QUEST','REISE','STOFF','TURBO','ULMER','VENUS','WELLE','XEROX','YUCCA','ZIRPE','ALPEN','BRAND','CHAOS','DRECK','ERNTE','FLUSS','GRUBE','HEXER','IDEAL','JUBEL','KLANG','LEERE','MENGE','NOBIL','OPFER','PAUSE','QUELL','RAUCH','SCHLAF','TINTE','URBAN','VILLA','WEICH','PIXEL','ZOMBI','ATLAS','BRISE','CLOWN','DOLCH','EFFEKT','FALKE','GLEICH','HAFEN','IRREN','JUNGE','KREIS','LIEGE','MORAL','NOTAR','OBDACH','PREIS','QUOTE','RANCH','SALAT','TRANK','ULTRA'];
+const WORDLE_VALID=[...WORDLE_WORDS,'ABEND','ADLER','AHNEN','AHORN','ALARM','ALBUM','ALDER','ALGEN','ALLEE','ANGEL','ANGER','ANGST','ANKER','ARMEE','ARTIG','ASCHE','ASSEL','ASTRO','ATMEN','AUDIO'];
+
+let wordleWord='',wordleGuesses=[],wordleCurrent='',wordleDone=false,wordleRow=0;
+let wordleStats={played:0,won:0,streak:0,maxStreak:0};
+
+function getWordleWord(){
+  const d=new Date();const dayNum=Math.floor((d-new Date(2024,0,1))/86400000);
+  return WORDLE_WORDS[dayNum%WORDLE_WORDS.length];
+}
+function getTodayStr(){return new Date().toISOString().split('T')[0];}
+
+function initWordle(){
+  wordleWord=getWordleWord();
+  const saved=JSON.parse(localStorage.getItem('wordle7d_'+getTodayStr())||'null');
+  wordleStats=JSON.parse(localStorage.getItem('wordle7d_stats')||'{"played":0,"won":0,"streak":0,"maxStreak":0}');
+  updateWordleStats();
+  buildWordleGrid();
+  buildWordleKeyboard();
+  if(saved){
+    wordleGuesses=saved.guesses||[];
+    wordleDone=saved.done||false;
+    wordleRow=wordleGuesses.length;
+    wordleGuesses.forEach((g,ri)=>colorRow(ri,g));
+    if(wordleDone){
+      const won=wordleGuesses[wordleGuesses.length-1]===wordleWord;
+      document.getElementById('wordleMsg').textContent=won?'🎉 Gewonnen!! '+wordleWord:'💀 Verloren!! Wort war: '+wordleWord;
+      document.getElementById('wordleShareBtn').style.display='inline-block';
+    }
+  }
+  document.addEventListener('keydown',wordleKeyHandler);
+}
+
+function buildWordleGrid(){
+  const grid=document.getElementById('wordleGrid');
+  grid.innerHTML='';
+  for(let r=0;r<6;r++){
+    const row=document.createElement('div');row.className='wordle-row';row.id='wrow-'+r;
+    for(let c=0;c<5;c++){const tile=document.createElement('div');tile.className='wordle-tile';tile.id=`wtile-${r}-${c}`;row.appendChild(tile);}
+    grid.appendChild(row);
+  }
+}
+function buildWordleKeyboard(){
+  const kb=document.getElementById('wordleKeyboard');
+  kb.innerHTML='';
+  const rows=[['Q','W','E','R','T','Z','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['ENTER','Y','X','C','V','B','N','M','⌫']];
+  rows.forEach(row=>{
+    const r=document.createElement('div');r.className='wordle-key-row';
+    row.forEach(k=>{
+      const btn=document.createElement('button');
+      btn.className='wordle-key'+(k==='ENTER'||k==='⌫'?' wide':'');
+      btn.textContent=k;btn.id='wkey-'+k;
+      btn.addEventListener('click',()=>wordleInput(k));
+      r.appendChild(btn);
+    });
+    kb.appendChild(r);
+  });
+}
+
+function wordleKeyHandler(e){
+  if(document.getElementById('page-wordle').classList.contains('active')===false)return;
+  if(wordleDone)return;
+  const k=e.key.toUpperCase();
+  if(k==='ENTER')wordleInput('ENTER');
+  else if(k==='BACKSPACE')wordleInput('⌫');
+  else if(/^[A-ZÄÖÜ]$/.test(k))wordleInput(k);
+}
+
+function wordleInput(key){
+  if(wordleDone)return;
+  if(key==='⌫'){if(wordleCurrent.length>0){wordleCurrent=wordleCurrent.slice(0,-1);renderCurrentRow();}}
+  else if(key==='ENTER'){submitWordle();}
+  else if(wordleCurrent.length<5&&/^[A-ZÄÖÜ]$/.test(key)){wordleCurrent+=key;renderCurrentRow();}
+}
+
+function renderCurrentRow(){
+  for(let c=0;c<5;c++){
+    const tile=document.getElementById(`wtile-${wordleRow}-${c}`);
+    tile.textContent=wordleCurrent[c]||'';
+    tile.className='wordle-tile'+(wordleCurrent[c]?' filled':'');
+  }
+}
+
+function submitWordle(){
+  if(wordleCurrent.length!==5){shakeRow(wordleRow);document.getElementById('wordleMsg').textContent='5 Buchstaben!!';return;}
+  const guess=wordleCurrent;
+  colorRow(wordleRow,guess);
+  wordleGuesses.push(guess);
+  wordleCurrent='';
+  const won=guess===wordleWord;
+  if(won||wordleRow===5){
+    wordleDone=true;
+    wordleStats.played++;
+    if(won){wordleStats.won++;wordleStats.streak++;wordleStats.maxStreak=Math.max(wordleStats.maxStreak,wordleStats.streak);addXP(50,'Wordle gelöst!! 🟩');checkAndAwardBadge('wordle1');updateChallengeProgress('wordleWin',1);}
+    else{wordleStats.streak=0;}
+    localStorage.setItem('wordle7d_stats',JSON.stringify(wordleStats));
+    localStorage.setItem('wordle7d_'+getTodayStr(),JSON.stringify({guesses:wordleGuesses,done:true}));
+    updateWordleStats();
+    setTimeout(()=>{
+      document.getElementById('wordleMsg').textContent=won?`🎉 KRASS!! in ${wordleRow+1} Versuchen!! 🔥`:'💀 Verloren!! Wort war: '+wordleWord;
+      document.getElementById('wordleShareBtn').style.display='inline-block';
+    },1200);
+  } else {
+    localStorage.setItem('wordle7d_'+getTodayStr(),JSON.stringify({guesses:wordleGuesses,done:false}));
+    document.getElementById('wordleMsg').textContent='';
+    wordleRow++;
+  }
+}
+
+function colorRow(ri,guess){
+  const result=getWordleResult(guess,wordleWord);
+  for(let c=0;c<5;c++){
+    const tile=document.getElementById(`wtile-${ri}-${c}`);
+    setTimeout(()=>{
+      tile.textContent=guess[c];
+      tile.className='wordle-tile '+result[c];
+      updateKeyColor(guess[c],result[c]);
+    },c*120);
+  }
+}
+
+function getWordleResult(guess,word){
+  const res=Array(5).fill('absent');
+  const wordArr=word.split('');const guessArr=guess.split('');
+  const used=Array(5).fill(false);
+  // correct pass
+  for(let i=0;i<5;i++){if(guessArr[i]===wordArr[i]){res[i]='correct';used[i]=true;guessArr[i]=null;}}
+  // present pass
+  for(let i=0;i<5;i++){
+    if(res[i]==='correct')continue;
+    for(let j=0;j<5;j++){if(!used[j]&&guessArr[i]===wordArr[j]){res[i]='present';used[j]=true;break;}}
+  }
+  return res;
+}
+
+function updateKeyColor(letter,status){
+  const el=document.getElementById('wkey-'+letter);if(!el)return;
+  const priority={correct:3,present:2,absent:1};
+  const cur=el.classList.contains('correct')?3:el.classList.contains('present')?2:el.classList.contains('absent')?1:0;
+  if((priority[status]||0)>cur){el.className='wordle-key'+(letter==='ENTER'||letter==='⌫'?' wide':'')+' '+status;}
+}
+
+function shakeRow(ri){const row=document.getElementById('wrow-'+ri);row.querySelectorAll('.wordle-tile').forEach(t=>{t.classList.add('shake');setTimeout(()=>t.classList.remove('shake'),500);});}
+
+function updateWordleStats(){
+  document.getElementById('wStatPlayed').textContent=wordleStats.played;
+  document.getElementById('wStatWin').textContent=wordleStats.played>0?Math.round((wordleStats.won/wordleStats.played)*100)+'%':'0%';
+  document.getElementById('wStatStreak').textContent=wordleStats.streak;
+  document.getElementById('wStatMax').textContent=wordleStats.maxStreak;
+}
+
+function wordleShare(){
+  const emojis=wordleGuesses.map(g=>getWordleResult(g,wordleWord).map(r=>r==='correct'?'🟩':r==='present'?'🟨':'⬛').join(''));
+  const txt=`🟩 Wordle 7D ${wordleGuesses.length}/6\n${emojis.join('\n')}`;
+  if(navigator.clipboard)navigator.clipboard.writeText(txt).then(()=>showEgg('📤 Ergebnis kopiert!!'));
+}
+
+// ============================================================
+// CHAT
+// ============================================================
+let chatRef=null,chatListener=null,chatCount=0,presenceRef=null;
+const CHAT_EMOJIS={'halil':'🐱','roman':'🦫'};
+function getChatEmoji(name){return CHAT_EMOJIS[name?.toLowerCase()]||'👤';}
+
+function initChat(){
+  if(chatRef)return;
+  chatRef=fbDb.ref('chat7d');
+  presenceRef=fbDb.ref('presence7d/'+currentUser.uid);
+  // set online
+  presenceRef.set({name:currentUser.username,ts:Date.now()});
+  presenceRef.onDisconnect().remove();
+  // listen messages
+  chatListener=chatRef.limitToLast(60).on('value',snap=>{
+    const msgs=snap.val()||{};
+    renderChat(msgs);
+  });
+  // listen presence
+  fbDb.ref('presence7d').on('value',snap=>{
+    const online=snap.val()||{};
+    const list=document.getElementById('onlineList');
+    if(!list)return;
+    list.innerHTML=Object.values(online).map(u=>`<span class="online-user"><span class="online-dot" style="width:6px;height:6px;"></span>${u.name}</span>`).join('');
+  });
+}
+
+function renderChat(msgs){
+  const container=document.getElementById('chatMessages');if(!container)return;
+  const wasAtBottom=container.scrollHeight-container.scrollTop-container.clientHeight<80;
+  container.innerHTML='';
+  Object.values(msgs).sort((a,b)=>a.ts-b.ts).forEach(m=>{
+    const isOwn=m.uid===currentUser?.uid;
+    const d=new Date(m.ts);const time=d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+    const div=document.createElement('div');div.className='chat-msg'+(isOwn?' own':'');
+    div.innerHTML=`<div class="chat-avatar">${getChatEmoji(m.name)}</div>
+      <div class="chat-bubble">
+        <div class="chat-name">${m.name}</div>
+        <div class="chat-text">${escapeHtml(m.text)}</div>
+        <div class="chat-time">${time}</div>
+      </div>`;
+    container.appendChild(div);
+  });
+  if(wasAtBottom) container.scrollTop=container.scrollHeight;
+}
+
+function escapeHtml(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+
+async function sendChat(){
+  if(!currentUser)return;
+  const input=document.getElementById('chatInput');
+  const text=input.value.trim();
+  if(!text||text.length>200)return;
+  input.value='';
+  const key=fbDb.ref('chat7d').push().key;
+  await fbDb.ref('chat7d/'+key).set({uid:currentUser.uid,name:currentUser.username,text,ts:Date.now()});
+  updateChallengeProgress('chatMsg',1);
+  // keep only last 100
+  chatCount++;
+  if(chatCount%10===0){
+    const snap=await fbDb.ref('chat7d').once('value');
+    const keys=Object.keys(snap.val()||{});
+    if(keys.length>100){keys.slice(0,keys.length-100).forEach(k=>fbDb.ref('chat7d/'+k).remove());}
+  }
+  if(chatCount===1)addXP(5,'Erste Chat-Nachricht!! 💬');
+  if(chatCount===10){checkAndAwardBadge('chat10');addXP(20,'10 Chat-Nachrichten!! 💬');}
+  // scroll to bottom
+  const container=document.getElementById('chatMessages');if(container)container.scrollTop=container.scrollHeight;
+}
+
+// ============================================================
+// DAILY CHALLENGES
+// ============================================================
+const CHALLENGE_DEFS=[
+  {id:'quiz5',icon:'🧠',title:'Quiz-Starter',desc:'Beantworte 5 Quiz-Fragen',xp:30,target:5,type:'quiz'},
+  {id:'quiz15',icon:'📚',title:'Quiz-Profi',desc:'Beantworte 15 Quiz-Fragen richtig',xp:80,target:15,type:'quizCorrect'},
+  {id:'catch30',icon:'🎮',title:'Catch-Champion',desc:'Erreiche 30 Punkte in Catch-Emoji',xp:50,target:30,type:'catchScore'},
+  {id:'snake5',icon:'🐍',title:'Snake-Starter',desc:'Erreiche Level 5 in Snake',xp:60,target:5,type:'snakeLevel'},
+  {id:'joke3',icon:'😂',title:'Witz-Freak',desc:'Lies 3 Witze',xp:20,target:3,type:'joke'},
+  {id:'wordle1',icon:'🟩',title:'Wordle-Tag',desc:'Löse das heutige Wordle',xp:50,target:1,type:'wordleWin'},
+  {id:'chat5',icon:'💬',title:'Chatter',desc:'Sende 5 Chat-Nachrichten',xp:25,target:5,type:'chatMsg'},
+  {id:'login',icon:'🎁',title:'Täglicher Login',desc:'Melde dich an',xp:10,target:1,type:'auto'},
+];
+
+let challengeProgress={},challengeDone={},todayChallenges=[];
+
+function getDailyChallengeSet(){
+  const d=new Date();const dayNum=Math.floor((d-new Date(2024,0,1))/86400000);
+  const shuffled=[...CHALLENGE_DEFS].sort((a,b)=>{
+    const ha=simpleHash(a.id+dayNum),hb=simpleHash(b.id+dayNum);return ha-hb;
+  });
+  return shuffled.slice(0,5);
+}
+function simpleHash(str){let h=0;for(let c of str){h=(h*31+c.charCodeAt(0))%100000;}return h;}
+
+async function loadChallenges(){
+  todayChallenges=getDailyChallengeSet();
+  const today=getTodayStr();
+  try{
+    const snap=await fbDb.ref('users/'+currentUser.uid+'/challenges/'+today).once('value');
+    const data=snap.val()||{};
+    challengeProgress=data.progress||{};
+    challengeDone=data.done||{};
+    // auto-complete login challenge
+    if(!challengeDone['login']){
+      challengeDone['login']=true;challengeProgress['login']=1;
+      await saveChallenges();addXP(10,'Login Challenge!! 🎁');
+    }
+  }catch(e){}
+  renderChallenges();
+  updateChallengeStats();
+}
+
+async function saveChallenges(){
+  if(!currentUser)return;
+  const today=getTodayStr();
+  try{await fbDb.ref('users/'+currentUser.uid+'/challenges/'+today).set({progress:challengeProgress,done:challengeDone});}catch(e){}
+}
+
+async function updateChallengeProgress(type,amount=1){
+  if(!currentUser)return;
+  todayChallenges.forEach(async ch=>{
+    if(ch.type!==type||challengeDone[ch.id])return;
+    challengeProgress[ch.id]=(challengeProgress[ch.id]||0)+amount;
+    if(challengeProgress[ch.id]>=ch.target){
+      challengeDone[ch.id]=true;
+      challengeProgress[ch.id]=ch.target;
+      showEgg('🏆 Challenge fertig: '+ch.title+'!! +'+ch.xp+' XP');
+      await addXP(ch.xp,'Challenge: '+ch.title);
+    }
+  });
+  await saveChallenges();
+  renderChallenges();
+  updateChallengeStats();
+}
+
+function renderChallenges(){
+  const list=document.getElementById('challengeList');if(!list)return;
+  list.innerHTML=todayChallenges.map(ch=>{
+    const done=challengeDone[ch.id];
+    const prog=Math.min(challengeProgress[ch.id]||0,ch.target);
+    const pct=Math.round((prog/ch.target)*100);
+    return `<div class="challenge-card${done?' done':''}">
+      <div class="ch-icon">${ch.icon}${done?'✅':''}</div>
+      <div class="ch-info">
+        <div class="ch-title">${ch.title}</div>
+        <div class="ch-desc">${ch.desc}</div>
+        <div class="ch-progress"><div class="ch-progress-fill" style="width:${pct}%"></div></div>
+        <div style="font-size:0.68rem;color:var(--text2);margin-top:0.15rem;">${prog}/${ch.target}</div>
+      </div>
+      <div class="ch-xp">+${ch.xp} XP</div>
+    </div>`;
+  }).join('');
+}
+
+function updateChallengeStats(){
+  const done=Object.values(challengeDone).filter(Boolean).length;
+  const xp=todayChallenges.filter(c=>challengeDone[c.id]).reduce((s,c)=>s+c.xp,0);
+  document.getElementById('chStatDone').textContent=done;
+  document.getElementById('chStatXp').textContent=xp;
+  document.getElementById('chStatTotal').textContent=done;
+  document.getElementById('profileChallenges').textContent=done;
+  if(done>=5)checkAndAwardBadge('challenges5');
+}
+
+function startChallengeTimer(){
+  setInterval(()=>{
+    const el=document.getElementById('challengeTimer');if(!el)return;
+    const now=new Date();const tomorrow=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);
+    const diff=tomorrow-now;
+    const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+    el.textContent='reset in: '+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  },1000);
+}
+
+window.closeLoginBonus=closeLoginBonus;
+window.closeLevelUp=closeLevelUp;
+window.sendChat=sendChat;
+window.wordleShare=wordleShare;
+window.renderChallenges=renderChallenges;
+window.initChat=initChat;
+
 } // end initApp
 </script></body></html>
