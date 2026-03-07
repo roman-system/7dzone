@@ -2341,7 +2341,7 @@ function goPage(name,btn,bnavBtn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('on'));
   document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('on'));
-  document.getElementById('page-'+name).classList.add('active');
+  const _pg=document.getElementById('page-'+name); if(!_pg) return; _pg.classList.add('active');
   if(btn) btn.classList.add('on');
   const topBtn=document.querySelector(`.ptab[onclick*="'${name}'"]`);
   if(topBtn) topBtn.classList.add('on');
@@ -2358,7 +2358,7 @@ function goPage(name,btn,bnavBtn){
   if(name==='friends'&&currentUser) loadFriends();
   if(name==='home'){setTimeout(()=>{updateHomeStats();initHomeParticles();},50);}
   if(name==='leaderboard'){loadXpLeaderboard();loadGameLeaderboard('snake',document.querySelector('#gameRankTabRow .tbtn'));}
-  if(name==='wordle'){setTimeout(initWordle,50);}
+  if(name==='wordle'&&document.getElementById('page-wordle')){setTimeout(initWordle,50);}
   if(name==='gaming'){
     document.getElementById('gameSelectGrid').style.display='block';
     document.getElementById('gameBackBar').style.display='none';
