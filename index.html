@@ -994,8 +994,7 @@ footer span{color:var(--accent);}
   <button class="ptab" onclick="goPage('home',this)">🏠 Home</button>
   <button class="ptab" onclick="goPage('gaming',this)">🎮 Spiele</button>
   <button class="ptab" onclick="goPage('jokes',this)">😂 Witze</button>
-  <button class="ptab" onclick="goPage('quiz',this)">🎲 Quiz</button>
-  <button class="ptab" onclick="goPage('wordle',this)">🟩 Wordle</button>
+
   <button class="ptab" onclick="goPage('chat',this)">💬 Chat</button>
   <button class="ptab" onclick="goPage('friends',this)">👫 Freunde</button>
   <button class="ptab" onclick="goPage('events',this)">📅 Events</button>
@@ -1065,16 +1064,7 @@ footer span{color:var(--accent);}
       <span class="tile-title">Challenges</span>
       <span class="tile-label">daily bonus-XP!!</span>
     </div>
-    <div class="home-tile" onclick="goPageByName('wordle')">
-      <span class="tile-emoji">🟩</span>
-      <span class="tile-title">Wordle</span>
-      <span class="tile-label">täglich neues wort</span>
-    </div>
-    <div class="home-tile" onclick="goPageByName('quiz')">
-      <span class="tile-emoji">🎲</span>
-      <span class="tile-title">Quiz</span>
-      <span class="tile-label">300 fragen!!</span>
-    </div>
+
     <div class="home-tile" onclick="goPageByName('jokes')">
       <span class="tile-emoji">😂</span>
       <span class="tile-title">Witze</span>
@@ -1175,13 +1165,9 @@ footer span{color:var(--accent);}
       <div class="game-select-card" onclick="showGame('wordle')">
         <div class="gsc-icon">🟩</div>
         <div class="gsc-title">Wordle</div>
-        <div class="gsc-desc">Rate das 5-Buchstaben Wort!!</div>
+        <div class="gsc-desc">Errate das Wort!!</div>
       </div>
-      <div class="game-select-card" onclick="showGame('quizgame')">
-        <div class="gsc-icon">🎲</div>
-        <div class="gsc-title">Quiz</div>
-        <div class="gsc-desc">300 Fragen – wer weiß mehr?!</div>
-      </div>
+
     </div>
   </div>
 
@@ -1279,7 +1265,9 @@ footer span{color:var(--accent);}
       <div class="hud-box">SCORE: <span id="flappyScore">0</span></div>
       <div class="hud-box">BEST: <span id="flappyBest">0</span></div>
     </div>
-    <canvas id="flappyCanvas" width="360" height="400" style="width:100%;border-radius:10px;background:#87CEEB;display:block;touch-action:none;"></canvas>
+    <div style="display:flex;justify-content:center;">
+      <canvas id="flappyCanvas" width="288" height="512" style="max-width:100%;max-height:70vh;border-radius:10px;display:block;touch-action:none;cursor:pointer;image-rendering:pixelated;"></canvas>
+    </div>
     <div class="btn-row" style="margin-top:0.6rem;">
       <button class="btn" ontouchstart="" onclick="startFlappy()">▶ START</button>
       <button class="btn red" ontouchstart="" onclick="resetFlappy()">✕ RESET</button>
@@ -1329,13 +1317,22 @@ footer span{color:var(--accent);}
   <div id="game-dino" style="display:none;">
   <div class="card">
     <div class="card-title">🦕 DINO RUN!!</div>
-    <p>leertaste / tippen zum springen!! doppelsprung möglich!! 🌵</p>
+    <p>leertaste / tippen = springen · ↓ = ducken · doppelsprung möglich!! 🌵</p>
     <div class="game-hud">
       <div class="hud-box">SCORE: <span id="dinoScore">0</span></div>
       <div class="hud-box">BEST: <span id="dinoBest">0</span></div>
-      <div class="hud-box">SPEED: <span id="dinoSpeed">1</span>x</div>
+      <div class="hud-box">SPEED: <span id="dinoSpeed">5.5x</span></div>
     </div>
-    <canvas id="dinoCanvas" width="600" height="160" style="width:100%;border-radius:10px;border:2px solid var(--border);background:var(--bg);display:block;touch-action:none;cursor:pointer;"></canvas>
+    <canvas id="dinoCanvas" width="600" height="150" style="width:100%;border-radius:10px;border:2px solid var(--border);background:var(--bg);display:block;touch-action:none;cursor:pointer;image-rendering:pixelated;"></canvas>
+    <div class="dpad" style="margin-top:0.5rem;">
+      <div></div>
+      <button class="dpad-btn" ontouchstart="event.preventDefault();dnAction()" onmousedown="dnAction()">▲</button>
+      <div></div>
+      <div></div>
+      <button class="dpad-btn" ontouchstart="event.preventDefault();dnDuckStart()" onmousedown="dnDuckStart()" ontouchend="dnDuckEnd()" onmouseup="dnDuckEnd()">▼</button>
+      <div></div>
+      <div></div><div></div><div></div>
+    </div>
     <div class="btn-row" style="margin-top:0.6rem;">
       <button class="btn" ontouchstart="" onclick="startDino()">▶ START</button>
       <button class="btn red" ontouchstart="" onclick="resetDino()">✕ RESET</button>
@@ -1368,53 +1365,25 @@ footer span{color:var(--accent);}
   </div>
   </div>
 
-  <!-- WORDLE -->
   <div id="game-wordle" style="display:none;">
   <div class="card">
-    <div class="card-title">🟩 WORDLE!!</div>
-    <p>Rate das 5-Buchstaben Wort in 6 Versuchen!! 🟩 = richtig, 🟨 = falsche stelle, ⬛ = nicht dabei</p>
+    <div class="card-title">🟩 WORDLE</div>
+    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;">errate das 5-buchstaben-wort in 6 versuchen!! 🟩=richtig 🟨=falsche position ⬜=nicht dabei</p>
     <div class="game-hud">
-      <div class="hud-box">VERSUCH: <span id="gWordleAttempt">0</span>/6</div>
-      <div class="hud-box">GEWONNEN: <span id="gWordleWins">0</span></div>
-      <div class="hud-box">SERIE: <span id="gWordleStreak">0</span>🔥</div>
+      <div class="hud-box">Versuch: <span id="gWordleAttempt">0</span>/6</div>
+      <div class="hud-box">Wins: <span id="gWordleWins">0</span></div>
+      <div class="hud-box">Streak: <span id="gWordleStreak">0</span></div>
     </div>
-    <div id="gWordleGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:300px;margin:0.8rem auto;"></div>
-    <div id="gWordleKeyboard" style="max-width:340px;margin:0 auto 0.8rem;"></div>
-    <div id="gWordleMsg" style="text-align:center;font-family:'Press Start 2P';font-size:0.55rem;color:var(--accent);min-height:1.5rem;margin-bottom:0.5rem;"></div>
-    <div class="btn-row" style="justify-content:center;">
-      <button class="btn" onclick="gWordleReset()">🔄 NEUES WORT</button>
+    <div id="gWordleGrid" style="display:grid;grid-template-columns:repeat(5,46px);gap:5px;justify-content:center;margin:1rem 0;"></div>
+    <div id="gWordleMsg" style="text-align:center;font-size:0.9rem;font-weight:700;color:var(--accent);min-height:1.4rem;margin-bottom:0.7rem;"></div>
+    <div id="gWordleKeyboard" style="display:flex;flex-direction:column;gap:6px;align-items:center;"></div>
+    <div class="btn-row" style="margin-top:1rem;">
+      <button class="btn" onclick="gWordleReset()">🔄 neues wort</button>
     </div>
   </div>
   </div>
 
-  <!-- QUIZ IM SPIELE-TAB -->
-  <div id="game-quizgame" style="display:none;">
-  <div class="card">
-    <div class="card-title">🎲 MEGA-QUIZ!!</div>
-    <p>wähl kategorie & länge, dann los!! 🧠</p>
-    <div class="quiz-cats" id="quizCatBar2"></div>
-    <div class="quiz-len">
-      <span style="font-size:0.8rem;color:var(--text2);">Länge:</span>
-      <button class="qlen-btn on" onclick="setQuizLen2(10,this)">10</button>
-      <button class="qlen-btn" onclick="setQuizLen2(20,this)">20</button>
-      <button class="qlen-btn" onclick="setQuizLen2(30,this)">30</button>
-    </div>
-    <div class="quiz-hud">
-      <div class="hud-box">FRAGE: <span id="qNum2">-</span>/<span id="qTotal2">10</span></div>
-      <div class="hud-box">PUNKTE: <span id="qScore2">0</span></div>
-      <div class="hud-box">BESTE: <span id="qBest2">0</span></div>
-    </div>
-    <div class="progress-bar"><div class="progress-fill" id="qProgress2" style="width:0%"></div></div>
-    <div id="quizArea2">
-      <div style="text-align:center;padding:2rem 0;">
-        <div style="font-size:2rem;margin-bottom:1rem;">🧠</div>
-        <div style="font-family:'Press Start 2P';font-size:0.65rem;color:var(--accent);margin-bottom:1rem;">QUIZ STARTEN!!</div>
-        <button class="btn" onclick="startQuiz2()">▶ LOS GEHT'S</button>
-      </div>
-    </div>
-    <div id="quizMsg2"></div>
-  </div>
-  </div>
+
 
 </div>
 </div>
@@ -1473,36 +1442,7 @@ footer span{color:var(--accent);}
 </div>
 </div>
 
-<!-- QUIZ -->
-<div class="page" id="page-quiz">
-<div class="wrap">
-  <div class="card">
-    <div class="card-title">🎲 mega-quiz!! 300 fragen!!</div>
-    <p>wähl kategorie & länge, dann los!! 🧠</p>
-    <div class="quiz-cats" id="quizCatBar"></div>
-    <div class="quiz-len">
-      <span style="font-size:0.8rem;color:var(--text2);">Länge:</span>
-      <button class="qlen-btn on" onclick="setQuizLen(10,this)">10</button>
-      <button class="qlen-btn" onclick="setQuizLen(20,this)">20</button>
-      <button class="qlen-btn" onclick="setQuizLen(30,this)">30</button>
-    </div>
-    <div class="quiz-hud">
-      <div class="hud-box">FRAGE: <span id="qNum">-</span>/<span id="qTotal">10</span></div>
-      <div class="hud-box">PUNKTE: <span id="qScore">0</span></div>
-      <div class="hud-box">BESTE: <span id="qBest">0</span></div>
-    </div>
-    <div class="progress-bar"><div class="progress-fill" id="qProgress" style="width:0%"></div></div>
-    <div id="quizArea">
-      <div style="text-align:center;padding:2rem 0;">
-        <div style="font-size:2rem;margin-bottom:1rem;">🧠</div>
-        <div style="font-family:'Press Start 2P';font-size:0.65rem;color:var(--accent);margin-bottom:1rem;">QUIZ STARTEN!!</div>
-        <button class="btn" onclick="startQuiz()">▶ LOS GEHT'S</button>
-      </div>
-    </div>
-    <div id="quizMsg"></div>
-  </div>
-</div>
-</div>
+
 
 <!-- VOTE PAGE -->
 <div class="page" id="page-vote">
@@ -1912,42 +1852,7 @@ footer span{color:var(--accent);}
 </div>
 </div>
 
-<!-- WORDLE -->
-<div class="page" id="page-wordle">
-<div class="wrap">
-  <div class="card">
-    <div class="card-title">🟩 WORDLE — TÄGLICH!!</div>
-    <p>errate das 5-buchstaben-wort in 6 versuchen!! täglich neu!! 🧠</p>
-    <div id="wordleMsg">tipp dein erstes wort!!</div>
-    <div class="wordle-grid" id="wordleGrid"></div>
-    <div class="wordle-keyboard" id="wordleKeyboard"></div>
-    <div class="btn-row" style="margin-top:1rem;justify-content:center;">
-      <button class="btn" id="wordleShareBtn" onclick="wordleShare()" style="display:none;">📤 TEILEN</button>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-title">📊 WORDLE STATS</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem;text-align:center;">
-      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.8rem 0.3rem;">
-        <div style="font-size:1.6rem;font-weight:900;color:var(--accent);" id="wStatPlayed">0</div>
-        <div style="font-size:0.7rem;color:var(--text2);">gespielt</div>
-      </div>
-      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.8rem 0.3rem;">
-        <div style="font-size:1.6rem;font-weight:900;color:var(--accent);" id="wStatWin">0%</div>
-        <div style="font-size:0.7rem;color:var(--text2);">gewonnen</div>
-      </div>
-      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.8rem 0.3rem;">
-        <div style="font-size:1.6rem;font-weight:900;color:var(--accent);" id="wStatStreak">0</div>
-        <div style="font-size:0.7rem;color:var(--text2);">streak 🔥</div>
-      </div>
-      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.8rem 0.3rem;">
-        <div style="font-size:1.6rem;font-weight:900;color:var(--accent);" id="wStatMax">0</div>
-        <div style="font-size:0.7rem;color:var(--text2);">max streak</div>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
+
 
 <!-- CHAT -->
 <div class="page" id="page-chat">
@@ -2182,8 +2087,6 @@ footer span{color:var(--accent);}
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;">
     <button onclick="goPageFromMore('gaming')" class="more-btn"><span style="font-size:1.5rem;">🎮</span><span>Spiele</span></button>
     <button onclick="goPageFromMore('jokes')" class="more-btn"><span style="font-size:1.5rem;">😂</span><span>Witze</span></button>
-    <button onclick="goPageFromMore('quiz')" class="more-btn"><span style="font-size:1.5rem;">🎲</span><span>Quiz</span></button>
-    <button onclick="goPageFromMore('wordle')" class="more-btn"><span style="font-size:1.5rem;">🟩</span><span>Wordle</span></button>
     <button onclick="goPageFromMore('challenges')" class="more-btn"><span style="font-size:1.5rem;">🏆</span><span>Challenges</span></button>
     <button onclick="goPageFromMore('leaderboard')" class="more-btn"><span style="font-size:1.5rem;">📊</span><span>Rangliste</span></button>
     <button onclick="goPageFromMore('pinnwand')" class="more-btn"><span style="font-size:1.5rem;">📸</span><span>Pinnwand</span></button>
@@ -4659,7 +4562,7 @@ function closeLoginBonus(){document.getElementById('loginBonusOverlay').classLis
 // ============================================================
 // WORDLE
 // ============================================================
-const WORDLE_WORDS=['APFEL','BAUCH','DUNKEL','ELFER','FARBE','GABEL','HANDY','INSEL','JAGD','KABEL','LAMPE','MAUER','NACHT','OFFEN','PFERD','QUARK','REGEN','STERN','TIGER','UBOOT','VOGEL','WALD','XENON','YACHT','ZEBRA','BLUME','CREME','DECKE','EBENE','FEUER','GERNE','HERDE','IMPFE','JOKER','KRONE','LICHT','MANGE','NERVE','OCKER','PINNE','QUEST','REISE','STOFF','TURBO','ULMER','VENUS','WELLE','XEROX','YUCCA','ZIRPE','ALPEN','BRAND','CHAOS','DRECK','ERNTE','FLUSS','GRUBE','HEXER','IDEAL','JUBEL','KLANG','LEERE','MENGE','NOBIL','OPFER','PAUSE','QUELL','RAUCH','SCHLAF','TINTE','URBAN','VILLA','WEICH','PIXEL','ZOMBI','ATLAS','BRISE','CLOWN','DOLCH','EFFEKT','FALKE','GLEICH','HAFEN','IRREN','JUNGE','KREIS','LIEGE','MORAL','NOTAR','OBDACH','PREIS','QUOTE','RANCH','SALAT','TRANK','ULTRA'];
+const WORDLE_WORDS=['APFEL','BAUCH','FARBE','GABEL','LAMPE','MAUER','NACHT','PFERD','QUARK','REGEN','STERN','TIGER','UBOOT','VOGEL','ZEBRA','BLUME','DECKE','EBENE','FEUER','JOKER','KRONE','LICHT','NERVE','REISE','STOFF','TURBO','VENUS','WELLE','ALPEN','BRAND','CHAOS','ERNTE','FLUSS','GRUBE','JUBEL','KLANG','MENGE','OPFER','PAUSE','RAUCH','TINTE','VILLA','WEICH','PIXEL','ATLAS','BRISE','CLOWN','DOLCH','FALKE','HAFEN','JUNGE','KREIS','MORAL','PREIS','SALAT','TRANK','ULTRA','ABEND','ADLER','AHORN','ALARM','ANGEL','ANGST','ANKER','ASCHE','ATMEN','BACKE','BADER','BAHRE','BALKE','BANDE','BAUER','BEERE','BELEG','BESEN','BETON','BIENE','BIRKE','BIRNE','BITTE','BLECH','BLICK','BLOCK','BODEN','BOHNE','BOMBE','BOXEN','BRUCH','BRUDE','BRUST','BUCHE','BUCHT','BUERO','BUSSE','DELTA','DICHT','DIENST','DOHLE','DRAHT','DRALL','DRUCK','DUNST','DURCH','DURST','EICHE','EINIG','EISEN','EKLIG','ELEND','ELFER','ELTER','ENGER','ENGEL','ERDIG','ERKER','ESCHE','ETAGE','EUTER','FADEN','FAEHR','FAHNE','FALLE','FALTE','FASER','FAUST','FEIGE','FEIND','FELDE','FELLE','FERSE','FESTE','FISCH','FLAIR','FLECK','FLEIG','FOLIE','FORST','FREAK','FREMD','FRONT','FROSCH','FUCHS','FUNKE','GALLE','GARBE','GASSE','GATTE','GEBÜH','GEIER','GEIST','GESTE','GIBET','GILDE','GLANZ','GLEIS','GLÜCK','GREIS','GRILL','GRIND','GRIPS','GRUBE','GRUND','GUNST','GÜRTE','HEIDE','HEIST','HELFT','HEROE','HEXER','HIEBE','HIRTE','HOBEL','HORST','HÜGEL','HUMOR','HUMUS','HUNGER','HÜRDE','IMKER','INSEL','IRREN','JACKE','JAHRT','JAUSE','JETON','KANAL','KANTE','KAPOK','KEGEL','KEILE','KELLE','KERBE','KIEPE','KIEME','KIRBE','KIRNE','KITZE','KLEID','KLEIE','KLEIN','KNABE','KNALL','KNAPP','KNARZ','KNAUF','KNAUL','KNICK','KNOSP','KNUFF','KOBRA','KOHLE','KOMET','KONIG','KORUS','KRACH','KRÄHE','KRANZ','KREUZ','KRIBB','KUMPF','KUPFE','LACKE','LAGER','LAICH','LAUBE','LAUER','LAUNE','LEDER','LEHRE','LEIER','LEITE','LERCH','LIEGE','LINSE','LIPPE','LISTE','LITER','LOCHE','LOCKE','LOGIK','LÜCKE','LUMPE','LUXUS','MAGMA','MÄHNE','MAKRO','MALVE','MANGE','MANIA','MARKE','MASSE','MAUKE','MEILE','MEISE','MELDE','MEUTE','MILBE','MILCH','MINZE','MODER','MÖNCH','MULDE','MÜNZE','NADEL','NABEL','NARBE','NEBEL','NEFFE','NEIGE','NONNE','NORTH','NUDEL','OBDACH','OCKER','OHEIM','ÖLUNG','ONKEL','PALME','PANEL','PANIK','PANNE','PERLE','PETZE','PFIFF','PFOTE','PISTE','PLAGE','PLANE','PLATZ','POCHE','POKAL','POKER','POLKA','PRANK','PROBE','PUSTE','RANKE','RAPPE','RATTE','RAUPE','REBEN','RECKE','REIHE','RELAX','REUSE','RIEGE','RIESE','RILLE','RINDE','RIPPE','RITUS','ROBBE','RODEL','ROGGE','ROHRE','RÖSTE','ROTTE','RÜBEN','RÜCKE','RÜFFEL','RUINE','RUMPF','RUNDE','RUNZE','SAHNE','SAITE','SALBE','SALVE','SAMEN','SANFT','SARGE','SATZE','SAUGE','SÄULE','SCHAL','SCHAM','SCHUH','SEIFE','SEITE','SENKE','SICHT','SIRUP','SKALA','SNACK','SOHLE','SPALT','SPANGE','SPECK','SPEED','SPORE','SPOTT','SPUND','STALL','STAMM','STAND','STARK','STAUB','STEAK','STELE','STICH','STOCK','STOPP','STORM','STROM','STUBЕ','STÜCK','STUTE','SUCHT','SUMPF','SZENE','TAFEL','TANNE','TASTE','TEICH','TINTE','TIPPS','TOBAK','TOPAS','TORTE','TOTAL','TRANE','TRIAS','TRICK','TROTZ','TRUHE','TRUNK','TUBЕN','TÜLLE','TÜLPE','TUMOR','TUPFE','TÜPFE','ÜBRIG','ULKIG','ULMEN','UMBER','UNGUT','UNLST','UNRAT','UNTER','VATER','VENOM','VERVE','VEXIE','VIECH','VIERT','VIREN','VOKAB','VORAN','VORAT','WAFFE','WAGEN','WANGE','WARZE','WESEN','WETZE','WIESE','WINKE','WIRTS','WONNE','WUCHS','WUCHT','WURZE','YUCCA','ZANGE','ZARGE','ZECHE','ZEDER','ZEILE','ZELTE','ZIEGE','ZÜGEL','ZWANG','ZWECK'];
 const WORDLE_VALID=[...WORDLE_WORDS,'ABEND','ADLER','AHNEN','AHORN','ALARM','ALBUM','ALDER','ALGEN','ALLEE','ANGEL','ANGER','ANGST','ANKER','ARMEE','ARTIG','ASCHE','ASSEL','ASTRO','ATMEN','AUDIO'];
 
 let wordleWord='',wordleGuesses=[],wordleCurrent='',wordleDone=false,wordleRow=0;
@@ -4719,7 +4622,8 @@ function buildWordleKeyboard(){
 }
 
 function wordleKeyHandler(e){
-  if(document.getElementById('page-wordle').classList.contains('active')===false)return;
+  const wp=document.getElementById('page-wordle');
+  if(wp&&wp.classList.contains('active')===false)return;
   if(wordleDone)return;
   const k=e.key.toUpperCase();
   if(k==='ENTER')wordleInput('ENTER');
@@ -5098,189 +5002,244 @@ window.initChat=initChat;
 
 // ============================================================
 // ============================================================
-// 🐦 FLAPPY BIRD — Eins zu Eins Original
+// 🐦 FLAPPY BIRD — 1:1 Original Authentic Recreation
 // ============================================================
-// Original Auflösung: 288×512, Gravity 0.25, Jump -5.0
-// Rohre: 52px breit, 150px Lücke, Spawn alle 90 frames
-// Speed: 3px/frame (original), Bird: 34×24px
+// Canvas: 288×512 (original resolution)
+// Physics: gravity 0.25/frame, jump -5.0
+// Pipes: 52px wide, 120px gap, every 90 frames at 3px/frame
+// Bird: 34×24px, rotates with velocity
 // ============================================================
 
 const FB={
-  IW:288, IH:512,         // Interne Spielauflösung (Original)
-  GH:112,                 // Ground height in pixels (Original)
-  GRAV:0.25,              // Schwerkraft pro Frame (Original)
-  JUMP:-5.0,              // Sprungkraft (Original: -9 / 60fps ≈ -5)
-  PW:52,                  // Pipe Breite (Original)
-  PGAP:100,               // Pipe Lücke (Original)
-  PSPAWN:90,              // Frames zwischen Pipes (Original)
-  PSPEED:3.0,             // Pipe-Geschwindigkeit px/frame
-  BW:34, BH:26            // Bird Breite & Höhe
+  IW:288, IH:512,
+  GH:112,        // ground height
+  GRAV:0.25,     // gravity per frame (original)
+  JUMP:-5.0,     // jump velocity (original)
+  PW:52,         // pipe width
+  PGAP:120,      // gap between pipes (slightly more forgiving)
+  PSPAWN:90,     // frames between pipes
+  PSPEED:3.0,    // pipe speed px/frame (original)
+  BW:34, BH:26,  // bird size
+  BX:60          // fixed bird x position
 };
 
 let fbRunning=false,fbAF=null,fbScore=0,fbBest=0;
-let fbBird={x:0,y:0,vy:0},fbPipes=[],fbFrame=0;
-let fbStarted=false,fbDead=false,fbDeadT=0;
+let fbBird={x:FB.BX,y:200,vy:0};
+let fbPipes=[],fbFrame=0,fbStarted=false,fbDead=false,fbDeadT=0;
 const FBC=()=>document.getElementById('flappyCanvas');
-const FBSC=()=>{const c=FBC();return c?c.width/FB.IW:1;};
 
-// ─── BIRD (pixel-art, originalgetreu) ──────────────────────────────
+// ─── PIXEL ART BIRD (faithful to original yellow Flappy Bird) ──────
 function fbBird_draw(ctx,x,y,vy,frame,dead,sc){
-  // Rotation: nach oben bei jump, nach unten bei fall
-  const rot=dead?Math.PI/2:Math.max(-0.4,Math.min(1.5,vy*0.08));
-  ctx.save();ctx.translate(x,y);ctx.rotate(rot);
+  const rot=dead?Math.PI/2:Math.max(-0.5,Math.min(1.5,vy*0.09));
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.rotate(rot);
 
   const W=FB.BW*sc, H=FB.BH*sc;
-  // Körper (gelb, elliptisch)
+
+  // Main body (bright yellow)
   ctx.fillStyle='#f4cc14';
-  ctx.beginPath();ctx.ellipse(0,0,W/2,H/2,0,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.ellipse(0,0,W*0.5,H*0.5,0,0,Math.PI*2);ctx.fill();
 
-  // Bauch-Highlight
-  ctx.fillStyle='#f8dc5a';
-  ctx.beginPath();ctx.ellipse(W*0.15,H*0.15,W*0.3,H*0.28,0.2,0,Math.PI*2);ctx.fill();
+  // Belly highlight (lighter yellow)
+  ctx.fillStyle='#fae04a';
+  ctx.beginPath();ctx.ellipse(W*0.1,H*0.1,W*0.32,H*0.26,0.3,0,Math.PI*2);ctx.fill();
 
-  // Flügel (schlägt alle 8 Frames)
-  const wingUp=(frame%16<8);
+  // Wing (flaps every 8 frames)
+  const wingUp=(Math.floor(frame/8)%2===0);
   ctx.fillStyle='#d8a800';
-  ctx.beginPath();ctx.ellipse(-W*0.18,wingUp?-H*0.18:H*0.18,W*0.28,H*0.2,-0.3,0,Math.PI*2);ctx.fill();
+  if(wingUp){
+    ctx.beginPath();ctx.ellipse(-W*0.2,-H*0.15,W*0.28,H*0.18,-0.4,0,Math.PI*2);ctx.fill();
+  }else{
+    ctx.beginPath();ctx.ellipse(-W*0.2,H*0.2,W*0.28,H*0.18,0.4,0,Math.PI*2);ctx.fill();
+  }
 
-  // Auge (weiß)
-  ctx.fillStyle='#fff';
-  ctx.beginPath();ctx.arc(W*0.28,-H*0.18,W*0.18,0,Math.PI*2);ctx.fill();
-  // Pupille
-  ctx.fillStyle=dead?'#c00':'#111';
-  ctx.beginPath();ctx.arc(dead?W*0.28:W*0.31,-H*0.18,W*0.10,0,Math.PI*2);ctx.fill();
-  // Glanzpunkt
-  ctx.fillStyle='#fff';
-  ctx.beginPath();ctx.arc(W*0.32,-H*0.23,W*0.045,0,Math.PI*2);ctx.fill();
+  // Eye white
+  ctx.fillStyle='#ffffff';
+  ctx.beginPath();ctx.arc(W*0.28,-H*0.16,W*0.18,0,Math.PI*2);ctx.fill();
+  // Pupil
+  ctx.fillStyle=dead?'#cc0000':'#1a1a1a';
+  ctx.beginPath();ctx.arc(W*0.32,-H*0.16,W*0.10,0,Math.PI*2);ctx.fill();
+  // Eye shine
+  ctx.fillStyle='#ffffff';
+  ctx.beginPath();ctx.arc(W*0.36,-H*0.22,W*0.04,0,Math.PI*2);ctx.fill();
 
-  // Schnabel (zwei Teile wie Original)
+  // Upper beak
   ctx.fillStyle='#f87418';
-  ctx.fillRect(W*0.38,-H*0.08,W*0.28,H*0.17);
-  ctx.fillStyle='#c85800';
-  ctx.fillRect(W*0.38,H*0.04,W*0.28,H*0.12);
+  ctx.beginPath();
+  ctx.moveTo(W*0.4,-H*0.06);
+  ctx.lineTo(W*0.72,-H*0.02);
+  ctx.lineTo(W*0.4,H*0.1);
+  ctx.closePath();ctx.fill();
+  // Lower beak
+  ctx.fillStyle='#d05800';
+  ctx.beginPath();
+  ctx.moveTo(W*0.4,H*0.04);
+  ctx.lineTo(W*0.66,H*0.08);
+  ctx.lineTo(W*0.4,H*0.18);
+  ctx.closePath();ctx.fill();
 
-  // Körper-Outline
-  ctx.strokeStyle='rgba(0,0,0,0.2)';ctx.lineWidth=1.2;
-  ctx.beginPath();ctx.ellipse(0,0,W/2,H/2,0,0,Math.PI*2);ctx.stroke();
+  // Body outline
+  ctx.strokeStyle='rgba(0,0,0,0.25)';ctx.lineWidth=1.5*sc;
+  ctx.beginPath();ctx.ellipse(0,0,W*0.5,H*0.5,0,0,Math.PI*2);ctx.stroke();
+
   ctx.restore();
 }
 
-// ─── PIPE ──────────────────────────────────────────────────────────
+// ─── PIPE DRAWING (green with cap, original style) ─────────────────
 function fbPipe_draw(ctx,px,topH,canH,sc){
   const x=px, w=FB.PW*sc;
-  const capH=26*sc, capOvr=6*sc, cx=x-capOvr, cw=w+capOvr*2;
+  const capH=26*sc, capOvr=6*sc;
+  const cx=x-capOvr, cw=w+capOvr*2;
   const botY=topH+FB.PGAP*sc;
 
-  const bodyGrad=ctx.createLinearGradient(x,0,x+w,0);
-  bodyGrad.addColorStop(0,'#5dc83e');
-  bodyGrad.addColorStop(0.32,'#73e050');
-  bodyGrad.addColorStop(1,'#3a9e22');
+  // Pipe body gradient
+  const bodyGrd=ctx.createLinearGradient(x,0,x+w,0);
+  bodyGrd.addColorStop(0,'#5dc83e');
+  bodyGrd.addColorStop(0.3,'#74e050');
+  bodyGrd.addColorStop(0.65,'#52b830');
+  bodyGrd.addColorStop(1,'#3a9e22');
 
-  const capGrad=ctx.createLinearGradient(cx,0,cx+cw,0);
-  capGrad.addColorStop(0,'#4db83a');
-  capGrad.addColorStop(0.32,'#62cc48');
-  capGrad.addColorStop(1,'#2e8a1e');
+  // Pipe cap gradient
+  const capGrd=ctx.createLinearGradient(cx,0,cx+cw,0);
+  capGrd.addColorStop(0,'#4db83a');
+  capGrd.addColorStop(0.3,'#62cc48');
+  capGrd.addColorStop(0.65,'#42a82e');
+  capGrd.addColorStop(1,'#2e8a1e');
 
-  // Oben
-  ctx.fillStyle=bodyGrad; ctx.fillRect(x,0,w,topH-capH);
-  ctx.fillStyle=capGrad;  ctx.fillRect(cx,topH-capH,cw,capH);
-  // Unten
-  ctx.fillStyle=capGrad;  ctx.fillRect(cx,botY,cw,capH);
-  ctx.fillStyle=bodyGrad; ctx.fillRect(x,botY+capH,w,canH-botY-capH);
+  // Top pipe (body + cap)
+  if(topH>capH){ctx.fillStyle=bodyGrd;ctx.fillRect(x,0,w,topH-capH);}
+  ctx.fillStyle=capGrd;ctx.fillRect(cx,topH-capH,cw,capH);
 
-  // Highlight-Streifen
-  ctx.fillStyle='rgba(255,255,255,0.16)';
-  ctx.fillRect(x+5*sc,0,6*sc,topH-capH);
-  ctx.fillRect(x+5*sc,botY+capH,6*sc,canH-botY-capH);
-  ctx.fillRect(cx+4*sc,topH-capH,6*sc,capH);
-  ctx.fillRect(cx+4*sc,botY,6*sc,capH);
+  // Bottom pipe (cap + body)
+  ctx.fillStyle=capGrd;ctx.fillRect(cx,botY,cw,capH);
+  ctx.fillStyle=bodyGrd;ctx.fillRect(x,botY+capH,w,canH-botY-capH);
+
+  // Highlights (left side lighter strip)
+  ctx.fillStyle='rgba(255,255,255,0.2)';
+  if(topH>capH)ctx.fillRect(x+4*sc,0,7*sc,topH-capH);
+  ctx.fillRect(cx+4*sc,topH-capH,7*sc,capH);
+  ctx.fillRect(cx+4*sc,botY,7*sc,capH);
+  ctx.fillRect(x+4*sc,botY+capH,7*sc,canH-botY-capH);
+
+  // Shadows (right side darker)
+  ctx.fillStyle='rgba(0,0,0,0.12)';
+  if(topH>capH)ctx.fillRect(x+w-8*sc,0,8*sc,topH-capH);
+  ctx.fillRect(cx+cw-10*sc,topH-capH,10*sc,capH);
+  ctx.fillRect(cx+cw-10*sc,botY,10*sc,capH);
+  ctx.fillRect(x+w-8*sc,botY+capH,8*sc,canH-botY-capH);
 
   // Outline
-  ctx.strokeStyle='rgba(0,70,0,0.45)';ctx.lineWidth=1;
-  ctx.strokeRect(x,0,w,topH-capH);ctx.strokeRect(cx,topH-capH,cw,capH);
-  ctx.strokeRect(cx,botY,cw,capH);ctx.strokeRect(x,botY+capH,w,canH-botY-capH);
+  ctx.strokeStyle='rgba(0,60,0,0.4)';ctx.lineWidth=1;
+  if(topH>capH)ctx.strokeRect(x,0,w,topH-capH);
+  ctx.strokeRect(cx,topH-capH,cw,capH);
+  ctx.strokeRect(cx,botY,cw,capH);
+  ctx.strokeRect(x,botY+capH,w,canH-botY-capH);
 }
 
-// ─── HAUPTRENDER ───────────────────────────────────────────────────
-function flappyDraw(){
-  const c=FBC();if(!c)return;
-  const ctx=c.getContext('2d'),W=c.width,H=c.height,sc=W/FB.IW;
+// ─── GROUND DRAWING ────────────────────────────────────────────────
+function fbDrawGround(ctx,W,H,sc,frame){
   const GH=FB.GH*sc, skyH=H-GH;
+  const grdGrd=ctx.createLinearGradient(0,skyH,0,H);
+  grdGrd.addColorStop(0,'#ded895');
+  grdGrd.addColorStop(0.12,'#c8b866');
+  grdGrd.addColorStop(1,'#a8903c');
+  ctx.fillStyle=grdGrd;ctx.fillRect(0,skyH,W,GH);
 
-  // Himmel
-  const sky=ctx.createLinearGradient(0,0,0,skyH);
-  sky.addColorStop(0,'#4dc8f5');sky.addColorStop(1,'#9ae8ff');
-  ctx.fillStyle=sky;ctx.fillRect(0,0,W,skyH);
+  // Green top strip
+  ctx.fillStyle='#78c032';ctx.fillRect(0,skyH,W,12*sc);
+  ctx.fillStyle='#5a9e22';ctx.fillRect(0,skyH,W,5*sc);
 
-  // Stadt-Silhouette im Hintergrund
-  ctx.fillStyle='#c4e8a8';ctx.fillRect(0,skyH-30*sc,W,30*sc);
-  [[18,22,14],[55,14,12],[95,28,16],[150,16,14],[200,24,18],[255,12,13],[295,26,17]].forEach(([bx,bh,bw])=>{
-    ctx.fillStyle='#d0e8b0';ctx.fillRect(bx*sc,skyH-30*sc-bh*sc,bw*sc,bh*sc);
-  });
-
-  // Wolken (parallax scrollend)
-  ctx.fillStyle='rgba(255,255,255,0.94)';
-  const cf=fbFrame*0.32;
-  [[8,48,20],[140,36,16],[260,58,22]].forEach(([ox,cy,cr])=>{
-    const cx=((cf+ox*sc)%W+W)%W;
-    ctx.beginPath();ctx.arc(cx,cy*sc,cr*sc,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(cx+cr*sc,cy*sc,cr*0.65*sc,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(cx-cr*0.6*sc,(cy+5)*sc,cr*0.55*sc,0,Math.PI*2);ctx.fill();
-  });
-
-  // Rohre
-  flappyPipes.forEach(p=>fbPipe_draw(ctx,p.x*sc,p.top*sc,skyH,sc));
-
-  // Boden (Original: sandfarben mit Grasstreifen)
-  const grdG=ctx.createLinearGradient(0,H-GH,0,H);
-  grdG.addColorStop(0,'#ded895');grdG.addColorStop(0.15,'#c8b866');grdG.addColorStop(1,'#a8903c');
-  ctx.fillStyle=grdG;ctx.fillRect(0,H-GH,W,GH);
-  ctx.fillStyle='#78c032';ctx.fillRect(0,H-GH,W,12*sc);
-  ctx.fillStyle='#5a9e22';ctx.fillRect(0,H-GH,W,5*sc);
-  // Boden-Streifen (scrollend)
-  ctx.fillStyle='rgba(0,0,0,0.07)';
-  const gOff=((fbFrame*FB.PSPEED*sc)%52+52)%52;
-  for(let gx=0;gx<W+52;gx+=52) ctx.fillRect(gx-gOff,H-GH+13*sc,26*sc,4*sc);
-
-  // Vogel
-  fbBird_draw(ctx,fbBird.x*sc,fbBird.y*sc,fbBird.vy,fbFrame,fbDead,sc);
-
-  // Score (weißer Text mit schwarzem Schatten)
-  if(fbStarted){
-    ctx.font=`bold ${28*sc}px 'Press Start 2P',sans-serif`;
-    ctx.textAlign='center';
-    ctx.strokeStyle='rgba(0,0,0,0.6)';ctx.lineWidth=4*sc;
-    ctx.strokeText(fbScore,W/2,44*sc);
-    ctx.fillStyle='#fff';ctx.fillText(fbScore,W/2,44*sc);
-  }
-
-  // Startscreen
-  if(!fbStarted&&!fbRunning){
-    ctx.fillStyle='rgba(0,0,0,0.28)';ctx.fillRect(0,0,W,H);
-    const pw=210*sc,ph=108*sc,bx=(W-pw)/2,by=(H-ph)/2;
-    ctx.fillStyle='rgba(255,255,255,0.96)';
-    fbRR(ctx,bx,by,pw,ph,12*sc);ctx.fill();
-    ctx.strokeStyle='#e8a800';ctx.lineWidth=2.5*sc;
-    fbRR(ctx,bx,by,pw,ph,12*sc);ctx.stroke();
-    ctx.fillStyle='#f4cc14';ctx.font=`bold ${16*sc}px 'Press Start 2P',sans-serif`;ctx.textAlign='center';
-    ctx.fillText('FLAPPY BIRD',W/2,by+30*sc);
-    ctx.fillStyle='#444';ctx.font=`${8.5*sc}px 'Press Start 2P',sans-serif`;
-    ctx.fillText('TAP / KLICK ZUM START',W/2,by+58*sc);
-    ctx.fillText('BEST: '+fbBest,W/2,by+80*sc);
-  }
+  // Scrolling ground stripes
+  ctx.fillStyle='rgba(0,0,0,0.08)';
+  const gOff=((frame*FB.PSPEED*sc)%52+52)%52;
+  for(let gx=0;gx<W+52;gx+=52)ctx.fillRect(gx-gOff,skyH+14*sc,26*sc,4*sc);
 }
 
+// ─── SKY + BACKGROUND ──────────────────────────────────────────────
+function fbDrawSky(ctx,W,H,sc){
+  const GH=FB.GH*sc, skyH=H-GH;
+  // Sky gradient (original day sky blue)
+  const sky=ctx.createLinearGradient(0,0,0,skyH);
+  sky.addColorStop(0,'#4dc8f5');
+  sky.addColorStop(0.6,'#87dcf8');
+  sky.addColorStop(1,'#9ae8ff');
+  ctx.fillStyle=sky;ctx.fillRect(0,0,W,skyH);
+}
+
+// ─── CLOUD DRAWING ─────────────────────────────────────────────────
+function fbDrawClouds(ctx,W,sc,frame){
+  ctx.fillStyle='rgba(255,255,255,0.92)';
+  const cf=frame*0.4;
+  [[0,52,22],[110,38,18],[210,58,24]].forEach(([ox,cy,cr])=>{
+    const cx=((cf+ox)%W+W)%W;
+    ctx.beginPath();ctx.arc(cx*sc,cy*sc,cr*sc,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc((cx+cr)*sc,cy*sc,cr*0.65*sc,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.arc((cx-cr*0.6)*sc,(cy+5)*sc,cr*0.55*sc,0,Math.PI*2);ctx.fill();
+  });
+}
+
+// ─── SCORE DISPLAY ─────────────────────────────────────────────────
+function fbDrawScore(ctx,W,sc,score){
+  const digits=score.toString().split('');
+  const dw=24*sc,dh=36*sc,gap=4*sc;
+  const totalW=digits.length*(dw+gap)-gap;
+  let sx=(W-totalW)/2;
+  digits.forEach(d=>{
+    // White digit with black shadow (original style)
+    ctx.font=`bold ${30*sc}px 'Press Start 2P',monospace`;
+    ctx.textAlign='left';
+    ctx.strokeStyle='rgba(0,0,0,0.55)';ctx.lineWidth=3*sc;
+    ctx.strokeText(d,sx,44*sc);
+    ctx.fillStyle='#ffffff';ctx.fillText(d,sx,44*sc);
+    sx+=dw+gap;
+  });
+}
+
+// ─── ROUNDED RECT HELPER ───────────────────────────────────────────
 function fbRR(ctx,x,y,w,h,r){
   ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
   ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);ctx.lineTo(x+r,y+h);
   ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();
 }
 
+// ─── MAIN DRAW ─────────────────────────────────────────────────────
+function flappyDraw(){
+  const c=FBC();if(!c)return;
+  const ctx=c.getContext('2d');
+  const W=c.width,H=c.height,sc=W/FB.IW;
+  const GH=FB.GH*sc,skyH=H-GH;
+
+  fbDrawSky(ctx,W,H,sc);
+  fbDrawClouds(ctx,W,sc,fbFrame);
+  fbPipes.forEach(p=>fbPipe_draw(ctx,p.x*sc,p.top*sc,skyH,sc));
+  fbDrawGround(ctx,W,H,sc,fbFrame);
+  fbBird_draw(ctx,fbBird.x*sc,fbBird.y*sc,fbBird.vy,fbFrame,fbDead,sc);
+
+  if(fbStarted){fbDrawScore(ctx,W,sc,fbScore);}
+
+  // Start screen
+  if(!fbStarted&&!fbDead){
+    ctx.fillStyle='rgba(0,0,0,0.3)';ctx.fillRect(0,0,W,H);
+    const pw=200*sc,ph=100*sc,bx=(W-pw)/2,by=(H-ph)/2;
+    ctx.fillStyle='rgba(255,255,255,0.96)';fbRR(ctx,bx,by,pw,ph,12*sc);ctx.fill();
+    ctx.strokeStyle='#e8a800';ctx.lineWidth=2.5*sc;fbRR(ctx,bx,by,pw,ph,12*sc);ctx.stroke();
+    ctx.fillStyle='#f4cc14';
+    ctx.font=`bold ${15*sc}px 'Press Start 2P',sans-serif`;ctx.textAlign='center';
+    ctx.fillText('FLAPPY BIRD',W/2,by+30*sc);
+    ctx.fillStyle='#555';
+    ctx.font=`${8*sc}px 'Press Start 2P',sans-serif`;
+    ctx.fillText('TAP / KLICK',W/2,by+54*sc);
+    ctx.fillText('BEST: '+fbBest,W/2,by+76*sc);
+  }
+}
+
 // ─── GAME LOOP ─────────────────────────────────────────────────────
 function flappyUpdate(){
   if(!fbRunning)return;
   fbFrame++;
-  // Todesanimation: Vogel fällt, dann Game Over Panel
+  const sc=1;// internal units
+
   if(fbDead){
     fbDeadT++;
     fbBird.vy+=FB.GRAV;fbBird.y+=fbBird.vy;
@@ -5288,20 +5247,22 @@ function flappyUpdate(){
     if(fbDeadT>55){fbRunning=false;cancelAnimationFrame(fbAF);fbShowGameOver();return;}
     fbAF=requestAnimationFrame(flappyUpdate);return;
   }
-  // Physik
+
+  // Physics
   fbBird.vy+=FB.GRAV;fbBird.y+=fbBird.vy;
 
-  // Rohre spawnen
+  // Spawn pipes
   if(fbFrame%FB.PSPAWN===0){
     const minT=50,maxT=FB.IH-FB.GH-FB.PGAP-50;
     fbPipes.push({x:FB.IW+FB.PW,top:minT+Math.random()*(maxT-minT),scored:false});
   }
-  // Rohre bewegen (leicht schneller mit Score)
+
+  // Move pipes (speed increases slightly with score)
   const spd=FB.PSPEED+(fbScore*0.025);
   fbPipes.forEach(p=>p.x-=spd);
-  fbPipes=fbPipes.filter(p=>p.x>-FB.PW-8);
+  fbPipes=fbPipes.filter(p=>p.x>-FB.PW-10);
 
-  // Punkt vergeben
+  // Score
   fbPipes.forEach(p=>{
     if(!p.scored&&p.x+FB.PW<fbBird.x){
       p.scored=true;fbScore++;
@@ -5309,20 +5270,23 @@ function flappyUpdate(){
     }
   });
 
-  // Kollision: Boden / Decke
-  if(fbBird.y+FB.BH/2>FB.IH-FB.GH||fbBird.y-FB.BH/2<0){
+  // Collisions: floor / ceiling
+  const skyH=FB.IH-FB.GH;
+  if(fbBird.y+FB.BH/2>skyH||fbBird.y-FB.BH/2<0){
     fbDead=true;fbDeadT=0;fbAF=requestAnimationFrame(flappyUpdate);return;
   }
 
-  // Kollision: Rohre (originale Hitbox: ~38% des Sprites)
+  // Collisions: pipes
   const bx=fbBird.x,by=fbBird.y,bm=0.38;
   for(const p of fbPipes){
+    const pSkyH=(FB.IH-FB.GH);
     if(bx+FB.BW*bm>p.x&&bx-FB.BW*bm<p.x+FB.PW){
       if(by-FB.BH*bm<p.top||by+FB.BH*bm>p.top+FB.PGAP){
         fbDead=true;fbDeadT=0;fbAF=requestAnimationFrame(flappyUpdate);return;
       }
     }
   }
+
   flappyDraw();fbAF=requestAnimationFrame(flappyUpdate);
 }
 
@@ -5333,23 +5297,19 @@ function fbShowGameOver(){
   }
   if(typeof saveGameScore==='function')saveGameScore('flappy',fbScore);
   flappyDraw();
-  const c=FBC(),ctx=c.getContext('2d'),W=c.width,H=c.height,sc=FBSC();
-  // Dunkel-Overlay
-  ctx.fillStyle='rgba(0,0,0,0.42)';ctx.fillRect(0,0,W,H);
-  // Panel
+  const c=FBC();const ctx=c.getContext('2d');
+  const W=c.width,H=c.height,sc=W/FB.IW;
+  ctx.fillStyle='rgba(0,0,0,0.45)';ctx.fillRect(0,0,W,H);
   const pw=240*sc,ph=168*sc,bx=(W-pw)/2,by=(H-ph)/2;
   ctx.fillStyle='#fff';fbRR(ctx,bx,by,pw,ph,14*sc);ctx.fill();
   ctx.strokeStyle='#e8a800';ctx.lineWidth=3.5*sc;fbRR(ctx,bx,by,pw,ph,14*sc);ctx.stroke();
-  // Texte
   ctx.fillStyle='#cc0000';ctx.font=`bold ${14*sc}px 'Press Start 2P',sans-serif`;ctx.textAlign='center';
   ctx.fillText('GAME OVER',W/2,by+36*sc);
-  // Medaille
   const medal=fbScore>=30?'🏆':fbScore>=20?'🥇':fbScore>=10?'🥈':fbScore>=5?'🥉':'💀';
   ctx.font=`${32*sc}px serif`;ctx.fillText(medal,bx+pw*0.22,by+ph*0.55);
-  // Scores
   ctx.fillStyle='#333';ctx.font=`${10.5*sc}px 'Press Start 2P',sans-serif`;
-  ctx.fillText('SCORE: '+fbScore,  bx+pw*0.65,by+ph*0.45);
-  ctx.fillText('BEST:  '+fbBest,   bx+pw*0.65,by+ph*0.62);
+  ctx.fillText('SCORE: '+fbScore,bx+pw*0.65,by+ph*0.45);
+  ctx.fillText('BEST:  '+fbBest,bx+pw*0.65,by+ph*0.62);
   ctx.fillStyle='#888';ctx.font=`${7.5*sc}px 'Press Start 2P',sans-serif`;
   ctx.fillText('TAP ZUM NEUSTART',W/2,by+ph*0.88);
   if(fbScore>=5&&typeof giveXP==='function')giveXP(fbScore*2,'Flappy Bird');
@@ -5357,7 +5317,7 @@ function fbShowGameOver(){
 }
 
 function flappyJump(){
-  if(fbDead)return;
+  if(fbDead){resetFlappy();return;}
   if(!fbStarted){fbStarted=true;fbRunning=true;fbAF=requestAnimationFrame(flappyUpdate);}
   fbBird.vy=FB.JUMP;
 }
@@ -5367,7 +5327,7 @@ function resetFlappy(){
   fbRunning=false;fbStarted=false;fbDead=false;fbDeadT=0;
   fbScore=0;fbFrame=0;fbPipes=[];
   const c=FBC();if(!c)return;
-  fbBird={x:FB.IW*0.22,y:FB.IH*0.42,vy:0};
+  fbBird={x:FB.BX,y:FB.IH*0.42,vy:0};
   document.getElementById('flappyScore').textContent=0;
   document.getElementById('flappyMsg').textContent='tippe zum starten!!';
   try{const b=localStorage.getItem('flappyBest7d');if(b){fbBest=+b;document.getElementById('flappyBest').textContent=b;}}catch(e){}
@@ -5390,107 +5350,62 @@ window.startFlappy=startFlappy;
 window.resetFlappy=resetFlappy;
 
 
+
+
+
 // ============================================================
 // 🦕 CHROME DINO — Eins zu Eins Original
 // ============================================================
-// Original Chrome Dino: 600×150 Canvas
-// Gravity: 0.6px/f², Jump: -11.5, Start: 5.5px/f, Max: 12px/f
-// Sprites: pixel-art via fillRect (kein Bildladen nötig)
-// ============================================================
 
-const DINO={
-  CW:600,CH:150,   // Canvas-Auflösung (unscaled)
-  GND:18,          // Grundlinie von unten (unscaled)
-  GRAV:0.6,        // Gravitation
-  JUMP:-11.5,      // Sprunggeschwindigkeit
-  SPEED0:5.5,      // Startgeschwindigkeit
-  SPEED_MAX:12,    // Maximalgeschwindigkeit
-  // Dino-Sprite Dimensionen (unscaled)
-  DW:22, DH:26,    // stehend
-  DDW:30,DDH:18    // duckend
-};
-
-let dinoState=null,dinoRAF=null,dinoRunning=false;
-
-function dnC(){ // Dino Vordergrundfarbe
-  return getComputedStyle(document.documentElement).getPropertyValue('--text').trim()||'#535353';
-}
-function dnBg(){
-  return getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()||'#fff';
-}
-function dnGr(){
-  return getComputedStyle(document.documentElement).getPropertyValue('--text2').trim()||'#999';
-}
-
-// ─── DINO SPRITE (originalgetreu, pixel-art) ───────────────────────
-// Alle Koordinaten in Einheiten, Ausgabe: x,y = Obere linke Ecke des Sprites
+// ─── DINO SPRITE (faithful pixel art, 1:1 Chrome) ──────────────────
 function dnDrawDino(ctx,x,y,sc,frame,dead,duck){
   const c=dead?'#ff3333':dnC(), bg=dnBg();
+  // f(row, col, w, h) — pixel rect helper
   const f=(r,col,w,h)=>ctx.fillRect(x+col*sc,y+r*sc,w*sc,h*sc);
-  ctx.fillStyle=c;
 
   if(duck){
-    // Duckend: 30×18 Pixel
-    // Körper
-    f(4,0,24,8); f(0,12,16,12);
-    // Kopf
-    f(0,18,12,8); f(0,26,4,3);
-    // Auge
-    ctx.fillStyle=bg;f(1,23,2,2);ctx.fillStyle=c;f(2,24,1,1);
-    // Beine (wechselnd)
-    const lA=frame%20<10;
+    // Ducking: 30×18px
     ctx.fillStyle=c;
-    f(10,lA?3:7,4,8);f(10,lA?10:6,4,8);
+    f(4,0,24,8); f(0,12,16,12);
+    f(0,18,12,8); f(0,26,4,3);
+    ctx.fillStyle=bg; f(1,23,2,2); ctx.fillStyle=c; f(2,24,1,1);
+    const lA=frame%20<10;
+    f(10,lA?3:7,4,8); f(10,lA?10:6,4,8);
     return;
   }
-
-  // Stehend / Laufend: 22×26 Pixel
-  // Schwanz
-  f(14,0,4,4);f(15,3,3,3);f(16,5,2,2);
-  // Körper
-  f(6,2,16,10);f(5,4,2,6);
-  // Hals
-  f(2,8,8,6);f(0,10,10,4);
-  // Kopf
-  f(0,10,14,8);f(0,12,16,6);
-  // Auge: weiß
-  ctx.fillStyle=bg;
-  f(1,20,3,3);f(0,19,2,2);
-  // Pupille
-  ctx.fillStyle=dead?'#ff0000':c;
-  f(1,21,2,2);
+  // Standing/Running: 22×26px
   ctx.fillStyle=c;
-  // Mund (offen beim Laufen)
-  if(!dead&&frame%20<10){ctx.fillStyle=bg;f(4,13,3,1);ctx.fillStyle=c;}
-  // Arm
-  f(10,4,4,2);
-  // Beine
+  f(14,0,4,4); f(15,3,3,3); f(16,5,2,2); // tail
+  f(6,2,16,10); f(5,4,2,6);              // body
+  f(2,8,8,6); f(0,10,10,4);              // neck
+  f(0,10,14,8); f(0,12,16,6);            // head
+  ctx.fillStyle=bg; f(1,20,3,3); f(0,19,2,2); // eye white
+  ctx.fillStyle=dead?'#ff0000':c; f(1,21,2,2); // pupil
+  ctx.fillStyle=c;
+  if(!dead&&frame%20<10){ctx.fillStyle=bg;f(4,13,3,1);ctx.fillStyle=c;} // mouth
+  f(10,4,4,2); // arm
   if(dead){f(18,5,4,8);f(18,10,4,8);}
   else{
     const lA=frame%20<10;
-    // Vorderbein
-    f(18,lA?6:9,4,lA?8:5);if(lA)f(22,5,5,3);
-    // Hinterbein
-    f(18,lA?10:7,4,lA?5:8);if(!lA)f(22,9,5,3);
+    f(18,lA?6:9,4,lA?8:5); if(lA)f(22,5,5,3);
+    f(18,lA?10:7,4,lA?5:8); if(!lA)f(22,9,5,3);
   }
 }
 
-// ─── KAKTUS (3 Varianten) ──────────────────────────────────────────
+// ─── CACTUS (3 variants) ──────────────────────────────────────────
 function dnDrawCactus(ctx,x,y,sc,type){
   ctx.fillStyle=dnC();
   const f=(r,c,w,h)=>ctx.fillRect(x+c*sc,y+r*sc,w*sc,h*sc);
   if(type==='sm'){
-    // Kleiner Kaktus: 16×32
     f(0,5,6,32);f(8,0,5,8);f(8,11,5,8);
     f(10,0,16,4);f(14,0,16,4);
   }else if(type==='md'){
-    // Mittlerer Kaktus: 16×40
     f(0,5,6,40);f(10,0,5,10);f(10,11,5,10);
     f(12,0,16,4);f(18,0,16,4);
     f(0,22,6,18);f(8,14,5,8);f(8,24,5,8);
     f(10,14,22,4);f(18,14,22,4);
   }else{
-    // Dreifach-Kaktus: 32×36
+    // Triple/large cactus
     f(0,5,6,36);f(8,0,5,10);f(8,11,5,6);
     f(10,0,16,4);f(14,0,16,4);
     f(0,16,6,20);f(8,8,5,8);f(8,18,5,8);
@@ -5500,29 +5415,23 @@ function dnDrawCactus(ctx,x,y,sc,type){
   }
 }
 
-// ─── PTERODAKTYL ──────────────────────────────────────────────────
+// ─── PTERODACTYL ──────────────────────────────────────────────────
 function dnDrawPtero(ctx,x,y,sc,frame){
   const c=dnC(),bg=dnBg();
   ctx.fillStyle=c;
   const f=(r,col,w,h)=>ctx.fillRect(x+col*sc,y+r*sc,w*sc,h*sc);
-  const wu=frame%24<12; // Flügel oben oder unten
-  // Körper
-  f(5,4,14,6);f(4,6,12,4);
-  // Kopf
-  f(0,14,8,8);
-  // Schnabel
-  f(3,22,8,3);
-  // Auge
-  ctx.fillStyle=bg;f(2,17,2,2);ctx.fillStyle=c;f(2,18,1,1);
+  const wu=frame%24<12;
+  f(5,4,14,6);f(4,6,12,4);  // body
+  f(0,14,8,8);               // head
+  f(3,22,8,3);               // beak
+  ctx.fillStyle=bg;f(2,17,2,2);ctx.fillStyle=c;f(2,18,1,1); // eye
   ctx.fillStyle=c;
-  // Flügel
   if(wu){f(0,0,18,4);f(1,1,14,3);f(0,3,6,2);}
   else  {f(7,0,18,4);f(8,1,14,3);f(8,3,6,2);}
-  // Schwanz
-  f(5,0,5,4);f(6,0,3,3);
+  f(5,0,5,4);f(6,0,3,3); // tail
 }
 
-// ─── WOLKE ────────────────────────────────────────────────────────
+// ─── CLOUD ────────────────────────────────────────────────────────
 function dnDrawCloud(ctx,x,y,sc){
   ctx.fillStyle=dnGr();ctx.globalAlpha=0.32;
   const f=(r,c,w,h)=>ctx.fillRect(x+c*sc,y+r*sc,w*sc,h*sc);
@@ -5530,19 +5439,18 @@ function dnDrawCloud(ctx,x,y,sc){
   ctx.globalAlpha=1;
 }
 
-// ─── HAUPT-RENDER ─────────────────────────────────────────────────
+// ─── MAIN DRAW ─────────────────────────────────────────────────────
 function dinoDraw(){
   const canvas=document.getElementById('dinoCanvas');if(!canvas)return;
   const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
   const sc=W/DINO.CW;
-  const gY=H-DINO.GND*sc;   // Y-Position der Grundlinie (canvas px)
+  const gY=H-DINO.GND*sc;
   const c=dnC(),bg=dnBg(),gr=dnGr();
 
   ctx.clearRect(0,0,W,H);ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
 
   const s=dinoState;
   if(!s){
-    // Idle: Dino steht, Text
     ctx.strokeStyle=gr;ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(0,gY);ctx.lineTo(W,gY);ctx.stroke();
     dnDrawDino(ctx,60*sc,(gY-DINO.DH*sc),sc,0,false,false);
@@ -5554,44 +5462,36 @@ function dinoDraw(){
 
   const {dino,obstacles,clouds,frame,score,speed}=s;
 
-  // Wolken
   clouds.forEach(cl=>dnDrawCloud(ctx,cl.x*sc,cl.y*sc,sc));
 
-  // Grundlinie
+  // Ground line
   ctx.strokeStyle=c;ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(0,gY);ctx.lineTo(W,gY);ctx.stroke();
 
-  // Boden-Punkte (scrollend)
+  // Ground dots (scrolling)
   ctx.fillStyle=gr;
   const dp=(frame*speed)%(18*sc);
-  for(let i=0;i<W;i+=18*sc)ctx.fillRect((i-dp%W+W)%W,gY+2*sc,8*sc,1.5*sc);
+  for(let i=0;i<W+18*sc;i+=18*sc)ctx.fillRect((i-dp%W+W)%W,gY+2*sc,8*sc,1.5*sc);
 
-  // Hindernisse
+  // Obstacles
   obstacles.forEach(o=>{
-    if(o.type==='ptero'){
-      dnDrawPtero(ctx,o.x*sc,o.y*sc,sc,frame);
-    }else{
-      // Kaktus: Unterkante auf gY
-      dnDrawCactus(ctx,o.x*sc,gY-o.h*sc,sc,o.type);
-    }
+    if(o.type==='ptero'){dnDrawPtero(ctx,o.x*sc,o.y*sc,sc,frame);}
+    else{dnDrawCactus(ctx,o.x*sc,gY-o.h*sc,sc,o.type);}
   });
 
   // Dino
-  const dh=dino.ducking?DINO.DDH:DINO.DH;
   dnDrawDino(ctx,dino.x*sc,dino.y*sc,sc,frame,dino.dead,dino.ducking);
 
-  // HI-Score (rechts oben, wie Original)
+  // HI-score (top right, Chrome style)
   const scoreTxt=Math.floor(score).toString().padStart(5,'0');
   const bestTxt=s.best.toString().padStart(5,'0');
   ctx.fillStyle=gr;ctx.font=`${8*sc}px 'Press Start 2P',monospace`;ctx.textAlign='right';
   ctx.fillText('HI '+bestTxt+'  '+scoreTxt,W-6*sc,13*sc);
   ctx.textAlign='left';
 
-  // HUD aktualisieren
   document.getElementById('dinoScore').textContent=Math.floor(score);
   document.getElementById('dinoSpeed').textContent=speed.toFixed(1)+'x';
 
-  // Game Over Text
   if(dino.dead){
     ctx.fillStyle=c;ctx.textAlign='center';
     ctx.font=`bold ${10*sc}px 'Press Start 2P',monospace`;
@@ -5617,15 +5517,16 @@ function resetDino(){
 function startDino(){
   const canvas=document.getElementById('dinoCanvas');if(!canvas||dinoRunning)return;
   const W=canvas.width,H=canvas.height,sc=W/DINO.CW;
-  const gndU=H/sc-DINO.GND;  // Boden in unscaled units
+  const gndU=H/sc-DINO.GND;
   const best=parseInt(document.getElementById('dinoBest').textContent)||0;
 
   dinoState={
     score:0,speed:DINO.SPEED0,frame:0,best,
-    dino:{x:60,y:gndU-DINO.DH,vy:0,onGround:true,dead:false,ducking:false},
+    dino:{x:60,y:gndU-DINO.DH,vy:0,onGround:true,dead:false,ducking:false,jumps:0},
     obstacles:[],
     clouds:[{x:180,y:20},{x:340,y:14},{x:490,y:22}],
-    spawnTimer:0,spawnInterval:70,cloudTimer:0
+    spawnTimer:0,spawnInterval:70,cloudTimer:0,
+    flashTimer:0,invincible:0
   };
   dinoRunning=true;
   document.getElementById('dinoMsg').textContent='';
@@ -5645,11 +5546,16 @@ function startDino(){
   dinoLoop();
 }
 
+window.dnDuckStart=function(){if(dinoState&&!dinoState.dino.dead){dinoState.dino.ducking=true;if(!dinoState.dino.onGround)dinoState.dino.vy=Math.max(dinoState.dino.vy,5);}};
+window.dnDuckEnd=function(){if(dinoState)dinoState.dino.ducking=false;};
+
 function dnAction(){
   if(!dinoState)return;
   const d=dinoState.dino;
-  if(d.dead){resetDino();return;}
-  if(d.onGround&&!d.ducking){d.vy=DINO.JUMP;d.onGround=false;}
+  if(d.dead){resetDino();startDino();return;}
+  // Double jump support
+  if(d.onGround&&!d.ducking){d.vy=DINO.JUMP;d.onGround=false;d.jumps=1;}
+  else if(!d.onGround&&d.jumps===1){d.vy=DINO.JUMP2;d.jumps=2;}
 }
 
 function dinoLoop(){
@@ -5660,34 +5566,31 @@ function dinoLoop(){
   const gndU=canvas.height/sc-DINO.GND;
 
   s.frame++;
-  // Score + Speed (original Formel)
   s.score+=s.speed/10;
   s.speed=Math.min(DINO.SPEED0+s.score/180,DINO.SPEED_MAX);
 
-  // Physik
+  // Physics
   if(!d.onGround){
     d.vy+=DINO.GRAV;d.y+=d.vy;
     const dh=d.ducking?DINO.DDH:DINO.DH;
-    if(d.y>=gndU-dh){d.y=gndU-dh;d.vy=0;d.onGround=true;}
+    if(d.y>=gndU-dh){d.y=gndU-dh;d.vy=0;d.onGround=true;d.jumps=0;}
   }
 
-  // Wolken
+  // Clouds
   s.cloudTimer++;
   if(s.cloudTimer>90){s.cloudTimer=0;s.clouds.push({x:DINO.CW+20,y:8+Math.random()*20});}
   s.clouds.forEach(c=>c.x-=s.speed*0.25);
   s.clouds=s.clouds.filter(c=>c.x>-30);
 
-  // Hindernisse spawnen
+  // Spawn obstacles
   s.spawnTimer++;
   s.spawnInterval=Math.max(38,Math.floor(72-s.score/22));
   if(s.spawnTimer>=s.spawnInterval){
     s.spawnTimer=0;
     const roll=Math.random();
     if(roll<0.22&&s.score>120){
-      // Pterodaktyl: 3 Höhen (niedrig, mittel, hoch)
-      const hy=[gndU-DINO.DH-4, gndU-DINO.DH-16, gndU-DINO.DH-28];
-      const py=hy[Math.floor(Math.random()*hy.length)];
-      s.obstacles.push({type:'ptero',x:DINO.CW+30,y:py,w:24,h:14});
+      const hy=[gndU-DINO.DH-4,gndU-DINO.DH-16,gndU-DINO.DH-28];
+      s.obstacles.push({type:'ptero',x:DINO.CW+30,y:hy[Math.floor(Math.random()*hy.length)],w:24,h:14});
     }else{
       const types=['sm','sm','md','lg'],t=types[Math.floor(Math.random()*types.length)];
       const hw={sm:{w:16,h:32},md:{w:22,h:40},lg:{w:36,h:36}};
@@ -5698,14 +5601,17 @@ function dinoLoop(){
   s.obstacles.forEach(o=>o.x-=s.speed);
   s.obstacles=s.obstacles.filter(o=>o.x>-50);
 
-  // Kollision
+  // Score milestones — brief flash at 100,200,...
+  const fl=Math.floor(s.score);
+  if(fl>0&&fl%100===0&&fl!==s.lastFlash){s.lastFlash=fl;s.flashTimer=12;}
+  if(s.flashTimer>0){s.flashTimer--;}
+
+  // Collision detection
   if(!d.dead){
     const duck=d.ducking;
-    const dw=duck?DINO.DDW:DINO.DW, dh=duck?DINO.DDH:DINO.DH;
+    const dw=duck?DINO.DDW:DINO.DW,dh=duck?DINO.DDH:DINO.DH;
     const dy=duck?d.y+DINO.DH-DINO.DDH:d.y;
-    // Dino-Hitbox (leicht kleiner als Sprite = fair)
     const dx1=d.x+3,dx2=d.x+dw-4,dy1=dy+3,dy2=dy+dh-2;
-
     for(const o of s.obstacles){
       let ox1,ox2,oy1,oy2;
       if(o.type==='ptero'){ox1=o.x+2;ox2=o.x+o.w-2;oy1=o.y+2;oy2=o.y+o.h-2;}
@@ -5727,6 +5633,9 @@ function dinoLoop(){
 }
 window.startDino=startDino;
 window.resetDino=resetDino;
+
+
+
 
 
 function renderTTT(winCells=[]){
@@ -6373,14 +6282,34 @@ function initEvents(){
 // 🟩 WORDLE (Spiele-Tab) — IDs: gWordleGrid, gWordleKeyboard etc.
 // ============================================================
 const WORDLE_GAME_WORDS = [
-  'APFEL','BIRNE','KATZE','TISCH','STUHL','SCHAF','PFERD','REGEN',
-  'SONNE','WOLKE','BLUME','BAUCH','NACHT','MUSIK','SPIEL','KRAFT',
-  'LICHT','FEUER','STEIN','BRAND','FARBE','STERN','KREIS','TRAUM',
-  'BLATT','BRIEF','FLUSS','HAFEN','JACKE','LAMPE','MAUER','NEBEL',
-  'PREIS','RADIO','STADT','VOGEL','ADLER','BETON','CHAOS','ENGEL',
-  'GABEL','INSEL','KANAL','TIGER','ZEBRA','ALARM','BIENE','EBENE',
-  'FALKE','GILDE','JOKER','LIEBE','NUDEL','PERLE','RIESE','SAHNE',
-  'VIPER','DOLCH','QUARZ','TURBO','VILLA','WEICH','ATLAS','CLOWN'
+  'APFEL','BIRNE','KATZE','TISCH','STUHL','PFERD','REGEN','SONNE',
+  'WOLKE','BLUME','BAUCH','NACHT','MUSIK','SPIEL','KRAFT','LICHT',
+  'FEUER','STEIN','BRAND','FARBE','STERN','KREIS','TRAUM','BLATT',
+  'BRIEF','FLUSS','HAFEN','JACKE','LAMPE','MAUER','NEBEL','PREIS',
+  'RADIO','STADT','VOGEL','ADLER','BETON','CHAOS','ENGEL','GABEL',
+  'INSEL','KANAL','TIGER','ZEBRA','ALARM','BIENE','EBENE','FALKE',
+  'GILDE','JOKER','LIEBE','NUDEL','PERLE','RIESE','SAHNE','DOLCH',
+  'QUARZ','TURBO','VILLA','WEICH','ATLAS','CLOWN','ABEND','AHORN',
+  'ANGEL','ANGST','ASCHE','BACKE','BIRKE','BITTE','BLECH','BLICK',
+  'BODEN','BOHNE','BOMBE','BRUST','BUCHE','DELTA','DRAHT','DRUCK',
+  'DURST','EICHE','EISEN','ELEND','FADEN','FAHNE','FALLE','FAUST',
+  'FEIND','FERSE','FISCH','FOLIE','FUCHS','FUNKE','GASSE','GEIST',
+  'GLANZ','GLEIS','GLUCK','GREIS','GRILL','GRUND','HEIDE','HIRTE',
+  'HOBEL','HUMOR','KANTE','KEGEL','KERBE','KLEID','KLEIN','KNALL',
+  'KOHLE','KOMET','KRACH','KRANZ','KREUZ','LAGER','LAUBE','LAUNE',
+  'LEDER','LEHRE','LINSE','LIPPE','LISTE','LOCKE','MAGMA','MARKE',
+  'MASSE','MEILE','MEISE','MILCH','MINZE','MULDE','NADEL','NABEL',
+  'NARBE','NEFFE','ONKEL','PALME','PANIK','PANNE','PFIFF','PFOTE',
+  'PISTE','PLATZ','POKER','PROBE','RANKE','RATTE','RAUPE','RECKE',
+  'RILLE','RINDE','RIPPE','ROBBE','ROHRE','RUINE','RUMPF','SAITE',
+  'SALBE','SAMEN','SANFT','SCHAL','SCHUH','SEIFE','SEITE','SICHT',
+  'SPECK','SPORE','STALL','STAMM','STAND','STARK','STAUB','STICH',
+  'STOCK','STROM','STUCK','SUCHT','SUMPF','TAFEL','TANNE','TASTE',
+  'TEICH','TOPAS','TORTE','TROTZ','TRUHE','TUMOR','WAFFE','WAGEN',
+  'WANGE','WARZE','WIESE','WONNE','WUCHT','ZANGE','ZECHE','ZEILE',
+  'ZIEGE','ZWANG','ZWECK','PFEIL','PAUSE','REISE','NERVE','KRONE',
+  'VENUS','WELLE','ERNTE','GRUBE','JUBEL','KLANG','MENGE','OPFER',
+  'TRANK','ULTRA','PIXEL','BRISE','MORAL','JUNGE','SCHAF','VIPER'
 ];
 
 let gWordleState = null;
@@ -6397,7 +6326,8 @@ function gWordleReset(){
   document._gWordleKey && document.removeEventListener('keydown', document._gWordleKey);
   document._gWordleKey = e => {
     if(!gWordleState||gWordleState.done) return;
-    if(document.getElementById('game-wordle').style.display==='none') return;
+    const gw=document.getElementById('game-wordle');
+    if(gw&&gw.style.display==='none') return;
     if(e.key==='Enter'){ gWordleSubmit(); return; }
     if(e.key==='Backspace'){ gWordleState.current=gWordleState.current.slice(0,-1); gWordleRenderGrid(); return; }
     if(/^[a-zA-ZäöüÄÖÜ]$/.test(e.key)&&gWordleState.current.length<5){ gWordleState.current+=e.key.toUpperCase(); gWordleRenderGrid(); }
