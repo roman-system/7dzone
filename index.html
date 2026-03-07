@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>7D ZONE 🎮 v5</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700;900&family=Orbitron:wght@700;900&family=Bangers&family=Satisfy&family=Permanent+Marker&family=Righteous&family=Bungee+Shade&display=swap" rel="stylesheet"/>
 <style>
@@ -74,13 +74,16 @@ html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;transition:background 0.4s,color 0.3s;}
 button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer;}
 
-#musicBar{position:fixed;bottom:1rem;right:1rem;z-index:999;display:flex;align-items:center;gap:0.5rem;background:rgba(0,0,0,0.7);border:1px solid var(--border);border-radius:100px;padding:0.4rem 0.9rem;backdrop-filter:blur(10px);cursor:pointer;transition:all 0.2s;}
+#musicBar{position:fixed;bottom:1rem;right:1rem;z-index:49;display:flex;align-items:center;gap:0.5rem;background:rgba(0,0,0,0.7);border:1px solid var(--border);border-radius:100px;padding:0.4rem 0.9rem;backdrop-filter:blur(10px);cursor:pointer;transition:all 0.2s;touch-action:manipulation;}
 #musicBar:hover{border-color:var(--accent);box-shadow:0 0 12px var(--glow);}
 #musicBar .micon{font-size:1.1rem;}
 #musicBar .mtext{font-family:'Press Start 2P';font-size:0.46rem;color:var(--accent);}
 #musicBar .mvol{width:60px;accent-color:var(--accent);cursor:pointer;}
 
 .theme-bar{position:sticky;top:0;z-index:50;display:flex;justify-content:center;flex-wrap:wrap;align-items:center;gap:0.4rem;padding:0.55rem 1rem;background:rgba(0,0,0,0.75);border-bottom:1px solid var(--border);backdrop-filter:blur(10px);}
+@media(max-width:600px){
+  .theme-bar{position:relative;top:auto;z-index:2;}
+}
 .theme-bar label{font-family:'Press Start 2P';font-size:0.5rem;color:var(--text2);margin-right:0.2rem;}
 .tbtn{padding:0.28rem 0.75rem;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--text2);font-family:'Nunito';font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
 .tbtn:hover,.tbtn.on{border-color:var(--accent);color:var(--accent);box-shadow:0 0 8px var(--glow);}
@@ -104,7 +107,7 @@ header{text-align:center;padding:2rem 1rem 0.8rem;}
 .card-title{font-family:'Press Start 2P',monospace;font-size:0.7rem;color:var(--accent);margin-bottom:1rem;}
 .card p{font-size:0.92rem;color:var(--text2);line-height:1.7;margin-bottom:0.7rem;}
 
-.btn{padding:0.5rem 1.2rem;border-radius:8px;border:2px solid var(--accent);background:transparent;color:var(--accent);font-family:'Press Start 2P',monospace;font-size:0.56rem;cursor:pointer;transition:all 0.2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.btn{padding:0.5rem 1.2rem;border-radius:8px;border:2px solid var(--accent);background:transparent;color:var(--accent);font-family:'Press Start 2P',monospace;font-size:0.56rem;cursor:pointer;transition:all 0.2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none;}
 @media(hover:hover){.btn:hover{background:var(--accent);color:var(--bg);}}
 .btn.red{border-color:#ff4444;color:#ff4444;}
 .btn.red:hover{background:#ff4444;color:#fff;}
@@ -355,7 +358,7 @@ footer span{color:var(--accent);}
 #userBar .ulogout:hover{border-color:#ff4444;color:#ff4444;}
 
 /* ===== XP / LEVEL ===== */
-#xpBar{position:fixed;top:0;left:0;right:0;z-index:199;height:4px;background:var(--border);}
+#xpBar{position:fixed;top:0;left:0;right:0;z-index:49;height:4px;background:var(--border);pointer-events:none;}
 #xpFill{height:100%;background:var(--accent);transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 0 8px var(--accent);}
 #xpPopup{position:fixed;top:52px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--card);border:2px solid var(--accent);border-radius:14px;padding:0.6rem 1.2rem;font-family:'Press Start 2P';font-size:0.52rem;color:var(--accent);box-shadow:0 0 24px var(--glow);z-index:9998;opacity:0;pointer-events:none;transition:all 0.35s;text-align:center;white-space:nowrap;}
 #xpPopup.show{opacity:1;transform:translateX(-50%) translateY(0);}
@@ -431,6 +434,12 @@ footer span{color:var(--accent);}
 .wordle-key-row{display:flex;gap:0.3rem;justify-content:center;flex-wrap:wrap;}
 #wordleMsg{text-align:center;font-family:'Press Start 2P';font-size:0.58rem;color:var(--accent);min-height:1.3rem;margin-bottom:0.5rem;}
 @media(max-width:400px){.wordle-tile{width:42px;height:42px;font-size:0.8rem;}.wordle-key{min-width:28px;}.wordle-key.wide{min-width:46px;}}
+
+@media(max-width:600px){
+  [data-theme="retro"] .card:hover{transform:none;box-shadow:6px 6px 0 var(--accent);}
+  [data-theme="anime"] .card:hover{transform:none;}
+  [data-theme="lava"] .card:hover{transform:none;border-left:4px solid var(--accent);}
+}
 </style>
 </head>
 <body>
@@ -852,14 +861,14 @@ footer span{color:var(--accent);}
         <div style="font-size:0.7rem;color:var(--text2);">🗳️ Votes</div>
       </div>
     </div>
-    <button class="btn" onclick="adminLoadStats()">🔄 Stats laden</button>
+    <button class="btn" ontouchstart="" onclick="adminLoadStats()">🔄 Stats laden</button>
   </div>
 
   <!-- 🏆 XP LEADERBOARD -->
   <div class="card">
     <div class="card-title">🏆 XP LEADERBOARD</div>
     <div id="adminXpLeaderboard" style="margin-bottom:0.8rem;"><div style="color:var(--text2);font-size:0.82rem;">⏳ noch nicht geladen</div></div>
-    <button class="btn" onclick="adminLoadLeaderboard()">🔄 laden</button>
+    <button class="btn" ontouchstart="" onclick="adminLoadLeaderboard()">🔄 laden</button>
   </div>
 
   <!-- ⭐ XP MANAGEMENT -->
@@ -867,7 +876,7 @@ footer span{color:var(--accent);}
     <div class="card-title">⭐ XP MANAGEMENT</div>
     <p style="margin-bottom:0.8rem;">gib XP, nimm welche weg, oder reset alles!!</p>
     <div style="display:flex;flex-direction:column;gap:0.6rem;">
-      <button class="btn" onclick="adminLoadXpUsers()" style="align-self:flex-start;">👥 User laden</button>
+      <button class="btn" ontouchstart="" onclick="adminLoadXpUsers()" style="align-self:flex-start;">👥 User laden</button>
       <div id="adminXpUserListWrap" style="display:none;">
         <select id="adminXpPerson" style="width:100%;padding:0.55rem 0.8rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.88rem;margin-bottom:0.6rem;"></select>
         <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.6rem;">
@@ -875,15 +884,15 @@ footer span{color:var(--accent);}
           <span style="font-size:0.82rem;color:var(--text2);">XP</span>
         </div>
         <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
-          <button class="btn" onclick="adminGiveXP(1)" style="flex:1;">⭐ geben</button>
-          <button class="btn red" onclick="adminGiveXP(-1)" style="flex:1;">➖ abnehmen</button>
+          <button class="btn" ontouchstart="" onclick="adminGiveXP(1)" style="flex:1;">⭐ geben</button>
+          <button class="btn red" ontouchstart="" onclick="adminGiveXP(-1)" style="flex:1;">➖ abnehmen</button>
         </div>
         <div id="adminXpMsg" style="font-size:0.78rem;color:var(--accent);min-height:1rem;"></div>
       </div>
     </div>
     <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
       <div style="font-size:0.78rem;color:#ff4444;margin-bottom:0.5rem;">⚠️ GEFÄHRLICH:</div>
-      <button class="btn red" onclick="adminResetAllXP()">🔄 ALLE XP auf 0 reset</button>
+      <button class="btn red" ontouchstart="" onclick="adminResetAllXP()">🔄 ALLE XP auf 0 reset</button>
     </div>
   </div>
 
@@ -892,7 +901,7 @@ footer span{color:var(--accent);}
     <div class="card-title">🚫 BAN MANAGEMENT</div>
     <p style="margin-bottom:0.8rem;">sperr oder entsperre User!!</p>
     <div id="adminBanList"><div style="color:var(--text2);font-size:0.82rem;">⏳ noch nicht geladen</div></div>
-    <button class="btn" style="margin-top:0.8rem;" onclick="adminLoadBanList()">🔄 User laden</button>
+    <button class="btn" style="margin-top:0.8rem;" ontouchstart="" onclick="adminLoadBanList()">🔄 User laden</button>
   </div>
 
   <!-- 🔇 CHAT MUTE -->
@@ -900,23 +909,23 @@ footer span{color:var(--accent);}
     <div class="card-title">🔇 CHAT MUTE</div>
     <p style="margin-bottom:0.8rem;">User für eine bestimmte Zeit im Chat stumm schalten!!</p>
     <div id="adminMuteList"><div style="color:var(--text2);font-size:0.82rem;">⏳ noch nicht geladen</div></div>
-    <button class="btn" style="margin-top:0.8rem;" onclick="adminLoadMuteList()">🔄 User laden</button>
+    <button class="btn" style="margin-top:0.8rem;" ontouchstart="" onclick="adminLoadMuteList()">🔄 User laden</button>
     <!-- mute time picker (hidden, shown inline) -->
     <div id="adminMutePicker" style="display:none;margin-top:1rem;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1rem;">
       <div style="font-size:0.82rem;font-weight:700;color:#ffaa00;margin-bottom:0.7rem;">🔇 stumm schalten: <span id="adminMuteTargetName" style="color:var(--accent);"></span></div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-bottom:0.6rem;">
-        <button class="btn" style="min-height:44px;" onclick="adminDoMute(5)">5 Min</button>
-        <button class="btn" style="min-height:44px;" onclick="adminDoMute(15)">15 Min</button>
-        <button class="btn" style="min-height:44px;" onclick="adminDoMute(30)">30 Min</button>
-        <button class="btn" style="min-height:44px;" onclick="adminDoMute(60)">1 Std</button>
-        <button class="btn" style="min-height:44px;" onclick="adminDoMute(360)">6 Std</button>
-        <button class="btn" style="min-height:44px;" onclick="adminDoMute(1440)">24 Std</button>
+        <button ontouchstart="" class="btn" style="min-height:44px;" onclick="adminDoMute(5)">5 Min</button>
+        <button ontouchstart="" class="btn" style="min-height:44px;" onclick="adminDoMute(15)">15 Min</button>
+        <button ontouchstart="" class="btn" style="min-height:44px;" onclick="adminDoMute(30)">30 Min</button>
+        <button ontouchstart="" class="btn" style="min-height:44px;" onclick="adminDoMute(60)">1 Std</button>
+        <button ontouchstart="" class="btn" style="min-height:44px;" onclick="adminDoMute(360)">6 Std</button>
+        <button ontouchstart="" class="btn" style="min-height:44px;" onclick="adminDoMute(1440)">24 Std</button>
       </div>
       <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;">
         <input id="adminMuteCustomMin" type="number" min="1" placeholder="eigene Minuten..." style="flex:1;padding:0.55rem 0.7rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:16px;outline:none;"/>
-        <button class="btn orange" style="min-height:44px;" onclick="adminDoMuteCustom()">✔ OK</button>
+        <button ontouchstart="" class="btn orange" style="min-height:44px;" onclick="adminDoMuteCustom()">✔ OK</button>
       </div>
-      <button class="btn" style="width:100%;min-height:44px;" onclick="document.getElementById('adminMutePicker').style.display='none'">✖ abbrechen</button>
+      <button class="btn" style="width:100%;min-height:44px;" ontouchstart="" onclick="document.getElementById('adminMutePicker').style.display='none'">✖ abbrechen</button>
     </div>
   </div>
 
@@ -926,8 +935,8 @@ footer span{color:var(--accent);}
     <p style="margin-bottom:0.8rem;">schick eine Nachricht an alle User die gerade online sind!!</p>
     <textarea id="adminAnnText" placeholder="Deine Ankündigung..." style="width:100%;padding:0.7rem;border-radius:10px;background:var(--bg);border:1.5px solid var(--border);color:var(--text);font-family:'Nunito';font-size:0.92rem;resize:vertical;min-height:80px;outline:none;box-sizing:border-box;" oninput="this.style.borderColor='var(--accent)'"></textarea>
     <div style="display:flex;gap:0.5rem;margin-top:0.6rem;flex-wrap:wrap;">
-      <button class="btn" onclick="adminSendAnnouncement()">📢 SENDEN</button>
-      <button class="btn red" onclick="adminDeleteAnnouncements()">🗑️ alle löschen</button>
+      <button class="btn" ontouchstart="" onclick="adminSendAnnouncement()">📢 SENDEN</button>
+      <button ontouchstart="" class="btn red" onclick="adminDeleteAnnouncements()">🗑️ alle löschen</button>
     </div>
     <div id="adminAnnMsg" style="font-size:0.78rem;color:var(--accent);margin-top:0.5rem;min-height:1rem;"></div>
   </div>
@@ -938,8 +947,8 @@ footer span{color:var(--accent);}
     <p style="margin-bottom:0.8rem;">einzelne Nachrichten löschen oder komplett clearen!!</p>
     <div id="adminChatMsgList"><div style="color:var(--text2);font-size:0.82rem;">⏳ noch nicht geladen</div></div>
     <div style="display:flex;gap:0.5rem;margin-top:0.8rem;flex-wrap:wrap;">
-      <button class="btn" onclick="adminLoadChatMsgs()">🔄 Nachrichten laden</button>
-      <button class="btn red" onclick="adminClearChat()">🗑️ alles löschen</button>
+      <button class="btn" ontouchstart="" onclick="adminLoadChatMsgs()">🔄 Nachrichten laden</button>
+      <button class="btn red" ontouchstart="" onclick="adminClearChat()">🗑️ alles löschen</button>
     </div>
     <div id="adminChatMgmtMsg" style="font-size:0.78rem;color:var(--accent);margin-top:0.5rem;min-height:1rem;"></div>
   </div>
@@ -948,8 +957,8 @@ footer span{color:var(--accent);}
   <div class="card">
     <div class="card-title">🗳️ VOTE MANAGEMENT</div>
     <div style="display:flex;gap:0.5rem;margin-bottom:0.8rem;flex-wrap:wrap;">
-      <button class="btn red" onclick="adminResetVotes()">🗑️ Votes resetten</button>
-      <button class="btn" onclick="adminLoadUsers()">👥 Accounts laden</button>
+      <button ontouchstart="" class="btn red" onclick="adminResetVotes()">🗑️ Votes resetten</button>
+      <button ontouchstart="" class="btn" onclick="adminLoadUsers()">👥 Accounts laden</button>
     </div>
     <div id="adminVoteGivenSection" style="display:none;background:var(--bg);border-radius:12px;padding:1rem;border:1px solid var(--border);">
       <div style="font-size:0.85rem;font-weight:700;color:var(--accent);margin-bottom:0.7rem;">🗳️ Votes manuell geben</div>
@@ -957,8 +966,8 @@ footer span{color:var(--accent);}
         <select id="adminVotePerson" style="padding:0.5rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.82rem;"></select>
         <input id="adminVoteAmount" type="number" min="1" max="99999" value="1" style="padding:0.5rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.82rem;">
         <div style="display:flex;gap:0.5rem;">
-          <button class="btn" onclick="adminGiveVotes(1)" style="flex:1;">✅ geben</button>
-          <button class="btn red" onclick="adminGiveVotes(-1)" style="flex:1;">➖ abnehmen</button>
+          <button ontouchstart="" class="btn" onclick="adminGiveVotes(1)" style="flex:1;">✅ geben</button>
+          <button ontouchstart="" class="btn red" onclick="adminGiveVotes(-1)" style="flex:1;">➖ abnehmen</button>
         </div>
       </div>
       <div id="adminVoteMsg" style="font-size:0.78rem;color:var(--accent);margin-top:0.5rem;min-height:1rem;"></div>
@@ -970,7 +979,7 @@ footer span{color:var(--accent);}
     <div class="card-title">🔑 ADMIN-RECHTE</div>
     <p style="margin-bottom:0.8rem;">gib anderen Usern Admin-Rechte oder entziehe sie!!</p>
     <div id="adminUsersCard2"><div style="color:var(--text2);font-size:0.82rem;">⏳ noch nicht geladen</div></div>
-    <button class="btn" style="margin-top:0.8rem;" onclick="adminLoadAdminRights()">🔄 User laden</button>
+    <button class="btn" style="margin-top:0.8rem;" ontouchstart="" onclick="adminLoadAdminRights()">🔄 User laden</button>
   </div>
 
   <!-- 📝 USERNAME ÄNDERN -->
@@ -978,11 +987,11 @@ footer span{color:var(--accent);}
     <div class="card-title">📝 USERNAME ÄNDERN</div>
     <p style="margin-bottom:0.8rem;">ändere den Usernamen eines Users!!</p>
     <div style="display:flex;flex-direction:column;gap:0.6rem;">
-      <button class="btn" onclick="adminLoadUsernameList()" style="align-self:flex-start;">👥 User laden</button>
+      <button class="btn" ontouchstart="" onclick="adminLoadUsernameList()" style="align-self:flex-start;">👥 User laden</button>
       <div id="adminUsernameWrap" style="display:none;">
         <select id="adminUsernameSelect" style="width:100%;padding:0.55rem 0.8rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.88rem;margin-bottom:0.6rem;"></select>
         <input id="adminUsernameNew" type="text" maxlength="20" placeholder="neuer Username..." style="width:100%;padding:0.5rem 0.8rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.88rem;outline:none;box-sizing:border-box;margin-bottom:0.6rem;"/>
-        <button class="btn orange" onclick="adminChangeUsername()">✏️ umbenennen</button>
+        <button class="btn orange" ontouchstart="" onclick="adminChangeUsername()">✏️ umbenennen</button>
         <div id="adminUsernameMsg" style="font-size:0.78rem;color:var(--accent);margin-top:0.5rem;min-height:1rem;"></div>
       </div>
     </div>
@@ -2243,7 +2252,7 @@ async function renderVotePage(){
     startCountdown();return;
   }
   hofSelected=[];
-  area.innerHTML=`<div style="font-size:0.82rem;color:var(--text2);margin-bottom:0.4rem;">wähl bis zu <b style="color:var(--accent)">8 personen</b> aus!! nur 1x möglich 🗳️</div><div style="font-size:0.78rem;color:var(--text2);margin-bottom:0.7rem;" id="votePageCounter">0 / 8 ausgewählt</div><div class="vote-grid" id="votePageGrid">${hofMembers.map(m=>`<button class="vote-btn" id="vpbtn-${m.name}" onclick="toggleVoteSelectPage('${m.name}',this)">${m.name}</button>`).join('')}</div><div style="text-align:center;margin-top:0.8rem;"><button class="btn" id="submitVotePageBtn" onclick="submitVotePage()" style="opacity:0.4;pointer-events:none;">✅ jetzt abstimmen</button></div>${voteCountdownBlock()}<div style="font-family:'Press Start 2P';font-size:0.5rem;color:var(--accent);margin:1.1rem 0 0.6rem;text-align:center;">🏆 LIVE LEADERBOARD</div><div id="liveLeaderboard"><div style="color:var(--text2);text-align:center;padding:1rem;">laden... ⏳</div></div>`;
+  area.innerHTML=`<div style="font-size:0.82rem;color:var(--text2);margin-bottom:0.4rem;">wähl bis zu <b style="color:var(--accent)">8 personen</b> aus!! nur 1x möglich 🗳️</div><div style="font-size:0.78rem;color:var(--text2);margin-bottom:0.7rem;" id="votePageCounter">0 / 8 ausgewählt</div><div class="vote-grid" id="votePageGrid">${hofMembers.map(m=>`<button class="vote-btn" id="vpbtn-${m.name}" onclick="toggleVoteSelectPage('${m.name}',this)">${m.name}</button>`).join('')}</div><div style="text-align:center;margin-top:0.8rem;"><button class="btn" id="submitVotePageBtn" onclick="submitVotePage()" style="opacity:0.4;pointer-events:none;">✅ jetzt abstimmen</button></div>${voteCountdownBlock()}<div style="font-family:'Press Start 2P';font-size:0.5rem;color:var(--accent);margin:1.1rem 0 0.6rem;text-align:center;">🏆 LIVE LEADERBOARD</div><div id="liveLeaderboard2"><div style="color:var(--text2);text-align:center;padding:1rem;">laden... ⏳</div></div>`;
   startCountdown();
 }
 
@@ -2426,7 +2435,7 @@ async function adminLoadBanList(){
     if(!entries.length){el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">keine user</div>';return;}
     el.innerHTML=entries.map(([uid,u])=>{
       const banned=u.banned===true;
-      return `<div class="admin-ban-row"><div><span style="font-weight:700;color:${banned?'#ff4444':'var(--text)'};">${u.username}${banned?' 🚫':''}</span></div><div style="display:flex;gap:0.4rem;">${!banned?`<button class="btn red" style="font-size:0.46rem;padding:0.45rem 0.7rem;" onclick="adminBanUser('${uid}','${u.username}')">🚫 bannen</button>`:`<button class="btn" style="font-size:0.46rem;padding:0.45rem 0.7rem;" onclick="adminUnbanUser('${uid}','${u.username}')">✅ entbannen</button>`}</div></div>`;
+      return `<div class="admin-ban-row"><div><span style="font-weight:700;color:${banned?'#ff4444':'var(--text)'};">${u.username}${banned?' 🚫':''}</span></div><div style="display:flex;gap:0.4rem;">${!banned?`<button ontouchstart="" class="btn red" style="font-size:0.46rem;padding:0.45rem 0.7rem;" onclick="adminBanUser('${uid}','${u.username}')">🚫 bannen</button>`:`<button ontouchstart="" class="btn" style="font-size:0.46rem;padding:0.45rem 0.7rem;" onclick="adminUnbanUser('${uid}','${u.username}')">✅ entbannen</button>`}</div></div>`;
     }).join('');
   }catch(e){el.innerHTML='<div style="color:#ff4444;font-size:0.82rem;">❌ '+e.message+'</div>';}
 }
@@ -2461,7 +2470,7 @@ async function adminLoadMuteList(){
     el.innerHTML=entries.map(([uid,u])=>{
       const muted=u.chatMutedUntil&&u.chatMutedUntil>now;
       const remain=muted?formatMuteRemain(u.chatMutedUntil-now):'';
-      return `<div class="admin-ban-row"><div><span style="font-weight:700;">${u.username}</span>${muted?`<span class="admin-mute-badge">🔇 ${remain}</span>`:''}</div><div style="display:flex;gap:0.4rem;"><button class="btn orange" style="font-size:0.46rem;padding:0.45rem 0.7rem;" onclick="adminOpenMutePicker('${uid}','${u.username}')">🔇 muten</button>${muted?`<button class="btn" style="font-size:0.46rem;padding:0.45rem 0.7rem;" onclick="adminUnmute('${uid}','${u.username}')">🔊 unmuten</button>`:''}</div></div>`;
+      return `<div class="admin-ban-row"><div><span style="font-weight:700;">${u.username}</span>${muted?`<span class="admin-mute-badge">🔇 ${remain}</span>`:''}</div><div style="display:flex;gap:0.4rem;"><button ontouchstart="" class="btn orange" style="font-size:0.46rem;padding:0.45rem 0.7rem;" onclick="adminOpenMutePicker('${uid}','${u.username}')">🔇 muten</button>${muted?`<button ontouchstart="" class="btn" style="font-size:0.46rem;padding:0.45rem 0.7rem;" onclick="adminUnmute('${uid}','${u.username}')">🔊 unmuten</button>`:''}</div></div>`;
     }).join('');
   }catch(e){el.innerHTML='<div style="color:#ff4444;font-size:0.82rem;">❌ '+e.message+'</div>';}
 }
@@ -2518,7 +2527,7 @@ async function adminLoadChatMsgs(){
     const msgs=snap.val()||{};
     const entries=Object.entries(msgs).sort((a,b)=>b[1].ts-a[1].ts);
     if(!entries.length){el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">keine nachrichten</div>';return;}
-    el.innerHTML=entries.map(([key,m])=>`<div class="admin-chat-row"><div style="flex:1;min-width:0;"><span style="color:var(--accent);font-weight:700;">${m.name}:</span> <span style="color:var(--text2);">${escapeHtml(m.text)}</span></div><button style="border:none;background:none;color:#ff4444;cursor:pointer;font-size:1rem;flex-shrink:0;" onclick="adminDeleteMsg('${key}')">🗑️</button></div>`).join('');
+    el.innerHTML=entries.map(([key,m])=>`<div class="admin-chat-row"><div style="flex:1;min-width:0;"><span style="color:var(--accent);font-weight:700;">${m.name}:</span> <span style="color:var(--text2);">${escapeHtml(m.text)}</span></div><button ontouchstart="" style="border:none;background:none;color:#ff4444;cursor:pointer;font-size:1rem;flex-shrink:0;" onclick="adminDeleteMsg('${key}')">🗑️</button></div>`).join('');
   }catch(e){el.innerHTML='<div style="color:#ff4444;font-size:0.82rem;">❌ '+e.message+'</div>';}
 }
 async function adminDeleteMsg(key){
@@ -2547,7 +2556,7 @@ async function adminLoadAdminRights(){
     if(!entries.length){el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">keine user</div>';return;}
     el.innerHTML=entries.map(([uid,u])=>{
       const isAdm=u.admin===true;
-      return `<div class="admin-ban-row"><div><span style="font-weight:700;">${u.username}</span>${isAdm?' <span style="font-size:0.7rem;color:var(--accent);">👑</span>':''}</div><button onclick="adminToggle('${uid}',${isAdm})" style="padding:0.45rem 0.7rem;border-radius:6px;border:1px solid ${isAdm?'#ff4444':'var(--accent)'};background:transparent;color:${isAdm?'#ff4444':'var(--accent)'};font-size:0.65rem;cursor:pointer;">${isAdm?'❌ entziehen':'👑 geben'}</button></div>`;
+      return `<div class="admin-ban-row"><div><span style="font-weight:700;">${u.username}</span>${isAdm?' <span style="font-size:0.7rem;color:var(--accent);">👑</span>':''}</div><button ontouchstart="" onclick="adminToggle('${uid}',${isAdm})" style="padding:0.45rem 0.7rem;border-radius:6px;border:1px solid ${isAdm?'#ff4444':'var(--accent)'};background:transparent;color:${isAdm?'#ff4444':'var(--accent)'};font-size:0.65rem;cursor:pointer;">${isAdm?'❌ entziehen':'👑 geben'}</button></div>`;
     }).join('');
   }catch(e){el.innerHTML='<div style="color:#ff4444;font-size:0.82rem;">❌ '+e.message+'</div>';}
 }
