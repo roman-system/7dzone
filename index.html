@@ -746,13 +746,32 @@ footer span{color:var(--accent);}
 <!-- SETTINGS PAGE -->
 <div class="page" id="page-settings">
 <div class="wrap">
+
+  <!-- PROFIL BILD -->
+  <div class="card" style="text-align:center;">
+    <div class="card-title">🖼️ PROFILBILD</div>
+    <div style="position:relative;display:inline-block;margin:0.8rem 0 1rem;">
+      <div id="settingsAvatarWrap" style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid var(--accent);box-shadow:0 0 16px var(--glow);margin:0 auto;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:3rem;">
+        <span id="settingsAvatarEmoji">🐱</span>
+        <img id="settingsAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;" />
+      </div>
+      <button onclick="document.getElementById('avatarFileInput').click()" style="position:absolute;bottom:0;right:0;width:26px;height:26px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);">✏️</button>
+    </div>
+    <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)" />
+    <p style="font-size:0.75rem;color:var(--text2);margin-bottom:0.8rem;">tippe auf ✏️ um ein foto aus deiner galerie zu wählen!!</p>
+    <div id="avatarUploadMsg" style="font-size:0.78rem;color:var(--accent);min-height:1rem;"></div>
+    <button class="btn red" id="avatarRemoveBtn" style="display:none;margin-top:0.5rem;font-size:0.42rem;" onclick="removeAvatar()">🗑️ bild entfernen</button>
+  </div>
+
+  <!-- ACCOUNT -->
   <div class="card">
-    <div class="card-title">⚙️ EINSTELLUNGEN</div>
+    <div class="card-title">⚙️ ACCOUNT</div>
     <p>eingeloggt als: <b style="color:var(--accent);" id="settingsUsername"></b></p>
     <div class="btn-row" style="margin-top:1.2rem;">
       <button class="btn red" onclick="authLogout()">🚪 logout</button>
     </div>
   </div>
+
 </div>
 </div>
 
@@ -1042,7 +1061,12 @@ footer span{color:var(--accent);}
 <div class="page" id="page-profile">
 <div class="wrap">
   <div class="card" style="text-align:center;">
-    <div style="font-size:4rem;margin-bottom:0.5rem;" id="profileEmoji">🐱</div>
+    <div style="position:relative;display:inline-block;margin-bottom:0.5rem;">
+      <div style="width:80px;height:80px;border-radius:50%;overflow:hidden;border:3px solid var(--accent);box-shadow:0 0 16px var(--glow);margin:0 auto;background:var(--bg);display:flex;align-items:center;justify-content:center;" id="profileAvatarWrap">
+        <span id="profileEmoji" style="font-size:3rem;">🐱</span>
+        <img id="profileAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;" />
+      </div>
+    </div>
     <div style="font-family:'Press Start 2P';font-size:0.75rem;color:var(--accent);margin-bottom:0.2rem;" id="profileName">-</div>
     <div style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;" id="profileTitle">Neuling</div>
     <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:0.8rem;">
@@ -1202,6 +1226,11 @@ fbAuth.onAuthStateChanged(async user=>{
     await loadChallenges();
     startChallengeTimer();
     initWordle();
+    // load avatar
+    const avSnap=await fbDb.ref('users/'+user.uid+'/avatarUrl').once('value');
+    const avUrl=avSnap.val()||null;
+    currentUser.avatarUrl=avUrl;
+    applyAvatar(avUrl);
   } else {
     currentUser=null;hofVoted=null;
     document.getElementById('authOverlay').style.display='flex';
@@ -2545,7 +2574,7 @@ async function loadXpLeaderboard(){
 
 window.authLogout=authLogout;window.authSubmit=authSubmit;window.adminResetVotes=adminResetVotes;window.adminToggle=adminToggle;window.adminGiveVotes=adminGiveVotes;window.adminLoadUsers=adminLoadUsers;window.adminLoadXpUsers=adminLoadXpUsers;window.adminGiveXP=adminGiveXP;window.adminResetAllXP=adminResetAllXP;window.adminLoadBanList=adminLoadBanList;window.adminBanUser=adminBanUser;window.adminUnbanUser=adminUnbanUser;window.adminLoadMuteList=adminLoadMuteList;window.adminOpenMutePicker=adminOpenMutePicker;window.adminDoMute=adminDoMute;window.adminDoMuteCustom=adminDoMuteCustom;window.adminUnmute=adminUnmute;window.adminSendAnnouncement=adminSendAnnouncement;window.adminDeleteAnnouncements=adminDeleteAnnouncements;window.adminLoadChatMsgs=adminLoadChatMsgs;window.adminDeleteMsg=adminDeleteMsg;window.adminClearChat=adminClearChat;window.adminLoadAdminRights=adminLoadAdminRights;window.adminLoadStats=adminLoadStats;window.adminLoadLeaderboard=adminLoadLeaderboard;window.adminLoadUsernameList=adminLoadUsernameList;window.adminChangeUsername=adminChangeUsername;window.authSwitch=authSwitch;window.closeHoF=closeHoF;window.closeSurprise=closeSurprise;window.goPage=goPage;window.goPageByName=goPageByName;window.hofTab=hofTab;window.newJoke=newJoke;window.rateJoke=rateJoke;window.resetGame=resetGame;window.resetSnake=resetSnake;
 window.dpadDir=function(x,y){if(!snakeRunning)return;if(x===0&&y===0)return;const nd={x,y};if(nd.x===-snakeDir.x&&nd.y===-snakeDir.y)return;snakeDirQueue.push(nd);};
-window.resetStats=resetStats;window.setJokeCat=setJokeCat;window.setMemLevel=setMemLevel;window.setQuizLen=setQuizLen;window.setTheme=setTheme;window.setVol=setVol;window.showGame=showGame;window.showPunch=showPunch;window.startGame=startGame;window.startMemory=startMemory;window.startQuiz=startQuiz;window.answerQuiz=answerQuiz;window.setQuizCat=setQuizCat;window.startSnake=startSnake;window.toggleMusic=toggleMusic;window.toggleVoteSelectPage=toggleVoteSelectPage;window.submitVotePage=submitVotePage;window.resetMyVote=resetMyVote;window.openSurprise=openSurprise;window.openHoF=openHoF;window.renderVotePage=renderVotePage;window.updateLeaderboard=updateLeaderboard;window.showEgg=showEgg;window.loadXpLeaderboard=loadXpLeaderboard;
+window.resetStats=resetStats;window.setJokeCat=setJokeCat;window.setMemLevel=setMemLevel;window.setQuizLen=setQuizLen;window.setTheme=setTheme;window.setVol=setVol;window.showGame=showGame;window.showPunch=showPunch;window.startGame=startGame;window.startMemory=startMemory;window.startQuiz=startQuiz;window.answerQuiz=answerQuiz;window.setQuizCat=setQuizCat;window.startSnake=startSnake;window.toggleMusic=toggleMusic;window.toggleVoteSelectPage=toggleVoteSelectPage;window.submitVotePage=submitVotePage;window.resetMyVote=resetMyVote;window.openSurprise=openSurprise;window.openHoF=openHoF;window.renderVotePage=renderVotePage;window.updateLeaderboard=updateLeaderboard;window.showEgg=showEgg;window.loadXpLeaderboard=loadXpLeaderboard;window.handleAvatarUpload=handleAvatarUpload;window.removeAvatar=removeAvatar;
 // ============================================================
 // XP & LEVEL SYSTEM
 // ============================================================
@@ -2583,6 +2612,62 @@ async function loadUserXP(){
   }catch(e){}
 }
 
+function applyAvatar(url){
+  // settings page
+  const sImg=document.getElementById('settingsAvatarImg');
+  const sEmoji=document.getElementById('settingsAvatarEmoji');
+  const removeBtn=document.getElementById('avatarRemoveBtn');
+  // profile page
+  const pImg=document.getElementById('profileAvatarImg');
+  const pEmoji=document.getElementById('profileEmoji');
+  if(url){
+    if(sImg){sImg.src=url;sImg.style.display='block';}
+    if(sEmoji)sEmoji.style.display='none';
+    if(removeBtn)removeBtn.style.display='';
+    if(pImg){pImg.src=url;pImg.style.display='block';}
+    if(pEmoji)pEmoji.style.display='none';
+  }else{
+    if(sImg){sImg.src='';sImg.style.display='none';}
+    if(sEmoji)sEmoji.style.display='';
+    if(removeBtn)removeBtn.style.display='none';
+    if(pImg){pImg.src='';pImg.style.display='none';}
+    if(pEmoji)pEmoji.style.display='';
+  }
+}
+
+async function handleAvatarUpload(event){
+  const file=event.target.files[0];
+  const msg=document.getElementById('avatarUploadMsg');
+  if(!file){return;}
+  if(file.size>2*1024*1024){msg.textContent='❌ max 2MB!!';return;}
+  msg.textContent='⏳ wird hochgeladen...';
+  try{
+    const reader=new FileReader();
+    reader.onload=async e=>{
+      const base64=e.target.result;
+      // store as base64 in Firebase (works for small-medium images)
+      await fbDb.ref('users/'+currentUser.uid+'/avatarUrl').set(base64);
+      currentUser.avatarUrl=base64;
+      applyAvatar(base64);
+      msg.textContent='✅ profilbild gesetzt!!';
+      setTimeout(()=>msg.textContent='',3000);
+      showEgg('🖼️ Profilbild geändert!!');
+    };
+    reader.readAsDataURL(file);
+  }catch(e){msg.textContent='❌ fehler: '+e.message;}
+  event.target.value='';
+}
+
+async function removeAvatar(){
+  if(!currentUser)return;
+  if(!confirm('Profilbild entfernen?'))return;
+  await fbDb.ref('users/'+currentUser.uid+'/avatarUrl').remove();
+  currentUser.avatarUrl=null;
+  applyAvatar(null);
+  const msg=document.getElementById('avatarUploadMsg');
+  msg.textContent='✅ bild entfernt!!';setTimeout(()=>msg.textContent='',2000);
+}
+
 function updateXPDisplay(){
   const inLevel=getCurrentXpInLevel(totalXP);
   const needed=getXpNeededForNextLevel(totalXP);
@@ -2599,6 +2684,9 @@ function updateXPDisplay(){
   document.getElementById('profileEmoji').textContent=LEVEL_EMOJIS[Math.min(userLevel-1,LEVEL_EMOJIS.length-1)];
   document.getElementById('profileTitle').textContent=LEVEL_TITLES[Math.min(userLevel-1,LEVEL_TITLES.length-1)];
   if(document.getElementById('profileName'))document.getElementById('profileName').textContent=currentUser?.username||'';
+  // update emoji in settings and profile if no photo set
+  const sEmoji=document.getElementById('settingsAvatarEmoji');
+  if(sEmoji&&!currentUser?.avatarUrl) sEmoji.textContent=LEVEL_EMOJIS[Math.min(userLevel-1,LEVEL_EMOJIS.length-1)];
   renderBadges();
 }
 
@@ -2900,7 +2988,10 @@ function renderChat(msgs){
     const isOwn=m.uid===currentUser?.uid;
     const d=new Date(m.ts);const time=d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
     const div=document.createElement('div');div.className='chat-msg'+(isOwn?' own':'');
-    div.innerHTML=`<div class="chat-avatar">${getChatEmoji(m.name)}</div>
+    const avatarHtml=m.avatarUrl
+      ?`<div class="chat-avatar" style="overflow:hidden;border-radius:50%;width:28px;height:28px;flex-shrink:0;"><img src="${m.avatarUrl}" style="width:100%;height:100%;object-fit:cover;" /></div>`
+      :`<div class="chat-avatar">${getChatEmoji(m.name)}</div>`;
+    div.innerHTML=`${avatarHtml}
       <div class="chat-bubble">
         <div class="chat-name">${m.name}</div>
         <div class="chat-text">${escapeHtml(m.text)}</div>
@@ -2920,7 +3011,9 @@ async function sendChat(){
   if(!text||text.length>200)return;
   input.value='';
   const key=fbDb.ref('chat7d').push().key;
-  await fbDb.ref('chat7d/'+key).set({uid:currentUser.uid,name:currentUser.username,text,ts:Date.now()});
+  const msgData={uid:currentUser.uid,name:currentUser.username,text,ts:Date.now()};
+  if(currentUser.avatarUrl) msgData.avatarUrl=currentUser.avatarUrl;
+  await fbDb.ref('chat7d/'+key).set(msgData);
   updateChallengeProgress('chatMsg',1);
   // keep only last 100
   chatCount++;
