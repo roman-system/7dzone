@@ -175,6 +175,13 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
 .lofi-chip:hover{border-color:var(--accent);color:var(--accent);}
 .lofi-chip.on{border-color:var(--accent);color:var(--accent);background:rgba(255,255,255,0.05);box-shadow:0 0 8px var(--glow);}
 
+/* TIC TAC TOE */
+.ttt-cell{aspect-ratio:1;border-radius:14px;border:2px solid var(--border);background:var(--bg);font-size:2.4rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s cubic-bezier(0.34,1.5,0.64,1);user-select:none;}
+.ttt-cell:hover:not(.taken){border-color:var(--accent);background:rgba(255,255,255,0.04);transform:scale(1.06);}
+.ttt-cell.taken{cursor:default;}
+.ttt-cell.win{border-color:var(--accent);background:rgba(255,255,255,0.07);box-shadow:0 0 16px var(--glow);animation:tttWin 0.4s ease;}
+@keyframes tttWin{0%{transform:scale(1);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
+
 @media(max-width:600px){
   #musicBar{bottom:4.8rem;right:0.6rem;max-width:200px;}
   #musicTrackName{max-width:70px;}
@@ -917,6 +924,8 @@ footer span{color:var(--accent);}
     <button class="btn" id="gbtn-memory" onclick="showGame('memory')">🧠 Memory</button>
     <button class="btn" id="gbtn-flappy" onclick="showGame('flappy')">🐦 Flappy Bird</button>
     <button class="btn" id="gbtn-tetris" onclick="showGame('tetris')">🟦 Tetris</button>
+    <button class="btn" id="gbtn-dino" onclick="showGame('dino')">🦕 Dino Run</button>
+    <button class="btn" id="gbtn-ttt" onclick="showGame('ttt')">❌ Tic Tac Toe</button>
   </div>
 
   <div id="game-catch" style="display:none;">
@@ -1051,6 +1060,49 @@ footer span{color:var(--accent);}
       <button class="btn red" ontouchstart="" onclick="resetTetris()">✕ RESET</button>
     </div>
     <div id="tetrisMsg" style="text-align:center;font-family:'Press Start 2P';font-size:0.5rem;color:var(--text2);margin-top:0.4rem;">drück start!!</div>
+  </div>
+  </div>
+
+  <!-- DINO RUN -->
+  <div id="game-dino" style="display:none;">
+  <div class="card">
+    <div class="card-title">🦕 DINO RUN!!</div>
+    <p>leertaste / tippen zum springen!! doppelsprung möglich!! 🌵</p>
+    <div class="game-hud">
+      <div class="hud-box">SCORE: <span id="dinoScore">0</span></div>
+      <div class="hud-box">BEST: <span id="dinoBest">0</span></div>
+      <div class="hud-box">SPEED: <span id="dinoSpeed">1</span>x</div>
+    </div>
+    <canvas id="dinoCanvas" width="600" height="160" style="width:100%;border-radius:10px;border:2px solid var(--border);background:var(--bg);display:block;touch-action:none;cursor:pointer;"></canvas>
+    <div class="btn-row" style="margin-top:0.6rem;">
+      <button class="btn" ontouchstart="" onclick="startDino()">▶ START</button>
+      <button class="btn red" ontouchstart="" onclick="resetDino()">✕ RESET</button>
+    </div>
+    <div id="dinoMsg" style="text-align:center;font-family:'Press Start 2P';font-size:0.6rem;color:var(--accent);min-height:1.3rem;margin-top:0.5rem;">leertaste oder tippen zum starten!!</div>
+  </div>
+  </div>
+
+  <!-- TIC TAC TOE vs KI -->
+  <div id="game-ttt" style="display:none;">
+  <div class="card">
+    <div class="card-title">❌ TIC TAC TOE vs KI</div>
+    <p>du bist ❌ — die KI ist ⭕ — wer zuerst 3 in einer Reihe gewinnt!!</p>
+    <div class="game-hud">
+      <div class="hud-box">DU: <span id="tttWins">0</span></div>
+      <div class="hud-box">KI: <span id="tttLosses">0</span></div>
+      <div class="hud-box">DRAW: <span id="tttDraws">0</span></div>
+    </div>
+    <div style="display:flex;gap:0.5rem;margin-bottom:0.8rem;flex-wrap:wrap;align-items:center;">
+      <span style="font-family:'Press Start 2P';font-size:0.44rem;color:var(--text2);">KI-STÄRKE:</span>
+      <button class="btn" id="ttt-easy" onclick="tttSetDiff('easy',this)">😊 Easy</button>
+      <button class="btn on" id="ttt-medium" onclick="tttSetDiff('medium',this)">😐 Medium</button>
+      <button class="btn" id="ttt-hard" onclick="tttSetDiff('hard',this)">😈 Unschlagbar</button>
+    </div>
+    <div id="tttBoard" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;max-width:280px;margin:0 auto 1rem;"></div>
+    <div id="tttMsg" style="text-align:center;font-family:'Press Start 2P';font-size:0.6rem;color:var(--accent);min-height:1.3rem;margin-bottom:0.8rem;"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="tttReset()">🔄 NEUES SPIEL</button>
+    </div>
   </div>
   </div>
 
@@ -2555,7 +2607,7 @@ window.stopSoundcloud=stopSoundcloud;
 window.toggleScMini=toggleScMini;
 
 function showGame(name){
-  ['catch','snake','memory','flappy','tetris'].forEach(g=>{
+  ['catch','snake','memory','flappy','tetris','dino','ttt'].forEach(g=>{
     const el=document.getElementById('game-'+g);
     if(el) el.style.display=g===name?'block':'none';
   });
@@ -2563,6 +2615,8 @@ function showGame(name){
   const gb=document.getElementById('gbtn-'+name);if(gb) gb.classList.add('on');
   if(name==='flappy') setTimeout(resetFlappy,50);
   if(name==='tetris') setTimeout(resetTetris,50);
+  if(name==='dino') setTimeout(resetDino,50);
+  if(name==='ttt') setTimeout(tttReset,50);
 }
 document.getElementById('gbtn-snake').classList.add('on');
 
@@ -4979,6 +5033,384 @@ window.tetrisMove=tetrisMove;
 window.loadAchievements=loadAchievements;
 window.pinnwandFileChanged=pinnwandFileChanged;
 window.showGame=showGame;
+
+// ============================================================
+// 🦕 DINO RUN
+// ============================================================
+let dinoState=null, dinoRAF=null, dinoRunning=false;
+const DINO_H=160, DINO_W=600;
+
+function resetDino(){
+  dinoRunning=false;
+  if(dinoRAF) cancelAnimationFrame(dinoRAF);
+  dinoRAF=null;
+  dinoState=null;
+  const canvas=document.getElementById('dinoCanvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  drawDinoIdle(ctx, canvas.width, canvas.height);
+  document.getElementById('dinoScore').textContent='0';
+  document.getElementById('dinoSpeed').textContent='1';
+  document.getElementById('dinoMsg').textContent='leertaste oder tippen zum starten!!';
+}
+
+function drawDinoIdle(ctx, W, H){
+  ctx.clearRect(0,0,W,H);
+  const scale=W/DINO_W;
+  const ground=H-30*scale;
+  // ground line
+  ctx.strokeStyle='var(--accent)'; ctx.lineWidth=2*scale;
+  ctx.beginPath(); ctx.moveTo(0,ground); ctx.lineTo(W,ground); ctx.stroke();
+  // dino
+  const dx=80*scale, dy=ground-40*scale, dw=40*scale, dh=40*scale;
+  ctx.fillStyle='var(--accent)';
+  drawDinoShape(ctx, dx, dy, dw, dh, scale);
+  // title
+  ctx.fillStyle='var(--text2)';
+  ctx.font=`bold ${14*scale}px 'Press Start 2P', monospace`;
+  ctx.textAlign='center';
+  ctx.fillText('DRÜCKE START', W/2, H/2);
+}
+
+function drawDinoShape(ctx, x, y, w, h, scale){
+  // body
+  ctx.fillRect(x, y+h*0.3, w*0.7, h*0.7);
+  // neck+head
+  ctx.fillRect(x+w*0.4, y, w*0.55, h*0.45);
+  // eye
+  ctx.fillStyle='var(--bg)';
+  ctx.fillRect(x+w*0.78, y+h*0.07, w*0.1, w*0.1);
+  ctx.fillStyle='var(--accent)';
+  // tail
+  ctx.fillRect(x-w*0.2, y+h*0.5, w*0.25, h*0.2);
+}
+
+function startDino(){
+  const canvas=document.getElementById('dinoCanvas');
+  if(!canvas) return;
+  if(dinoRunning) return;
+  const W=canvas.width, H=canvas.height;
+  const scale=W/DINO_W;
+  const ground=H-30*scale;
+
+  dinoState={
+    score:0, speed:5*scale, spawnTimer:0, spawnInterval:90,
+    ground, scale, W, H,
+    dino:{x:80*scale, y:ground-40*scale, w:40*scale, h:40*scale, vy:0, jumps:0, maxJumps:2, dead:false},
+    obstacles:[], clouds:[{x:W*0.6,y:H*0.25,w:60*scale},{x:W*0.85,y:H*0.15,w:45*scale}],
+    frame:0, best:parseInt(document.getElementById('dinoBest').textContent)||0
+  };
+  dinoRunning=true;
+  document.getElementById('dinoMsg').textContent='';
+
+  // input
+  canvas._dinoJump=()=>dinojump();
+  canvas.ontouchstart=e=>{e.preventDefault();dinojump();};
+  canvas.onclick=()=>dinojump();
+  document._dinoKey=e=>{if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();dinojump();}};
+  document.addEventListener('keydown', document._dinoKey);
+
+  dinoLoop();
+}
+
+function dinojump(){
+  if(!dinoState||dinoState.dino.dead) return;
+  const d=dinoState.dino;
+  if(d.jumps < d.maxJumps){
+    d.vy=-12*dinoState.scale;
+    d.jumps++;
+  }
+}
+
+function dinoLoop(){
+  const canvas=document.getElementById('dinoCanvas');
+  if(!canvas||!dinoRunning){return;}
+  const ctx=canvas.getContext('2d');
+  const s=dinoState;
+  const {W,H,ground,scale,dino}=s;
+  const gravity=0.55*scale;
+
+  // physics
+  dino.vy+=gravity;
+  dino.y+=dino.vy;
+  if(dino.y>=ground-dino.h){dino.y=ground-dino.h;dino.vy=0;dino.jumps=0;}
+
+  // speed up over time
+  s.score++;
+  s.speed=Math.min((5+s.score/400)*scale, 18*scale);
+
+  // clouds
+  s.clouds.forEach(c=>{c.x-=s.speed*0.3;if(c.x+c.w<0) c.x=W+c.w;});
+
+  // spawn obstacles
+  s.spawnTimer++;
+  s.spawnInterval=Math.max(40, 90-s.score/80);
+  if(s.spawnTimer>=s.spawnInterval){
+    s.spawnTimer=0;
+    const types=['cactus','cactus','cactus','bird'];
+    const t=types[Math.floor(Math.random()*types.length)];
+    const h=(20+Math.random()*25)*scale;
+    const w=(16+Math.random()*12)*scale;
+    const y=t==='bird' ? ground - h - (30+Math.random()*40)*scale : ground - h;
+    s.obstacles.push({t, x:W+w, y, w, h});
+  }
+  s.obstacles.forEach(o=>{o.x-=s.speed;});
+  s.obstacles=s.obstacles.filter(o=>o.x+o.w>0);
+
+  // collision
+  const hitbox=0.72;
+  for(const o of s.obstacles){
+    const ox=o.x+o.w*(1-hitbox)/2, ow=o.w*hitbox;
+    const dx2=dino.x+dino.w*(1-hitbox)/2, dw2=dino.w*hitbox;
+    if(dx2<ox+ow && dx2+dw2>ox && dino.y<o.y+o.h && dino.y+dino.h>o.y){
+      dino.dead=true; break;
+    }
+  }
+
+  // draw
+  ctx.clearRect(0,0,W,H);
+
+  // sky gradient (theme-aware, just use bg color)
+  ctx.fillStyle='var(--bg)';
+  ctx.fillRect(0,0,W,H);
+
+  // clouds
+  ctx.fillStyle='var(--border)';
+  s.clouds.forEach(c=>{
+    ctx.beginPath();
+    ctx.ellipse(c.x,c.y,c.w*0.5,c.w*0.2,0,0,Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(c.x-c.w*0.25,c.y+c.w*0.05,c.w*0.28,c.w*0.15,0,0,Math.PI*2);
+    ctx.fill();
+  });
+
+  // ground
+  ctx.strokeStyle='var(--accent)'; ctx.lineWidth=2*scale;
+  ctx.beginPath(); ctx.moveTo(0,ground); ctx.lineTo(W,ground); ctx.stroke();
+  // ground detail dots
+  ctx.fillStyle='var(--border)';
+  for(let i=0;i<W;i+=18*scale){ctx.fillRect(i+((s.frame*s.speed)%(18*scale)),ground+3*scale,4*scale,2*scale);}
+
+  // obstacles
+  ctx.fillStyle='var(--accent2)';
+  s.obstacles.forEach(o=>{
+    if(o.t==='bird'){
+      // bird shape
+      ctx.fillStyle='var(--accent2)';
+      ctx.fillRect(o.x, o.y+o.h*0.3, o.w, o.h*0.4);
+      const wing=s.frame%20<10;
+      ctx.fillRect(o.x+o.w*0.2, o.y+(wing?0:o.h*0.15), o.w*0.6, o.h*0.35);
+      ctx.fillStyle='var(--bg)';
+      ctx.fillRect(o.x+o.w*0.75, o.y+o.h*0.35, o.w*0.1, o.h*0.1);
+    } else {
+      // cactus
+      ctx.fillStyle='var(--accent)';
+      ctx.fillRect(o.x+o.w*0.35, o.y, o.w*0.3, o.h);
+      ctx.fillRect(o.x, o.y+o.h*0.3, o.w*0.35, o.h*0.25);
+      ctx.fillRect(o.x+o.w*0.65, o.y+o.h*0.45, o.w*0.35, o.h*0.2);
+      ctx.fillRect(o.x, o.y+o.h*0.2, o.w*0.15, o.h*0.12);
+      ctx.fillRect(o.x+o.w*0.85, o.y+o.h*0.38, o.w*0.15, o.h*0.1);
+    }
+  });
+
+  // dino
+  ctx.fillStyle=dino.dead?'#ff4444':'var(--accent)';
+  drawDinoShape(ctx, dino.x, dino.y, dino.w, dino.h, scale);
+  // legs animation
+  if(!dino.dead && dino.jumps===0){
+    const leg=s.frame%16<8;
+    ctx.fillRect(dino.x+dino.w*0.15, dino.y+dino.h, dino.w*0.2, dino.h*0.22*(leg?1:0.5));
+    ctx.fillRect(dino.x+dino.w*0.4, dino.y+dino.h, dino.w*0.2, dino.h*0.22*(leg?0.5:1));
+  } else {
+    ctx.fillRect(dino.x+dino.w*0.15, dino.y+dino.h, dino.w*0.2, dino.h*0.2);
+    ctx.fillRect(dino.x+dino.w*0.4, dino.y+dino.h, dino.w*0.2, dino.h*0.2);
+  }
+
+  // score
+  ctx.fillStyle='var(--text2)';
+  ctx.font=`bold ${11*scale}px 'Press Start 2P',monospace`;
+  ctx.textAlign='right';
+  ctx.fillText(Math.floor(s.score/5).toString().padStart(5,'0'), W-10*scale, 20*scale);
+
+  document.getElementById('dinoScore').textContent=Math.floor(s.score/5);
+  document.getElementById('dinoSpeed').textContent=(s.speed/(5*scale)).toFixed(1)+'x';
+
+  s.frame++;
+
+  if(dino.dead){
+    dinoRunning=false;
+    document.removeEventListener('keydown', document._dinoKey);
+    const finalScore=Math.floor(s.score/5);
+    if(finalScore>s.best){
+      s.best=finalScore;
+      document.getElementById('dinoBest').textContent=finalScore;
+    }
+    // death screen
+    ctx.fillStyle='rgba(0,0,0,0.5)';
+    ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='var(--accent)';
+    ctx.font=`bold ${13*scale}px 'Press Start 2P',monospace`;
+    ctx.textAlign='center';
+    ctx.fillText('GAME OVER!!', W/2, H/2-10*scale);
+    ctx.fillStyle='var(--text2)';
+    ctx.font=`${9*scale}px 'Press Start 2P',monospace`;
+    ctx.fillText('SCORE: '+finalScore, W/2, H/2+10*scale);
+    document.getElementById('dinoMsg').textContent='game over!! drück start für nochmal!!';
+    if(typeof giveXP==='function') giveXP(Math.min(finalScore,100),'Dino Run');
+    return;
+  }
+
+  dinoRAF=requestAnimationFrame(dinoLoop);
+}
+
+window.startDino=startDino;
+window.resetDino=resetDino;
+
+// ============================================================
+// ❌ TIC TAC TOE vs KI
+// ============================================================
+let tttBoard=Array(9).fill(null), tttDiff='medium', tttTurn='X';
+let tttWins=0, tttLosses=0, tttDraws=0;
+
+function tttSetDiff(d, btn){
+  tttDiff=d;
+  document.querySelectorAll('[id^="ttt-"]').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  tttReset();
+}
+
+function tttReset(){
+  tttBoard=Array(9).fill(null);
+  tttTurn='X';
+  document.getElementById('tttMsg').textContent='du bist dran!! ❌';
+  renderTTT();
+}
+
+function renderTTT(winCells=[]){
+  const el=document.getElementById('tttBoard');
+  if(!el) return;
+  el.innerHTML=tttBoard.map((v,i)=>`
+    <div class="ttt-cell ${v?'taken':''} ${winCells.includes(i)?'win':''}"
+      onclick="tttClick(${i})"
+      style="font-size:${v?'2.2':'1.2'}rem;">
+      ${v==='X'?'❌':v==='O'?'⭕':''}
+    </div>`).join('');
+}
+
+function tttClick(i){
+  if(tttBoard[i]||tttTurn!=='X') return;
+  tttBoard[i]='X';
+  const win=tttCheck('X');
+  if(win){
+    renderTTT(win);
+    tttWins++;
+    document.getElementById('tttWins').textContent=tttWins;
+    document.getElementById('tttMsg').textContent='🎉 du hast gewonnen!!';
+    if(typeof giveXP==='function') giveXP(15,'Tic Tac Toe Sieg');
+    return;
+  }
+  if(tttBoard.every(c=>c)){
+    renderTTT(); tttDraws++;
+    document.getElementById('tttDraws').textContent=tttDraws;
+    document.getElementById('tttMsg').textContent='🤝 unentschieden!!';
+    return;
+  }
+  tttTurn='O';
+  renderTTT();
+  document.getElementById('tttMsg').textContent='KI denkt nach... ⭕';
+  setTimeout(()=>{
+    tttAI();
+    const win2=tttCheck('O');
+    if(win2){
+      renderTTT(win2);
+      tttLosses++;
+      document.getElementById('tttLosses').textContent=tttLosses;
+      document.getElementById('tttMsg').textContent='😈 KI hat gewonnen!!';
+      return;
+    }
+    if(tttBoard.every(c=>c)){
+      renderTTT(); tttDraws++;
+      document.getElementById('tttDraws').textContent=tttDraws;
+      document.getElementById('tttMsg').textContent='🤝 unentschieden!!';
+      return;
+    }
+    tttTurn='X';
+    renderTTT();
+    document.getElementById('tttMsg').textContent='du bist dran!! ❌';
+  }, 400);
+}
+
+function tttAI(){
+  const empty=tttBoard.map((v,i)=>v?null:i).filter(i=>i!==null);
+  if(empty.length===0) return;
+
+  if(tttDiff==='easy'){
+    // Random
+    tttBoard[empty[Math.floor(Math.random()*empty.length)]]='O';
+    return;
+  }
+  if(tttDiff==='medium'){
+    // Win if possible, block if possible, else random
+    const win=tttFindWin('O');
+    if(win!==null){tttBoard[win]='O';return;}
+    const block=tttFindWin('X');
+    if(block!==null){tttBoard[block]='O';return;}
+    tttBoard[empty[Math.floor(Math.random()*empty.length)]]='O';
+    return;
+  }
+  // HARD — minimax (unschlagbar)
+  let best=-Infinity, move=empty[0];
+  for(const i of empty){
+    tttBoard[i]='O';
+    const score=tttMinimax(false, 0);
+    tttBoard[i]=null;
+    if(score>best){best=score;move=i;}
+  }
+  tttBoard[move]='O';
+}
+
+function tttFindWin(p){
+  const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for(const [a,b,c] of lines){
+    const vals=[tttBoard[a],tttBoard[b],tttBoard[c]];
+    if(vals.filter(v=>v===p).length===2 && vals.includes(null)){
+      return [a,b,c].find(i=>tttBoard[i]===null);
+    }
+  }
+  return null;
+}
+
+function tttMinimax(isMax, depth){
+  const win=tttCheck('O');
+  if(win) return 10-depth;
+  const lose=tttCheck('X');
+  if(lose) return depth-10;
+  const empty=tttBoard.map((v,i)=>v?null:i).filter(i=>i!==null);
+  if(empty.length===0) return 0;
+  if(isMax){
+    let best=-Infinity;
+    for(const i of empty){tttBoard[i]='O';best=Math.max(best,tttMinimax(false,depth+1));tttBoard[i]=null;}
+    return best;
+  } else {
+    let best=Infinity;
+    for(const i of empty){tttBoard[i]='X';best=Math.min(best,tttMinimax(true,depth+1));tttBoard[i]=null;}
+    return best;
+  }
+}
+
+function tttCheck(p){
+  const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for(const line of lines){
+    if(line.every(i=>tttBoard[i]===p)) return line;
+  }
+  return null;
+}
+
+window.tttClick=tttClick;
+window.tttReset=tttReset;
+window.tttSetDiff=tttSetDiff;
 
 } // end initApp
 </script></body></html>
