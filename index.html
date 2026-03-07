@@ -1418,6 +1418,7 @@ footer span{color:var(--accent);}
 
 </div>
 </div>
+<div class="page" id="page-jokes">
 <div class="wrap">
   <div class="card">
     <div class="card-title">😂 witz-maschine 3000</div>
@@ -2454,10 +2455,11 @@ function goPage(name,btn,bnavBtn){
   if(name==='friends'&&currentUser) loadFriends();
   if(name==='home'){setTimeout(()=>{updateHomeStats();initHomeParticles();},50);}
   if(name==='leaderboard'){loadXpLeaderboard();loadGameLeaderboard('snake',document.querySelector('#gameRankTabRow .tbtn'));}
+  if(name==='wordle'){setTimeout(initWordle,50);}
   if(name==='gaming'){
     document.getElementById('gameSelectGrid').style.display='block';
     document.getElementById('gameBackBar').style.display='none';
-    ['catch','snake','memory','flappy','tetris','dino','ttt'].forEach(g=>{const el=document.getElementById('game-'+g);if(el)el.style.display='none';});
+    ['catch','snake','memory','flappy','tetris','dino','ttt','wordle','quizgame'].forEach(g=>{const el=document.getElementById('game-'+g);if(el)el.style.display='none';});
   }
   window.scrollTo({top:0,behavior:'smooth'});
 }
