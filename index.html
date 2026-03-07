@@ -80,7 +80,7 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
 #musicBar .mtext{font-family:'Press Start 2P';font-size:0.46rem;color:var(--accent);}
 #musicBar .mvol{width:60px;accent-color:var(--accent);cursor:pointer;}
 
-.theme-bar{position:sticky;top:0;z-index:50;display:flex;justify-content:center;flex-wrap:wrap;align-items:center;gap:0.4rem;padding:0.55rem 1rem;background:rgba(0,0,0,0.75);border-bottom:1px solid var(--border);backdrop-filter:blur(10px);}
+.theme-bar{position:sticky;top:0;z-index:50;display:flex;justify-content:center;flex-wrap:wrap;align-items:center;gap:0.4rem;padding:0.55rem 1rem;background:rgba(0,0,0,0.92);border-bottom:1px solid var(--border);}
 @media(max-width:600px){
   .theme-bar{position:relative;top:auto;z-index:2;}
 }
@@ -100,7 +100,7 @@ header{text-align:center;padding:2rem 1rem 0.8rem;}
 .page.active{display:block;position:relative;z-index:1;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
-.wrap{max-width:800px;margin:0 auto;padding:0 1.2rem 6rem;position:relative;z-index:1;}
+.wrap{max-width:800px;margin:0 auto;padding:0 1.2rem 8rem;position:relative;z-index:1;}
 
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.6rem;margin-bottom:1.3rem;transition:border-color 0.2s;position:relative;z-index:1;}
 @media(hover:hover){.card:hover{border-color:var(--accent);}}
@@ -234,7 +234,7 @@ body.konami-active{animation:konamiFlash 0.4s linear 5;}
 footer{text-align:center;padding:1.5rem 1rem 5rem;border-top:1px solid var(--border);font-family:'Press Start 2P';font-size:0.5rem;color:var(--text2);}
 footer span{color:var(--accent);}
 
-.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;background:rgba(13,13,13,0.96);border-top:1px solid var(--border);backdrop-filter:blur(16px);padding:0.45rem 0 max(0.5rem,env(safe-area-inset-bottom));justify-content:space-around;align-items:center;}
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;background:rgba(13,13,13,0.98);border-top:1px solid var(--border);padding:0.45rem 0 max(0.5rem,env(safe-area-inset-bottom));justify-content:space-around;align-items:center;}
 .bnav-btn{display:flex;flex-direction:column;align-items:center;gap:0.2rem;background:none;border:none;color:var(--text2);font-family:'Nunito';font-size:0.62rem;font-weight:700;cursor:pointer;padding:0.45rem 0.7rem;border-radius:12px;transition:all 0.2s;flex:1;-webkit-tap-highlight-color:transparent;}
 .bnav-btn .bnav-icon{font-size:1.35rem;line-height:1;}
 .bnav-btn.on{color:var(--accent);}
@@ -1411,9 +1411,24 @@ function goPage(name,btn,bnavBtn){
   if(name==='vote'&&currentUser) renderVotePage();
   if(name==='chat'&&currentUser) initChat();
   if(name==='leaderboard') loadXpLeaderboard();
+  if(name==='admin') setTimeout(fixAdminTouches, 100);
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function goPageByName(name){goPage(name,null,null);}
+
+// MOBILE TOUCH FIX - override all admin buttons to use touchend
+function fixAdminTouches(){
+  document.querySelectorAll('#page-admin button').forEach(function(btn){
+    var oc = btn.getAttribute('onclick');
+    if(!oc) return;
+    btn.addEventListener('touchend', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      try{ eval(oc); }catch(ex){}
+    }, {passive:false});
+  });
+}
+
 
 let audioCtx=null,musicNodes=[],musicOn=false,currentVol=0.2,currentMusicTheme='';
 
