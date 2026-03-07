@@ -1265,8 +1265,7 @@ function animate(){
   requestAnimationFrame(animate);
 }
 initParticles('');animate();
-// restore saved theme
-(function(){const t=localStorage.getItem('theme7d');if(t&&t!=='default'&&t!==''){setTheme(t);}else{setTheme('');}})();
+// theme restore happens after setTheme is defined — see below
 
 function setTheme(name,btn){
   const themeName=name==='default'?'':name;
@@ -1281,6 +1280,8 @@ function setTheme(name,btn){
   const lbl=document.getElementById('currentSkinLabel');if(lbl)lbl.textContent=skinNames[name||'default']||name;
   localStorage.setItem('theme7d',name||'default');
 }
+// restore saved theme on load
+(function(){const t=localStorage.getItem('theme7d')||'default';setTheme(t);})();
 
 function goPage(name,btn,bnavBtn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
