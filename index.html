@@ -1172,6 +1172,16 @@ footer span{color:var(--accent);}
         <div class="gsc-title">Tic Tac Toe</div>
         <div class="gsc-desc">Schlage die KI!!</div>
       </div>
+      <div class="game-select-card" onclick="showGame('wordle')">
+        <div class="gsc-icon">🟩</div>
+        <div class="gsc-title">Wordle</div>
+        <div class="gsc-desc">Rate das 5-Buchstaben Wort!!</div>
+      </div>
+      <div class="game-select-card" onclick="showGame('quizgame')">
+        <div class="gsc-icon">🎲</div>
+        <div class="gsc-title">Quiz</div>
+        <div class="gsc-desc">300 Fragen – wer weiß mehr?!</div>
+      </div>
     </div>
   </div>
 
@@ -1358,9 +1368,56 @@ footer span{color:var(--accent);}
   </div>
   </div>
 
+  <!-- WORDLE -->
+  <div id="game-wordle" style="display:none;">
+  <div class="card">
+    <div class="card-title">🟩 WORDLE!!</div>
+    <p>Rate das 5-Buchstaben Wort in 6 Versuchen!! 🟩 = richtig, 🟨 = falsche stelle, ⬛ = nicht dabei</p>
+    <div class="game-hud">
+      <div class="hud-box">VERSUCH: <span id="wordleAttempt">0</span>/6</div>
+      <div class="hud-box">GEWONNEN: <span id="wordleWins">0</span></div>
+      <div class="hud-box">SERIE: <span id="wordleStreak">0</span>🔥</div>
+    </div>
+    <div id="wordleGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:300px;margin:0.8rem auto;"></div>
+    <div id="wordleKeyboard" style="max-width:340px;margin:0 auto 0.8rem;"></div>
+    <div id="wordleMsg" style="text-align:center;font-family:'Press Start 2P';font-size:0.55rem;color:var(--accent);min-height:1.5rem;margin-bottom:0.5rem;"></div>
+    <div class="btn-row" style="justify-content:center;">
+      <button class="btn" onclick="wordleReset()">🔄 NEUES WORT</button>
+    </div>
+  </div>
+  </div>
+
+  <!-- QUIZ IM SPIELE-TAB -->
+  <div id="game-quizgame" style="display:none;">
+  <div class="card">
+    <div class="card-title">🎲 MEGA-QUIZ!!</div>
+    <p>wähl kategorie & länge, dann los!! 🧠</p>
+    <div class="quiz-cats" id="quizCatBar2"></div>
+    <div class="quiz-len">
+      <span style="font-size:0.8rem;color:var(--text2);">Länge:</span>
+      <button class="qlen-btn on" onclick="setQuizLen2(10,this)">10</button>
+      <button class="qlen-btn" onclick="setQuizLen2(20,this)">20</button>
+      <button class="qlen-btn" onclick="setQuizLen2(30,this)">30</button>
+    </div>
+    <div class="quiz-hud">
+      <div class="hud-box">FRAGE: <span id="qNum2">-</span>/<span id="qTotal2">10</span></div>
+      <div class="hud-box">PUNKTE: <span id="qScore2">0</span></div>
+      <div class="hud-box">BESTE: <span id="qBest2">0</span></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="qProgress2" style="width:0%"></div></div>
+    <div id="quizArea2">
+      <div style="text-align:center;padding:2rem 0;">
+        <div style="font-size:2rem;margin-bottom:1rem;">🧠</div>
+        <div style="font-family:'Press Start 2P';font-size:0.65rem;color:var(--accent);margin-bottom:1rem;">QUIZ STARTEN!!</div>
+        <button class="btn" onclick="startQuiz2()">▶ LOS GEHT'S</button>
+      </div>
+    </div>
+    <div id="quizMsg2"></div>
+  </div>
+  </div>
+
 </div>
 </div>
-<div class="page" id="page-jokes">
 <div class="wrap">
   <div class="card">
     <div class="card-title">😂 witz-maschine 3000</div>
@@ -3041,7 +3098,7 @@ window.stopSoundcloud=stopSoundcloud;
 window.toggleScMini=toggleScMini;
 
 function showGame(name){
-  ['catch','snake','memory','flappy','tetris','dino','ttt'].forEach(g=>{
+  ['catch','snake','memory','flappy','tetris','dino','ttt','wordle','quizgame'].forEach(g=>{
     const el=document.getElementById('game-'+g);
     if(el) el.style.display=g===name?'block':'none';
   });
@@ -3051,15 +3108,16 @@ function showGame(name){
   if(name==='tetris') setTimeout(resetTetris,50);
   if(name==='dino') setTimeout(resetDino,50);
   if(name==='ttt') setTimeout(tttReset,50);
+  if(name==='wordle') setTimeout(wordleReset,50);
+  if(name==='quizgame') setTimeout(initQuiz2,50);
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function backToGameSelect(){
-  ['catch','snake','memory','flappy','tetris','dino','ttt'].forEach(g=>{
+  ['catch','snake','memory','flappy','tetris','dino','ttt','wordle','quizgame'].forEach(g=>{
     const el=document.getElementById('game-'+g);
     if(el) el.style.display='none';
   });
-  // stop running games
   if(typeof dinoRunning!=='undefined'&&dinoRunning) resetDino();
   document.getElementById('gameSelectGrid').style.display='block';
   document.getElementById('gameBackBar').style.display='none';
@@ -6491,10 +6549,215 @@ function initEvents(){
   evListener=fbDb.ref('events7d').limitToLast(30).on('value',snap=>renderEvList(snap.val()||{}));
 }
 
-window.evSetTab=evSetTab;
-window.evSubmit=evSubmit;
-window.evVote=evVote;
-window.evDelete=evDelete;
-
 } // end initApp
+// ============================================================
+const WORDLE_GAME_WORDS = [
+  'APFEL','BIRNE','KATZE','HUNDE','TISCH','STUHL','SCHAF','PFERD','REGEN',
+  'SONNE','WOLKE','BLUME','BAUCH','NACHT','MUSIK','SPIEL','KRAFT',
+  'LICHT','FEUER','STEIN','BRAND','FARBE','STERN','KREIS','TRAUM',
+  'BLATT','BRIEF','FLUSS','GLUCK','HAFEN','JACKE','KUCHE','LAMPE','MAUER','NEBEL',
+  'PREIS','RADIO','STADT','VOGEL','ADLER','BETON','CHAOS','ENGEL','GABEL',
+  'INSEL','KANAL','TIGER','ZEBRA','ALARM','BIENE','EBENE','FALKE',
+  'GILDE','JOKER','LIEBE','NUDEL','PERLE','RIESE','SAHNE','VIPER','DOLCH'
+];
+
+let wordleState = null;
+
+function wordleReset(){
+  const word = WORDLE_GAME_WORDS[Math.floor(Math.random()*WORDLE_GAME_WORDS.length)];
+  try { const w=localStorage.getItem('wordleWins2')||0; document.getElementById('wordleWins').textContent=w; } catch(e){}
+  try { const s=localStorage.getItem('wordleStreak2')||0; document.getElementById('wordleStreak').textContent=s; } catch(e){}
+  wordleState = { word, guesses:[], current:'', done:false };
+  document.getElementById('wordleAttempt').textContent='0';
+  document.getElementById('wordleMsg').textContent='';
+  wordleRenderGrid();
+  wordleRenderKeyboard();
+  document._wordleKey && document.removeEventListener('keydown', document._wordleKey);
+  document._wordleKey = e => {
+    if(!wordleState||wordleState.done) return;
+    if(!document.getElementById('game-wordle')||document.getElementById('game-wordle').style.display==='none') return;
+    if(e.key==='Enter') { wordleSubmit(); return; }
+    if(e.key==='Backspace') { wordleState.current=wordleState.current.slice(0,-1); wordleRenderGrid(); return; }
+    if(/^[a-zA-ZäöüÄÖÜ]$/.test(e.key) && wordleState.current.length<5){
+      wordleState.current+=e.key.toUpperCase();
+      wordleRenderGrid();
+    }
+  };
+  document.addEventListener('keydown', document._wordleKey);
+}
+
+function wordleRenderGrid(){
+  const el=document.getElementById('wordleGrid'); if(!el) return;
+  const s=wordleState;
+  let cells='';
+  for(let r=0;r<6;r++){
+    for(let c=0;c<5;c++){
+      let letter='', color='background:var(--card);border:2px solid var(--border);';
+      if(r < s.guesses.length){
+        const g=s.guesses[r];
+        letter=g.word[c]||'';
+        if(g.result[c]==='correct') color='background:#538d4e;border-color:#538d4e;color:#fff;';
+        else if(g.result[c]==='present') color='background:#b59f3b;border-color:#b59f3b;color:#fff;';
+        else color='background:#3a3a3c;border-color:#3a3a3c;color:#888;';
+      } else if(r===s.guesses.length){
+        letter=s.current[c]||'';
+        if(letter) color='background:var(--card);border:2px solid var(--accent);';
+      }
+      cells+=`<div style="${color}border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-family:'Press Start 2P';font-size:clamp(0.7rem,3vw,1rem);font-weight:900;color:var(--text);transition:all 0.1s;">${letter}</div>`;
+    }
+  }
+  el.innerHTML=cells;
+}
+
+function wordleRenderKeyboard(){
+  const el=document.getElementById('wordleKeyboard'); if(!el) return;
+  const rows=[['Q','W','E','R','T','Z','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['ENTER','Y','X','C','V','B','N','M','⌫']];
+  const used={};
+  if(wordleState) wordleState.guesses.forEach(g=>{
+    g.word.split('').forEach((l,i)=>{
+      const r=g.result[i];
+      if(!used[l]||r==='correct'||(r==='present'&&used[l]!=='correct')) used[l]=r;
+    });
+  });
+  el.innerHTML=rows.map(row=>`<div style="display:flex;gap:4px;justify-content:center;margin-bottom:4px;">${
+    row.map(k=>{
+      let bg='background:var(--border);color:var(--text);';
+      if(used[k]==='correct') bg='background:#538d4e;color:#fff;';
+      else if(used[k]==='present') bg='background:#b59f3b;color:#fff;';
+      else if(used[k]==='absent') bg='background:#3a3a3c;color:#555;';
+      const wide=k==='ENTER'||k==='⌫'?'min-width:48px;font-size:0.5rem;':'min-width:28px;font-size:0.6rem;';
+      return `<button onclick="wordleKey('${k}')" style="${bg}${wide}padding:0.5rem 0.2rem;border:none;border-radius:5px;font-family:'Press Start 2P';cursor:pointer;flex-shrink:0;">${k}</button>`;
+    }).join('')
+  }</div>`).join('');
+}
+
+function wordleKey(k){
+  if(!wordleState||wordleState.done) return;
+  if(k==='ENTER') { wordleSubmit(); return; }
+  if(k==='⌫') { wordleState.current=wordleState.current.slice(0,-1); wordleRenderGrid(); return; }
+  if(wordleState.current.length<5){ wordleState.current+=k; wordleRenderGrid(); }
+}
+
+function wordleSubmit(){
+  const s=wordleState;
+  if(!s||s.done) return;
+  if(s.current.length<5){ document.getElementById('wordleMsg').textContent='⚠️ 5 Buchstaben eingeben!!'; return; }
+  // evaluate
+  const word=s.word.split('');
+  const guess=s.current.split('');
+  const result=Array(5).fill('absent');
+  const used=Array(5).fill(false);
+  // correct pass
+  guess.forEach((l,i)=>{ if(l===word[i]){ result[i]='correct'; used[i]=true; } });
+  // present pass
+  guess.forEach((l,i)=>{ if(result[i]==='correct') return; for(let j=0;j<5;j++){ if(!used[j]&&l===word[j]){ result[i]='present'; used[j]=true; break; } } });
+  s.guesses.push({ word:s.current, result });
+  document.getElementById('wordleAttempt').textContent=s.guesses.length;
+  s.current='';
+  wordleRenderGrid();
+  wordleRenderKeyboard();
+  const msg=document.getElementById('wordleMsg');
+  if(result.every(r=>r==='correct')){
+    s.done=true;
+    msg.textContent='🎉 RICHTIG!! Super!!';
+    try{ const w=(parseInt(localStorage.getItem('wordleWins')||0)+1); localStorage.setItem('wordleWins',w); document.getElementById('wordleWins').textContent=w;
+      const streak=(parseInt(localStorage.getItem('wordleStreak')||0)+1); localStorage.setItem('wordleStreak',streak); document.getElementById('wordleStreak').textContent=streak; }catch(e){}
+    if(typeof giveXP==='function') giveXP(20,'Wordle');
+    showEgg('🟩 Wordle gewonnen!!');
+  } else if(s.guesses.length>=6){
+    s.done=true;
+    msg.textContent=`💀 GAME OVER!! Das Wort war: ${s.word}`;
+    try{ localStorage.setItem('wordleStreak',0); document.getElementById('wordleStreak').textContent=0; }catch(e){}
+  } else {
+    const msgs=['Weiter so!!','Gut!!','Super!!','Fast!!','Gib nicht auf!!'];
+    msg.textContent=msgs[Math.floor(Math.random()*msgs.length)];
+    setTimeout(()=>{ if(document.getElementById('wordleMsg').textContent===msgs[msgs.length-1]||true) document.getElementById('wordleMsg').textContent=''; },1200);
+  }
+}
+
+window.wordleReset=wordleReset;
+window.wordleKey=wordleKey;
+window.wordleSubmit=wordleSubmit;
+
+// ============================================================
+// 🎲 QUIZ IM SPIELE-TAB (Quiz2)
+// ============================================================
+let quiz2Running=false, quiz2Questions=[], quiz2Idx=0, quiz2Score=0, quiz2Best=0;
+let selectedQuiz2Cat='alle', quiz2Length=10;
+
+function initQuiz2(){
+  const bar=document.getElementById('quizCatBar2'); if(!bar) return;
+  if(bar.children.length>0) return; // already built
+  const cats=[...new Set(allQuestions.map(q=>q.cat))];
+  bar.innerHTML='<button class="qcat on" onclick="setQuiz2Cat(\'alle\',this)">🎲 Alle</button>';
+  cats.forEach(c=>{ const btn=document.createElement('button'); btn.className='qcat'; btn.textContent=c; btn.onclick=()=>setQuiz2Cat(c,btn); bar.appendChild(btn); });
+  try{ const b=localStorage.getItem('quizBest2'); if(b){ quiz2Best=+b; document.getElementById('qBest2').textContent=b; } }catch(e){}
+}
+
+function setQuiz2Cat(cat,btn){
+  selectedQuiz2Cat=cat;
+  document.querySelectorAll('#quizCatBar2 .qcat').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function setQuizLen2(n,btn){
+  quiz2Length=n;
+  document.querySelectorAll('#game-quizgame .qlen-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('qTotal2').textContent=n;
+}
+
+function startQuiz2(){
+  let pool=allQuestions.filter(q=>selectedQuiz2Cat==='alle'||q.cat===selectedQuiz2Cat);
+  pool=[...pool].sort(()=>Math.random()-0.5).slice(0,quiz2Length);
+  quiz2Questions=pool; quiz2Idx=0; quiz2Score=0; quiz2Running=true;
+  document.getElementById('qScore2').textContent=0;
+  document.getElementById('qTotal2').textContent=pool.length;
+  showQuiz2Question();
+}
+
+function showQuiz2Question(){
+  const area=document.getElementById('quizArea2'); if(!area) return;
+  if(quiz2Idx>=quiz2Questions.length){ endQuiz2(); return; }
+  const q=quiz2Questions[quiz2Idx];
+  document.getElementById('qNum2').textContent=quiz2Idx+1;
+  document.getElementById('qProgress2').style.width=((quiz2Idx/quiz2Questions.length)*100)+'%';
+  const opts=[q.a,...(q.w||[]).slice(0,3)].sort(()=>Math.random()-0.5);
+  area.innerHTML=`<div class="quiz-question">${q.s||q.q||''}</div><div class="quiz-options">${opts.map(o=>`<button class="qbtn" onclick="answerQuiz2(this,'${escQ(o)}','${escQ(q.a)}')">${o}</button>`).join('')}</div>`;
+}
+
+function escQ(s){ return (s||'').replace(/'/g,"\\'"); }
+
+function answerQuiz2(btn,answer,correct){
+  document.querySelectorAll('#quizArea2 .qbtn').forEach(b=>b.disabled=true);
+  const right=answer===correct;
+  btn.classList.add(right?'correct':'wrong');
+  if(!right){ document.querySelectorAll('#quizArea2 .qbtn').forEach(b=>{ if(b.textContent.trim()===correct) b.classList.add('correct'); }); }
+  if(right){ quiz2Score++; document.getElementById('qScore2').textContent=quiz2Score; showEgg('✅ Richtig!!'); }
+  document.getElementById('quizMsg2').textContent=right?'✅ Richtig!!':'❌ Falsch!! Richtig: '+correct;
+  quiz2Idx++;
+  setTimeout(()=>{ document.getElementById('quizMsg2').textContent=''; showQuiz2Question(); },1300);
+}
+
+function endQuiz2(){
+  quiz2Running=false;
+  if(quiz2Score>quiz2Best){ quiz2Best=quiz2Score; document.getElementById('qBest2').textContent=quiz2Best; try{localStorage.setItem('quizBest2',quiz2Best);}catch(e){} }
+  document.getElementById('qProgress2').style.width='100%';
+  document.getElementById('quizArea2').innerHTML=`<div style="text-align:center;padding:2rem 0;">
+    <div style="font-size:2.5rem;margin-bottom:1rem;">${quiz2Score>=quiz2Questions.length*0.8?'🏆':'🎲'}</div>
+    <div style="font-family:'Press Start 2P';font-size:0.7rem;color:var(--accent);margin-bottom:0.5rem;">QUIZ FERTIG!!</div>
+    <div style="font-size:1.1rem;font-weight:900;margin-bottom:1rem;">${quiz2Score} / ${quiz2Questions.length} richtig</div>
+    <button class="btn" onclick="startQuiz2()">▶ NOCHMAL</button>
+  </div>`;
+  if(typeof giveXP==='function') giveXP(quiz2Score*3,'Quiz');
+  if(typeof saveGameScore==='function') saveGameScore('quiz',quiz2Score);
+}
+
+window.setQuiz2Cat=setQuiz2Cat;
+window.setQuizLen2=setQuizLen2;
+window.startQuiz2=startQuiz2;
+window.answerQuiz2=answerQuiz2;
+window.initQuiz2=initQuiz2;
+
+
 </script></body></html>
