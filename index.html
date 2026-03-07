@@ -175,12 +175,23 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
 .lofi-chip:hover{border-color:var(--accent);color:var(--accent);}
 .lofi-chip.on{border-color:var(--accent);color:var(--accent);background:rgba(255,255,255,0.05);box-shadow:0 0 8px var(--glow);}
 
+/* GAME SELECT GRID */
+.game-select-card{background:var(--card);border:2px solid var(--border);border-radius:18px;padding:1.1rem 0.8rem;text-align:center;cursor:pointer;user-select:none;position:relative;overflow:hidden;transition:border-color 0.3s,box-shadow 0.3s,transform 0.3s cubic-bezier(0.34,1.5,0.64,1);}
+.game-select-card::before{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,0.08) 50%,transparent 65%);transform:translateX(-120%);transition:transform 0.55s ease;}
+.game-select-card:hover::before{transform:translateX(120%);}
+.game-select-card:hover{border-color:var(--accent);transform:translateY(-7px) scale(1.05);box-shadow:0 12px 30px var(--glow),0 0 0 1px var(--accent);}
+.game-select-card:active{transform:scale(0.93);}
+.gsc-icon{font-size:2.4rem;margin-bottom:0.4rem;line-height:1;transition:transform 0.4s cubic-bezier(0.34,1.9,0.64,1);display:block;}
+.game-select-card:hover .gsc-icon{transform:scale(1.3) rotate(-10deg) translateY(-4px);}
+.gsc-title{font-family:'Press Start 2P';font-size:0.46rem;color:var(--accent);margin-bottom:0.4rem;}
+.gsc-desc{font-size:0.74rem;color:var(--text2);line-height:1.3;}
+
 /* TIC TAC TOE */
-.ttt-cell{aspect-ratio:1;border-radius:14px;border:2px solid var(--border);background:var(--bg);font-size:2.4rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s cubic-bezier(0.34,1.5,0.64,1);user-select:none;}
-.ttt-cell:hover:not(.taken){border-color:var(--accent);background:rgba(255,255,255,0.04);transform:scale(1.06);}
+.ttt-cell{aspect-ratio:1;border-radius:14px;border:2px solid var(--border);background:var(--bg);font-size:2.4rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color 0.2s,background 0.2s,box-shadow 0.2s,transform 0.22s cubic-bezier(0.34,1.6,0.64,1);user-select:none;}
+.ttt-cell:hover:not(.taken){border-color:var(--accent);background:rgba(255,255,255,0.05);transform:scale(1.1);box-shadow:0 0 14px var(--glow);}
 .ttt-cell.taken{cursor:default;}
-.ttt-cell.win{border-color:var(--accent);background:rgba(255,255,255,0.07);box-shadow:0 0 16px var(--glow);animation:tttWin 0.4s ease;}
-@keyframes tttWin{0%{transform:scale(1);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
+.ttt-cell.win{border-color:var(--accent);background:rgba(255,255,255,0.08);box-shadow:0 0 22px var(--glow);animation:tttWin 0.5s cubic-bezier(0.34,1.7,0.64,1);}
+@keyframes tttWin{0%{transform:scale(1);}45%{transform:scale(1.25);}100%{transform:scale(1);}}
 
 @media(max-width:600px){
   #musicBar{bottom:4.8rem;right:0.6rem;max-width:200px;}
@@ -188,53 +199,61 @@ button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transpa
   #musicPanelBox{border-radius:20px 20px 0 0;padding:1.1rem 1rem 5rem;}
 }
 
-.theme-bar{position:sticky;top:0;z-index:50;display:flex;justify-content:center;flex-wrap:wrap;align-items:center;gap:0.4rem;padding:0.55rem 1rem;background:rgba(0,0,0,0.92);border-bottom:1px solid var(--border);}
-@media(max-width:600px){
-  .theme-bar{position:relative;top:auto;z-index:2;}
-}
+.theme-bar{position:sticky;top:0;z-index:50;display:flex;justify-content:center;flex-wrap:wrap;align-items:center;gap:0.4rem;padding:0.55rem 1rem;background:rgba(0,0,0,0.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}
+@media(max-width:600px){.theme-bar{position:relative;top:auto;z-index:2;}}
 .theme-bar label{font-family:'Press Start 2P';font-size:0.5rem;color:var(--text2);margin-right:0.2rem;}
 #userBarInline{margin-left:auto;display:none;align-items:center;gap:0.5rem;flex-shrink:0;}
 #userBarInline .uname{font-family:'Press Start 2P';font-size:0.42rem;color:var(--accent);cursor:pointer;white-space:nowrap;}
 #userBarInline .ulogout{background:none;border:1px solid var(--border);border-radius:100px;color:var(--text2);font-size:0.62rem;padding:0.12rem 0.45rem;cursor:pointer;transition:all 0.2s;}
 #userBarInline .ulogout:hover{border-color:#ff4444;color:#ff4444;}
 @media(min-width:601px){#userBarInline{display:flex;}}
-.tbtn{padding:0.3rem 0.85rem;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--text2);font-family:'Nunito';font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.2s cubic-bezier(0.34,1.4,0.64,1);white-space:nowrap;}
-.tbtn:hover,.tbtn.on{border-color:var(--accent);color:var(--accent);box-shadow:0 0 10px var(--glow),0 2px 8px rgba(0,0,0,0.2);transform:translateY(-1px) scale(1.04);}
-.tbtn.on{background:rgba(255,255,255,0.05);}
+.tbtn{padding:0.3rem 0.85rem;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--text2);font-family:'Nunito';font-size:0.8rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:border-color 0.2s,color 0.2s,box-shadow 0.22s,transform 0.22s cubic-bezier(0.34,1.6,0.64,1),background 0.2s;}
+.tbtn:hover,.tbtn.on{border-color:var(--accent);color:var(--accent);box-shadow:0 0 14px var(--glow);transform:translateY(-2px) scale(1.07);}
+.tbtn.on{background:rgba(255,255,255,0.07);}
+.tbtn:active{transform:scale(0.93);}
 
 header{text-align:center;padding:2rem 1rem 0.8rem;position:relative;}
-header::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);border-radius:2px;}
+header::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);border-radius:2px;animation:headerPulse 3s ease-in-out infinite;}
+@keyframes headerPulse{0%,100%{width:50px;opacity:0.5;}50%{width:130px;opacity:1;}}
 .logo{font-family:'Press Start 2P',monospace;font-size:clamp(1rem,4vw,1.8rem);color:var(--accent);text-shadow:0 0 20px var(--glow),0 2px 8px rgba(0,0,0,0.4);line-height:1.5;}
 .header-sub{color:var(--text2);font-size:0.82rem;margin-top:0.4rem;letter-spacing:0.02em;}
 
 .page-tabs{display:flex;justify-content:center;flex-wrap:wrap;gap:0.4rem;padding:0.8rem 1rem;}
-.ptab{padding:0.45rem 1.1rem;border-radius:12px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.2s cubic-bezier(0.34,1.4,0.64,1);position:relative;overflow:hidden;}
-.ptab::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:2px;background:var(--accent);border-radius:2px;transition:width 0.25s;}
-.ptab:hover,.ptab.on{border-color:var(--accent);color:var(--accent);box-shadow:0 0 10px var(--glow);transform:translateY(-1px);}
-.ptab.on::after{width:70%;}
-.ptab:active{transform:translateY(0) scale(0.97);}
+.ptab{padding:0.45rem 1.1rem;border-radius:12px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:0.85rem;font-weight:700;cursor:pointer;position:relative;overflow:hidden;transition:border-color 0.2s,color 0.2s,box-shadow 0.22s,transform 0.22s cubic-bezier(0.34,1.5,0.64,1);}
+.ptab::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:2.5px;background:var(--accent);border-radius:2px;transition:width 0.28s cubic-bezier(0.34,1.5,0.64,1);}
+.ptab:hover,.ptab.on{border-color:var(--accent);color:var(--accent);box-shadow:0 0 14px var(--glow);transform:translateY(-2px);}
+.ptab.on::after{width:75%;}
+.ptab:active{transform:translateY(0) scale(0.94);}
 
-.page{display:none;animation:fadeIn 0.3s ease;}
-.page.active{display:block;position:relative;z-index:1;}
+.page{display:none;}
+.page.active{display:block;position:relative;z-index:1;animation:pageSlideIn 0.42s cubic-bezier(0.22,1,0.36,1) both;}
+@keyframes pageSlideIn{from{opacity:0;transform:translateY(20px) scale(0.983);}to{opacity:1;transform:translateY(0) scale(1);}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
 .wrap{max-width:800px;margin:0 auto;padding:0 1.2rem 8rem;position:relative;z-index:1;}
 
-.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.8rem;margin-bottom:1.3rem;transition:border-color 0.25s,box-shadow 0.25s,transform 0.2s;position:relative;z-index:1;box-shadow:0 2px 12px rgba(0,0,0,0.25);}
-@media(hover:hover){.card:hover{border-color:var(--accent);box-shadow:0 4px 24px rgba(0,0,0,0.35),0 0 0 1px var(--accent);transform:translateY(-1px);}}
+/* Cards — staggered rise + strong glow hover */
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:1.8rem;margin-bottom:1.3rem;position:relative;z-index:1;box-shadow:0 2px 12px rgba(0,0,0,0.25);transition:border-color 0.3s,box-shadow 0.35s,transform 0.3s cubic-bezier(0.34,1.3,0.64,1);animation:cardRise 0.5s cubic-bezier(0.22,1,0.36,1) both;}
+@keyframes cardRise{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+.card:nth-child(1){animation-delay:0.05s;}.card:nth-child(2){animation-delay:0.12s;}.card:nth-child(3){animation-delay:0.19s;}.card:nth-child(4){animation-delay:0.26s;}.card:nth-child(5){animation-delay:0.33s;}
+@media(hover:hover){.card:hover{border-color:var(--accent);box-shadow:0 10px 36px rgba(0,0,0,0.38),0 0 0 1px var(--accent),0 0 24px var(--glow);transform:translateY(-4px);}}
 .card-title{font-family:'Press Start 2P',monospace;font-size:0.72rem;color:var(--accent);margin-bottom:1.1rem;display:flex;align-items:center;gap:0.5rem;}
 .card-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--accent),transparent);opacity:0.3;}
 .card p{font-size:0.92rem;color:var(--text2);line-height:1.7;margin-bottom:0.7rem;}
 
-.btn{padding:0.55rem 1.3rem;border-radius:10px;border:2px solid var(--accent);background:linear-gradient(135deg,rgba(255,255,255,0.03),transparent);color:var(--accent);font-family:'Press Start 2P',monospace;font-size:0.56rem;cursor:pointer;transition:all 0.2s cubic-bezier(0.34,1.4,0.64,1);-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none;position:relative;overflow:hidden;letter-spacing:0.03em;}
+/* Buttons — ripple + bounce + glow */
+.btn{padding:0.55rem 1.3rem;border-radius:10px;border:2px solid var(--accent);background:linear-gradient(135deg,rgba(255,255,255,0.04),transparent);color:var(--accent);font-family:'Press Start 2P',monospace;font-size:0.56rem;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none;position:relative;overflow:hidden;letter-spacing:0.03em;transition:color 0.2s,background 0.2s,border-color 0.2s,box-shadow 0.25s,transform 0.2s cubic-bezier(0.34,1.6,0.64,1);}
 .btn::before{content:'';position:absolute;inset:0;background:var(--accent);opacity:0;transition:opacity 0.2s;border-radius:inherit;}
-.btn:hover::before{opacity:0.12;}
-@media(hover:hover){.btn:hover{background:var(--accent);color:var(--bg);box-shadow:0 0 16px var(--glow),0 4px 12px rgba(0,0,0,0.3);transform:translateY(-2px);}}
-.btn:active{transform:translateY(0) scale(0.97);}
-.btn.red{border-color:#ff4444;color:#ff4444;}
-.btn.red:hover{background:#ff4444;color:#fff;box-shadow:0 0 16px rgba(255,68,68,0.4);}
-.btn.orange{border-color:#ffaa00;color:#ffaa00;}
-.btn.orange:hover{background:#ffaa00;color:#000;}
+/* ripple ring */
+.btn::after{content:'';position:absolute;border-radius:50%;background:rgba(255,255,255,0.3);width:0;height:0;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;transition:width 0.55s ease,height 0.55s ease,opacity 0.55s ease;opacity:0;}
+.btn:active::after{width:220px;height:220px;opacity:0;transition:0s;}
+@media(hover:hover){.btn:hover{background:var(--accent);color:var(--bg);box-shadow:0 0 22px var(--glow),0 6px 18px rgba(0,0,0,0.35);transform:translateY(-3px) scale(1.05);}  .btn:hover::before{opacity:0.15;}}
+.btn:active{transform:translateY(1px) scale(0.94)!important;box-shadow:0 0 8px var(--glow);}
+.btn.red{border-color:#ff4444;color:#ff4444;}.btn.red::before{background:#ff4444;}
+@media(hover:hover){.btn.red:hover{background:#ff4444;color:#fff;box-shadow:0 0 22px rgba(255,68,68,0.55),0 6px 18px rgba(0,0,0,0.3);}}
+.btn.orange{border-color:#ffaa00;color:#ffaa00;}.btn.orange::before{background:#ffaa00;}
+@media(hover:hover){.btn.orange:hover{background:#ffaa00;color:#000;}}
+.btn.on{background:var(--accent);color:var(--bg);box-shadow:0 0 14px var(--glow);}
 .admin-mute-badge{display:inline-block;background:rgba(255,170,0,0.15);border:1px solid #ffaa00;border-radius:100px;padding:0.1rem 0.45rem;font-size:0.6rem;color:#ffaa00;margin-left:0.3rem;}
 .admin-ban-row{display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:0.4rem;font-size:0.82rem;}
 .admin-ban-row:last-child{border-bottom:none;}
@@ -242,15 +261,54 @@ header::after{content:'';position:absolute;bottom:0;left:50%;transform:translate
 .admin-chat-row:last-child{border-bottom:none;}
 .btn-row{display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.8rem;}
 
+/* Home tiles — shimmer + magnetic lift */
 .home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin-top:0.5rem;}
-.home-tile{background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:1.6rem 1rem 1.3rem;text-align:center;cursor:pointer;transition:all 0.25s cubic-bezier(0.34,1.4,0.64,1);position:relative;overflow:hidden;}
-.home-tile::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,var(--accent),transparent 70%);opacity:0;transition:opacity 0.3s;}
-.home-tile:hover::before{opacity:0.08;}
-.home-tile:hover{border-color:var(--accent);box-shadow:0 8px 24px var(--glow),0 0 0 1px var(--accent);transform:translateY(-5px) scale(1.02);}
-.tile-emoji{font-size:2.4rem;display:block;margin-bottom:0.6rem;transition:transform 0.3s;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));}
-.home-tile:hover .tile-emoji{transform:scale(1.2) rotate(-5deg);}
+.home-tile{background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:1.6rem 1rem 1.3rem;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:border-color 0.3s,box-shadow 0.3s,transform 0.3s cubic-bezier(0.34,1.5,0.64,1);animation:cardRise 0.5s cubic-bezier(0.22,1,0.36,1) both;}
+/* shimmer sweep on hover */
+.home-tile::before{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,0.07) 50%,transparent 65%);transform:translateX(-120%);transition:transform 0.6s ease;}
+.home-tile:hover::before{transform:translateX(120%);}
+/* glow halo */
+.home-tile::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,var(--accent),transparent 70%);opacity:0;transition:opacity 0.3s;}
+.home-tile:hover::after{opacity:0.08;}
+.home-tile:hover{border-color:var(--accent);box-shadow:0 14px 36px var(--glow),0 0 0 1px var(--accent);transform:translateY(-8px) scale(1.04);}
+.home-tile:active{transform:scale(0.96)!important;}
+.tile-emoji{font-size:2.4rem;display:block;margin-bottom:0.6rem;transition:transform 0.4s cubic-bezier(0.34,1.9,0.64,1);filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));}
+.home-tile:hover .tile-emoji{transform:scale(1.3) rotate(-10deg) translateY(-4px);}
 .tile-label{font-size:0.82rem;color:var(--text2);font-weight:700;transition:color 0.2s;}
 .home-tile:hover .tile-label{color:var(--accent);}
+
+
+/* ═══════════════════════════════════════
+   HOME v7
+   ═══════════════════════════════════════ */
+.home-hero{position:relative;border-radius:24px;overflow:hidden;margin-bottom:1rem;padding:2.5rem 1.5rem 2rem;text-align:center;background:linear-gradient(135deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border:1.5px solid var(--border);}
+.home-hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,var(--accent),transparent 65%);opacity:0.07;pointer-events:none;}
+.home-hero-content{position:relative;z-index:2;}
+.home-version-badge{display:inline-block;background:var(--accent);color:var(--bg);font-family:'Press Start 2P';font-size:0.5rem;padding:0.3rem 0.8rem;border-radius:100px;margin-bottom:0.8rem;box-shadow:0 0 16px var(--glow);animation:badgePulse 2.5s ease-in-out infinite;}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 12px var(--glow);}50%{box-shadow:0 0 28px var(--glow),0 0 8px var(--accent);}}
+.home-title{font-family:'Press Start 2P';font-size:clamp(1.4rem,6vw,2.8rem);color:var(--accent);text-shadow:0 0 30px var(--glow),0 3px 12px rgba(0,0,0,0.5);line-height:1.2;margin-bottom:0.5rem;animation:titleFloat 4s ease-in-out infinite;}
+@keyframes titleFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.home-subtitle{font-size:0.92rem;color:var(--text2);letter-spacing:0.02em;}
+/* floating particles */
+.hero-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1;}
+.hero-particle{position:absolute;border-radius:50%;background:var(--accent);opacity:0;animation:particleFloat linear infinite;}
+@keyframes particleFloat{0%{opacity:0;transform:translateY(100%) scale(0);}20%{opacity:0.4;}80%{opacity:0.2;}100%{opacity:0;transform:translateY(-120%) scale(1.5);}}
+/* stats row */
+.home-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem;margin-bottom:1.2rem;}
+.home-stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:0.85rem 0.4rem;text-align:center;transition:border-color 0.2s,box-shadow 0.2s,transform 0.2s cubic-bezier(0.34,1.5,0.64,1);}
+.home-stat:hover{border-color:var(--accent);box-shadow:0 0 14px var(--glow);transform:translateY(-2px);}
+.home-stat-num{display:block;font-family:'Press Start 2P';font-size:clamp(0.7rem,2.5vw,1rem);color:var(--accent);margin-bottom:0.3rem;}
+.home-stat-label{font-size:0.7rem;color:var(--text2);}
+/* section label */
+.home-section-label{font-family:'Press Start 2P';font-size:0.5rem;color:var(--text2);margin-bottom:0.7rem;letter-spacing:0.05em;}
+/* tile upgrade */
+.tile-title{display:block;font-family:'Press Start 2P';font-size:0.42rem;color:var(--accent);margin-bottom:0.2rem;}
+/* v7 feature list */
+.v7-feature{display:flex;align-items:flex-start;gap:0.8rem;padding:0.5rem 0;border-bottom:1px solid var(--border);}
+.v7-feature:last-child{border-bottom:none;}
+.v7-icon{font-size:1.4rem;flex-shrink:0;width:2rem;text-align:center;}
+.v7-feature b{color:var(--accent);}
+.v7-feature div{font-size:0.85rem;color:var(--text);line-height:1.5;}
 
 /* GAME */
 /* XP LEADERBOARD */
@@ -486,7 +544,9 @@ footer span{color:var(--accent);}
 /* ===== XP / LEVEL ===== */
 #userBar{display:none!important;}
 #xpBar{position:fixed;top:0;left:0;right:0;z-index:49;height:4px;background:var(--border);pointer-events:none;}
-#xpFill{height:100%;background:var(--accent);transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 0 8px var(--accent);}
+#xpFill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2,var(--accent)));transition:width 0.7s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 0 10px var(--accent),0 0 4px var(--accent);position:relative;}
+#xpFill::after{content:'';position:absolute;top:0;right:0;bottom:0;width:30px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5));animation:xpShimmer 1.5s ease-in-out infinite;}
+@keyframes xpShimmer{0%,100%{opacity:0;}50%{opacity:1;}}
 #xpPopup{position:fixed;top:52px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--card);border:2px solid var(--accent);border-radius:14px;padding:0.6rem 1.2rem;font-family:'Press Start 2P';font-size:0.52rem;color:var(--accent);box-shadow:0 0 24px var(--glow);z-index:9998;opacity:0;pointer-events:none;transition:all 0.35s;text-align:center;white-space:nowrap;}
 #xpPopup.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .xp-badge{display:inline-flex;align-items:center;gap:0.3rem;background:var(--bg);border:1.5px solid var(--accent);border-radius:100px;padding:0.15rem 0.6rem;font-family:'Press Start 2P';font-size:0.46rem;color:var(--accent);cursor:pointer;}
@@ -522,19 +582,58 @@ footer span{color:var(--accent);}
 
 /* ===== CHAT ===== */
 #chatMessages{height:320px;overflow-y:auto;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:0.8rem;margin-bottom:0.6rem;display:flex;flex-direction:column;gap:0.5rem;scroll-behavior:smooth;}
-.chat-msg{display:flex;gap:0.5rem;align-items:flex-start;animation:fadeIn 0.2s ease;}
+.chat-msg{display:flex;gap:0.5rem;align-items:flex-start;animation:msgPop 0.3s cubic-bezier(0.34,1.5,0.64,1) both;}
+@keyframes msgPop{from{opacity:0;transform:translateY(8px) scale(0.95);}to{opacity:1;transform:translateY(0) scale(1);}}
 .chat-msg.own{flex-direction:row-reverse;}
 .chat-avatar{font-size:1.1rem;flex-shrink:0;margin-top:0.1rem;}
-.chat-bubble{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0.4rem 0.7rem;max-width:75%;word-break:break-word;}
+.chat-bubble{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0.4rem 0.7rem;max-width:75%;word-break:break-word;position:relative;}
 .chat-msg.own .chat-bubble{background:rgba(0,255,136,0.08);border-color:var(--accent);}
-.chat-name{font-size:0.62rem;color:var(--accent);font-weight:700;margin-bottom:0.15rem;}
+.chat-name{font-size:0.62rem;color:var(--accent);font-weight:700;margin-bottom:0.15rem;cursor:pointer;}
+.chat-name:hover{text-decoration:underline;}
 .chat-text{font-size:0.88rem;color:var(--text);line-height:1.4;}
-.chat-time{font-size:0.58rem;color:var(--text2);margin-top:0.1rem;}
+.chat-time{font-size:0.58rem;color:var(--text2);margin-top:0.1rem;display:inline;}
+.chat-actions{display:flex;gap:0.3rem;margin-top:0.35rem;flex-wrap:wrap;align-items:center;}
+.chat-react-btn{background:none;border:1px solid var(--border);border-radius:100px;font-size:0.82rem;padding:0.05rem 0.4rem;cursor:pointer;transition:all 0.15s;color:var(--text2);line-height:1.5;}
+.chat-react-btn:hover{border-color:var(--accent);transform:scale(1.18);}
+.chat-del-btn{background:none;border:none;font-size:0.82rem;cursor:pointer;color:var(--text2);padding:0.05rem 0.3rem;border-radius:6px;margin-left:auto;transition:color 0.15s;}
+.chat-del-btn:hover{color:#ff4444;}
+.chat-reactions{display:flex;gap:0.25rem;flex-wrap:wrap;margin-top:0.3rem;}
+.react-pill{background:var(--bg);border:1px solid var(--border);border-radius:100px;font-size:0.78rem;padding:0.1rem 0.5rem;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:0.2rem;}
+.react-pill:hover{border-color:var(--accent);}
+.react-pill.mine{border-color:var(--accent);background:rgba(255,255,255,0.06);}
+.react-pill-count{font-size:0.68rem;color:var(--text2);}
 .chat-input-row{display:flex;gap:0.5rem;}
 .chat-input{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:0.55rem 0.8rem;color:var(--text);font-family:'Nunito';font-size:0.9rem;outline:none;transition:border 0.2s;}
 .chat-input:focus{border-color:var(--accent);}
 .chat-send{padding:0.55rem 1rem;border-radius:10px;border:2px solid var(--accent);background:transparent;color:var(--accent);font-family:'Press Start 2P';font-size:0.5rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
 .chat-send:hover{background:var(--accent);color:var(--bg);}
+/* USER PROFILE OVERLAY */
+#userProfileOverlay{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;padding:1rem;}
+#userProfileOverlay.open{display:flex;}
+#userProfileBox{background:var(--card);border:2px solid var(--accent);border-radius:20px;padding:1.4rem;width:100%;max-width:360px;max-height:88vh;overflow-y:auto;box-shadow:0 0 40px var(--glow);}
+/* FREUNDE */
+.friend-item{display:flex;align-items:center;gap:0.7rem;padding:0.65rem;background:var(--bg);border:1px solid var(--border);border-radius:12px;margin-bottom:0.45rem;transition:border-color 0.2s;}
+.friend-item:hover{border-color:var(--accent);}
+.friend-av{width:36px;height:36px;border-radius:50%;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;overflow:hidden;background:var(--bg);}
+.friend-name{font-weight:700;color:var(--text);font-size:0.88rem;flex:1;}
+.friend-lvl{font-size:0.7rem;color:var(--text2);}
+.friend-btn{padding:0.22rem 0.65rem;border-radius:100px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-size:0.72rem;cursor:pointer;font-weight:700;transition:all 0.15s;}
+.friend-btn:hover{background:var(--accent);color:var(--bg);}
+.friend-btn.red{border-color:#ff4444;color:#ff4444;}
+.friend-btn.red:hover{background:#ff4444;color:#fff;}
+/* EVENTS & UMFRAGEN */
+.event-card{background:var(--bg);border:1.5px solid var(--border);border-radius:14px;padding:1rem;margin-bottom:0.7rem;transition:border-color 0.2s;}
+.event-card:hover{border-color:var(--accent);}
+.event-card.own{border-color:var(--accent);}
+.event-header{font-family:'Press Start 2P';font-size:0.48rem;color:var(--accent);margin-bottom:0.35rem;}
+.event-desc{font-size:0.85rem;color:var(--text);margin-bottom:0.5rem;line-height:1.4;}
+.event-meta{font-size:0.7rem;color:var(--text2);margin-bottom:0.5rem;}
+.poll-opt{display:flex;align-items:center;gap:0.5rem;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:0.45rem 0.75rem;margin-bottom:0.35rem;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden;}
+.poll-opt:hover:not(.voted){border-color:var(--accent);}
+.poll-opt.voted{border-color:var(--accent);}
+.poll-bar{position:absolute;left:0;top:0;bottom:0;background:rgba(255,255,255,0.06);pointer-events:none;transition:width 0.5s;}
+.poll-label{flex:1;font-size:0.84rem;position:relative;z-index:1;}
+.poll-pct{font-size:0.7rem;color:var(--text2);font-weight:700;position:relative;z-index:1;}
 .online-dot{width:8px;height:8px;border-radius:50%;background:#00ff88;display:inline-block;margin-right:0.3rem;box-shadow:0 0 6px #00ff88;animation:pulse 2s ease-in-out infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
 #onlineList{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.7rem;}
@@ -860,6 +959,8 @@ footer span{color:var(--accent);}
   <button class="ptab" onclick="goPage('quiz',this)">🎲 Quiz</button>
   <button class="ptab" onclick="goPage('wordle',this)">🟩 Wordle</button>
   <button class="ptab" onclick="goPage('chat',this)">💬 Chat</button>
+  <button class="ptab" onclick="goPage('friends',this)">👫 Freunde</button>
+  <button class="ptab" onclick="goPage('events',this)">📅 Events</button>
   <button class="ptab" onclick="goPage('challenges',this)">🏆 Challenges</button>
   <button class="ptab" onclick="goPage('vote',this)">⭐ Voting</button>
   <button class="ptab" onclick="goPage('leaderboard',this)">📊 Rangliste</button>
@@ -874,58 +975,171 @@ footer span{color:var(--accent);}
 <!-- HOME -->
 <div class="page active" id="page-home">
 <div class="wrap">
-  <div style="text-align:center;padding:1.5rem 0 1rem;">
-    <div style="font-family:'Press Start 2P';font-size:clamp(0.65rem,2.5vw,1rem);color:var(--accent);line-height:1.8;">WILLKOMMEN!! v5 🚀</div>
-    <p style="color:var(--text2);margin-top:0.5rem;font-size:0.95rem;">XP · Level · Chat · Wordle · Challenges · Login-Bonus 🔥</p>
+
+  <!-- HERO BANNER -->
+  <div class="home-hero">
+    <div class="home-hero-bg"></div>
+    <div class="home-hero-content">
+      <div class="home-version-badge">✨ v7</div>
+      <div class="home-title">7D ZONE</div>
+      <div class="home-subtitle">die offizielle klasse 7d community 🔥</div>
+      <div id="homeUserGreet" style="font-size:0.85rem;color:var(--text2);margin-top:0.5rem;min-height:1.2rem;"></div>
+    </div>
+    <!-- floating particles -->
+    <div class="hero-particles" id="heroParticles"></div>
   </div>
+
+  <!-- STATS ROW -->
+  <div class="home-stats-row">
+    <div class="home-stat">
+      <span id="homeStatXp" class="home-stat-num">–</span>
+      <span class="home-stat-label">dein XP</span>
+    </div>
+    <div class="home-stat">
+      <span id="homeStatLvl" class="home-stat-num">–</span>
+      <span class="home-stat-label">level</span>
+    </div>
+    <div class="home-stat">
+      <span id="homeStatStreak" class="home-stat-num">–</span>
+      <span class="home-stat-label">streak 🔥</span>
+    </div>
+    <div class="home-stat" onclick="goPageByName('leaderboard')" style="cursor:pointer;">
+      <span id="homeStatRank" class="home-stat-num">–</span>
+      <span class="home-stat-label">rang 🏆</span>
+    </div>
+  </div>
+
+  <!-- QUICK ACCESS GRID -->
+  <div class="home-section-label">🚀 SCHNELLZUGRIFF</div>
   <div class="home-grid">
     <div class="home-tile" onclick="goPageByName('gaming')">
       <span class="tile-emoji">🎮</span>
-      <span class="tile-label">3 mini-games!!</span>
-    </div>
-    <div class="home-tile" onclick="goPageByName('jokes')">
-      <span class="tile-emoji">😂</span>
-      <span class="tile-label">witz-maschine 3000</span>
-    </div>
-    <div class="home-tile" onclick="goPageByName('quiz')">
-      <span class="tile-emoji">🎲</span>
-      <span class="tile-label">300 fragen-quiz!!</span>
-    </div>
-    <div class="home-tile" onclick="goPageByName('wordle')">
-      <span class="tile-emoji">🟩</span>
-      <span class="tile-label">Wordle täglich!!</span>
+      <span class="tile-title">Spiele</span>
+      <span class="tile-label">7 mini-games!!</span>
     </div>
     <div class="home-tile" onclick="goPageByName('chat')">
       <span class="tile-emoji">💬</span>
-      <span class="tile-label">Klassen-Chat!!</span>
+      <span class="tile-title">Chat</span>
+      <span class="tile-label">live mit der klasse</span>
     </div>
     <div class="home-tile" onclick="goPageByName('challenges')">
       <span class="tile-emoji">🏆</span>
-      <span class="tile-label">Daily Challenges!!</span>
+      <span class="tile-title">Challenges</span>
+      <span class="tile-label">daily bonus-XP!!</span>
+    </div>
+    <div class="home-tile" onclick="goPageByName('wordle')">
+      <span class="tile-emoji">🟩</span>
+      <span class="tile-title">Wordle</span>
+      <span class="tile-label">täglich neues wort</span>
+    </div>
+    <div class="home-tile" onclick="goPageByName('quiz')">
+      <span class="tile-emoji">🎲</span>
+      <span class="tile-title">Quiz</span>
+      <span class="tile-label">300 fragen!!</span>
+    </div>
+    <div class="home-tile" onclick="goPageByName('jokes')">
+      <span class="tile-emoji">😂</span>
+      <span class="tile-title">Witze</span>
+      <span class="tile-label">witz-maschine 3000</span>
+    </div>
+    <div class="home-tile" onclick="goPageByName('vote')">
+      <span class="tile-emoji">⭐</span>
+      <span class="tile-title">Voting</span>
+      <span class="tile-label">klassen-voting!!</span>
+    </div>
+    <div class="home-tile" onclick="goPageByName('events')">
+      <span class="tile-emoji">📅</span>
+      <span class="tile-title">Events</span>
+      <span class="tile-label">klassen-events</span>
+    </div>
+    <div class="home-tile" onclick="goPageByName('friends')">
+      <span class="tile-emoji">👫</span>
+      <span class="tile-title">Freunde</span>
+      <span class="tile-label">freundesliste</span>
+    </div>
+    <div class="home-tile" onclick="goPageByName('leaderboard')">
+      <span class="tile-emoji">📊</span>
+      <span class="tile-title">Rangliste</span>
+      <span class="tile-label">wer ist #1?</span>
+    </div>
+    <div class="home-tile" onclick="goPageByName('pinnwand')">
+      <span class="tile-emoji">📸</span>
+      <span class="tile-title">Pinnwand</span>
+      <span class="tile-label">fotos & posts</span>
+    </div>
+    <div class="home-tile" onclick="goPageByName('achievements')">
+      <span class="tile-emoji">🏅</span>
+      <span class="tile-title">Badges</span>
+      <span class="tile-label">deine achievements</span>
     </div>
   </div>
-  <div class="card" style="margin-top:1rem;text-align:center;">
-    <div class="card-title">🆕 NEU IN V5</div>
-    <p>⚡ <b>XP & Level System</b> — verdiene XP für alles was du machst!!</p>
-    <p>🎁 <b>Täglicher Login-Bonus</b> — streak aufbauen für mehr XP!!</p>
-    <p>💬 <b>Klassen-Chat</b> — chatte live mit der ganzen Klasse!!</p>
-    <p>🟩 <b>Wordle auf Deutsch</b> — täglich ein neues Wort!!</p>
-    <p>🏆 <b>Daily Challenges</b> — tägliche Aufgaben mit Bonus-XP!!</p>
+
+  <!-- WHATS NEW -->
+  <div class="home-section-label" style="margin-top:1.2rem;">🆕 NEU IN V7</div>
+  <div class="card">
+    <div style="display:flex;flex-direction:column;gap:0.6rem;">
+      <div class="v7-feature"><span class="v7-icon">👍</span><div><b>Chat-Reaktionen</b> — reagiere mit 👍❤️😂 auf nachrichten!!</div></div>
+      <div class="v7-feature"><span class="v7-icon">🗑️</span><div><b>Nachrichten löschen</b> — eigene msgs im chat entfernen</div></div>
+      <div class="v7-feature"><span class="v7-icon">👤</span><div><b>Profilseiten</b> — klick auf namen → stats & badges sehen</div></div>
+      <div class="v7-feature"><span class="v7-icon">👫</span><div><b>Freundesliste</b> — füge klassenkameraden als freunde hinzu!!</div></div>
+      <div class="v7-feature"><span class="v7-icon">📅</span><div><b>Klassen-Events & Umfragen</b> — erstelle events für die klasse!!</div></div>
+      <div class="v7-feature"><span class="v7-icon">🦕</span><div><b>Dino Run + Tic Tac Toe vs KI</b> — 2 neue spiele!!</div></div>
+      <div class="v7-feature"><span class="v7-icon">✨</span><div><b>Bessere Animationen</b> — alles smoother & schöner!!</div></div>
+    </div>
   </div>
+
 </div>
 </div>
 
 <!-- GAMING -->
 <div class="page" id="page-gaming">
 <div class="wrap">
-  <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1rem;">
-    <button class="btn" id="gbtn-catch" onclick="showGame('catch')">🎮 Fang Emoji</button>
-    <button class="btn" id="gbtn-snake" onclick="showGame('snake')">🐍 Snake</button>
-    <button class="btn" id="gbtn-memory" onclick="showGame('memory')">🧠 Memory</button>
-    <button class="btn" id="gbtn-flappy" onclick="showGame('flappy')">🐦 Flappy Bird</button>
-    <button class="btn" id="gbtn-tetris" onclick="showGame('tetris')">🟦 Tetris</button>
-    <button class="btn" id="gbtn-dino" onclick="showGame('dino')">🦕 Dino Run</button>
-    <button class="btn" id="gbtn-ttt" onclick="showGame('ttt')">❌ Tic Tac Toe</button>
+
+  <!-- SPIELE AUSWAHL GRID -->
+  <div id="gameSelectGrid">
+    <div class="card-title" style="text-align:center;margin-bottom:1rem;">🎮 SPIELE AUSWAHL</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.8rem;">
+      <div class="game-select-card" onclick="showGame('catch')">
+        <div class="gsc-icon">🎮</div>
+        <div class="gsc-title">Fang Emoji</div>
+        <div class="gsc-desc">Klick schnell auf Emojis!!</div>
+      </div>
+      <div class="game-select-card" onclick="showGame('snake')">
+        <div class="gsc-icon">🐍</div>
+        <div class="gsc-title">Snake</div>
+        <div class="gsc-desc">Klassiker! Werde nie die Wand</div>
+      </div>
+      <div class="game-select-card" onclick="showGame('memory')">
+        <div class="gsc-icon">🧠</div>
+        <div class="gsc-title">Memory</div>
+        <div class="gsc-desc">Finde alle Paare!!</div>
+      </div>
+      <div class="game-select-card" onclick="showGame('flappy')">
+        <div class="gsc-icon">🐦</div>
+        <div class="gsc-title">Flappy Bird</div>
+        <div class="gsc-desc">Durch die Rohre fliegen!!</div>
+      </div>
+      <div class="game-select-card" onclick="showGame('tetris')">
+        <div class="gsc-icon">🟦</div>
+        <div class="gsc-title">Tetris</div>
+        <div class="gsc-desc">Reihen füllen = Punkte!!</div>
+      </div>
+      <div class="game-select-card" onclick="showGame('dino')">
+        <div class="gsc-icon">🦕</div>
+        <div class="gsc-title">Dino Run</div>
+        <div class="gsc-desc">Springe über Hindernisse!!</div>
+      </div>
+      <div class="game-select-card" onclick="showGame('ttt')">
+        <div class="gsc-icon">❌</div>
+        <div class="gsc-title">Tic Tac Toe</div>
+        <div class="gsc-desc">Schlage die KI!!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BACK BUTTON (shown while playing) -->
+  <div id="gameBackBar" style="display:none;margin-bottom:0.8rem;">
+    <button class="btn" onclick="backToGameSelect()" style="font-size:0.6rem;">◀ ZURÜCK ZU SPIELEN</button>
   </div>
 
   <div id="game-catch" style="display:none;">
@@ -1581,6 +1795,95 @@ footer span{color:var(--accent);}
 </div>
 </div>
 
+<!-- USER PROFILE OVERLAY -->
+<div id="userProfileOverlay" onclick="if(event.target===this)closeUserProfile()">
+  <div id="userProfileBox">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+      <div style="font-family:'Press Start 2P';font-size:0.52rem;color:var(--accent);">👤 PROFIL</div>
+      <button onclick="closeUserProfile()" style="background:none;border:none;color:var(--text2);font-size:1.3rem;cursor:pointer;">✕</button>
+    </div>
+    <div style="text-align:center;margin-bottom:1rem;">
+      <div id="upAvWrap" style="width:70px;height:70px;border-radius:50%;overflow:hidden;border:3px solid var(--accent);box-shadow:0 0 16px var(--glow);margin:0 auto 0.6rem;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:2.5rem;"></div>
+      <div id="upName" style="font-family:'Press Start 2P';font-size:0.7rem;color:var(--accent);margin-bottom:0.2rem;"></div>
+      <div id="upTitle" style="font-size:0.8rem;color:var(--text2);"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-bottom:1rem;">
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.7rem 0.3rem;text-align:center;">
+        <div id="upXp" style="font-size:1.3rem;font-weight:900;color:var(--accent);">0</div>
+        <div style="font-size:0.68rem;color:var(--text2);">XP</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.7rem 0.3rem;text-align:center;">
+        <div id="upLevel" style="font-size:1.3rem;font-weight:900;color:var(--accent);">1</div>
+        <div style="font-size:0.68rem;color:var(--text2);">Level</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.7rem 0.3rem;text-align:center;">
+        <div id="upStreak" style="font-size:1.3rem;font-weight:900;color:var(--accent);">0</div>
+        <div style="font-size:0.68rem;color:var(--text2);">Streak 🔥</div>
+      </div>
+    </div>
+    <div id="upBadges" style="display:flex;flex-wrap:wrap;gap:0.4rem;justify-content:center;margin-bottom:1rem;"></div>
+    <div id="upFriendBtn" style="display:flex;gap:0.5rem;justify-content:center;"></div>
+  </div>
+</div>
+
+<!-- EVENTS & UMFRAGEN PAGE -->
+<div class="page" id="page-events">
+<div class="wrap">
+  <div class="card">
+    <div class="card-title">📅 KLASSEN-EVENTS & UMFRAGEN</div>
+    <p>erstelle events oder umfragen für die ganze klasse!! 🎉</p>
+    <div style="display:flex;gap:0.5rem;margin-bottom:1rem;">
+      <button class="btn on" id="evTabEvent" onclick="evSetTab('event',this)">📅 Event</button>
+      <button class="btn" id="evTabPoll" onclick="evSetTab('poll',this)">📊 Umfrage</button>
+    </div>
+
+    <!-- Create Event -->
+    <div id="evCreateEvent">
+      <input id="evTitle" type="text" maxlength="60" placeholder="Event-Titel... 🎉" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:0.5rem 0.8rem;color:var(--text);font-family:'Nunito';font-size:0.9rem;outline:none;box-sizing:border-box;margin-bottom:0.5rem;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+      <textarea id="evDesc" maxlength="200" placeholder="Beschreibung... (optional)" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:0.5rem 0.8rem;color:var(--text);font-family:'Nunito';font-size:0.85rem;outline:none;resize:none;height:70px;box-sizing:border-box;margin-bottom:0.5rem;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      <input id="evDate" type="date" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:0.5rem 0.8rem;color:var(--text);font-family:'Nunito';font-size:0.85rem;outline:none;box-sizing:border-box;margin-bottom:0.8rem;color-scheme:dark;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+      <button class="btn" onclick="evSubmit('event')" style="width:100%;">📅 EVENT ERSTELLEN</button>
+    </div>
+
+    <!-- Create Poll -->
+    <div id="evCreatePoll" style="display:none;">
+      <input id="pollQuestion" type="text" maxlength="80" placeholder="Frage für die Klasse... 🤔" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:0.5rem 0.8rem;color:var(--text);font-family:'Nunito';font-size:0.9rem;outline:none;box-sizing:border-box;margin-bottom:0.5rem;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+      <div id="pollOptInputs">
+        <input class="poll-opt-input" type="text" maxlength="40" placeholder="Option 1..." style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:0.45rem 0.8rem;color:var(--text);font-family:'Nunito';font-size:0.85rem;outline:none;box-sizing:border-box;margin-bottom:0.35rem;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+        <input class="poll-opt-input" type="text" maxlength="40" placeholder="Option 2..." style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:0.45rem 0.8rem;color:var(--text);font-family:'Nunito';font-size:0.85rem;outline:none;box-sizing:border-box;margin-bottom:0.35rem;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+        <input class="poll-opt-input" type="text" maxlength="40" placeholder="Option 3... (optional)" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:0.45rem 0.8rem;color:var(--text);font-family:'Nunito';font-size:0.85rem;outline:none;box-sizing:border-box;margin-bottom:0.35rem;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+        <input class="poll-opt-input" type="text" maxlength="40" placeholder="Option 4... (optional)" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:0.45rem 0.8rem;color:var(--text);font-family:'Nunito';font-size:0.85rem;outline:none;box-sizing:border-box;margin-bottom:0.35rem;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+      </div>
+      <button class="btn" onclick="evSubmit('poll')" style="width:100%;margin-top:0.3rem;">📊 UMFRAGE ERSTELLEN</button>
+    </div>
+    <div id="evMsg" style="font-size:0.78rem;color:var(--accent);min-height:1rem;margin-top:0.5rem;text-align:center;"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 AKTUELLE EVENTS & UMFRAGEN</div>
+    <div id="evList"><div style="text-align:center;color:var(--text2);padding:1.5rem;">lade events... ⏳</div></div>
+  </div>
+</div>
+</div>
+
+<!-- FREUNDE PAGE -->
+<div class="page" id="page-friends">
+<div class="wrap">
+  <div class="card">
+    <div class="card-title">👫 FREUNDESLISTE</div>
+    <p>füge klassenkameraden als freunde hinzu!!</p>
+    <div style="display:flex;gap:0.5rem;margin-bottom:1rem;">
+      <input id="friendSearch" type="text" placeholder="name suchen..." maxlength="30" style="flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:0.5rem 0.8rem;color:var(--text);font-family:'Nunito';font-size:0.9rem;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" oninput="friendSearch(this.value)">
+    </div>
+    <div id="friendSearchResults" style="margin-bottom:0.8rem;"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">✅ MEINE FREUNDE (<span id="friendCount">0</span>)</div>
+    <div id="friendList"><div style="text-align:center;color:var(--text2);padding:1rem;">noch keine freunde... füge jemanden hinzu!! 👆</div></div>
+  </div>
+</div>
+</div>
+
 <!-- CHALLENGES -->
 <div class="page" id="page-challenges">
 <div class="wrap">
@@ -1709,6 +2012,8 @@ footer span{color:var(--accent);}
     <button onclick="goPageFromMore('pinnwand')" class="more-btn"><span style="font-size:1.5rem;">📸</span><span>Pinnwand</span></button>
     <button onclick="goPageFromMore('board')" class="more-btn"><span style="font-size:1.5rem;">📋</span><span>Brett</span></button>
     <button onclick="goPageFromMore('achievements')" class="more-btn"><span style="font-size:1.5rem;">🏅</span><span>Badges</span></button>
+    <button onclick="goPageFromMore('friends')" class="more-btn"><span style="font-size:1.5rem;">👫</span><span>Freunde</span></button>
+    <button onclick="goPageFromMore('events')" class="more-btn"><span style="font-size:1.5rem;">📅</span><span>Events</span></button>
     <button onclick="goPageFromMore('settings')" class="more-btn"><span style="font-size:1.5rem;">⚙️</span><span>Settings</span></button>
     <button onclick="goPageFromMore('admin')" class="more-btn" id="bn-admin" style="display:none;color:#ff4444;"><span style="font-size:1.5rem;">👑</span><span>Admin</span></button>
   </div>
@@ -1847,6 +2152,7 @@ fbAuth.onAuthStateChanged(async user=>{
     const avUrl=avSnap.val()||null;
     currentUser.avatarUrl=avUrl;
     applyAvatar(avUrl);
+    setTimeout(()=>{if(typeof updateHomeStats==='function')updateHomeStats();},400);
   } else {
     currentUser=null;hofVoted=null;
     document.getElementById('authOverlay').style.display='flex';
@@ -1968,6 +2274,14 @@ function goPage(name,btn,bnavBtn){
   if(name==='pinnwand') loadPinnwand();
   if(name==='board') loadBoard();
   if(name==='achievements') loadAchievements();
+  if(name==='events'&&currentUser) initEvents();
+  if(name==='friends'&&currentUser) loadFriends();
+  if(name==='home'){setTimeout(()=>{updateHomeStats();initHomeParticles();},50);}
+  if(name==='gaming'){
+    document.getElementById('gameSelectGrid').style.display='block';
+    document.getElementById('gameBackBar').style.display='none';
+    ['catch','snake','memory','flappy','tetris','dino','ttt'].forEach(g=>{const el=document.getElementById('game-'+g);if(el)el.style.display='none';});
+  }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function goPageByName(name){goPage(name,null,null);}
@@ -2611,14 +2925,28 @@ function showGame(name){
     const el=document.getElementById('game-'+g);
     if(el) el.style.display=g===name?'block':'none';
   });
-  document.querySelectorAll('[id^="gbtn-"]').forEach(b=>b.classList.remove('on'));
-  const gb=document.getElementById('gbtn-'+name);if(gb) gb.classList.add('on');
+  document.getElementById('gameSelectGrid').style.display='none';
+  document.getElementById('gameBackBar').style.display='block';
   if(name==='flappy') setTimeout(resetFlappy,50);
   if(name==='tetris') setTimeout(resetTetris,50);
   if(name==='dino') setTimeout(resetDino,50);
   if(name==='ttt') setTimeout(tttReset,50);
+  window.scrollTo({top:0,behavior:'smooth'});
 }
-document.getElementById('gbtn-snake').classList.add('on');
+
+function backToGameSelect(){
+  ['catch','snake','memory','flappy','tetris','dino','ttt'].forEach(g=>{
+    const el=document.getElementById('game-'+g);
+    if(el) el.style.display='none';
+  });
+  // stop running games
+  if(typeof dinoRunning!=='undefined'&&dinoRunning) resetDino();
+  document.getElementById('gameSelectGrid').style.display='block';
+  document.getElementById('gameBackBar').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+window.backToGameSelect=backToGameSelect;
+document.getElementById('gameSelectGrid')?.style && (document.getElementById('gameSelectGrid').style.display='block');
 
 const gEmojis=['🎮','👾','🕹️','🍕','🐸','🦊','🎯','🍦','🌟','🎪','🦄','🍩','🎈','🦋','🐙','🌈','🍭','🎸'];
 let gscore=0,gbest=parseInt(localStorage.getItem('gb7d')||'0'),gtimer=20;
@@ -4028,7 +4356,7 @@ async function addXP(amount,reason){
   const oldLevel=getLevelFromXp(totalXP);
   totalXP+=amount;
   userLevel=getLevelFromXp(totalXP);
-  try{await fbDb.ref('users/'+currentUser.uid+'/xp').set(totalXP);}catch(e){}
+  try{await fbDb.ref('users/'+currentUser.uid).update({xp:totalXP,level:userLevel});}catch(e){}
   updateXPDisplay();
   showXpPopup('+'+amount+' XP — '+reason);
   if(userLevel>oldLevel) showLevelUp(userLevel);
@@ -4329,25 +4657,91 @@ function renderChat(msgs){
   const container=document.getElementById('chatMessages');if(!container)return;
   const wasAtBottom=container.scrollHeight-container.scrollTop-container.clientHeight<80;
   container.innerHTML='';
-  Object.values(msgs).sort((a,b)=>a.ts-b.ts).forEach(m=>{
+  Object.entries(msgs).sort(([,a],[,b])=>a.ts-b.ts).forEach(([key,m])=>{
     const isOwn=m.uid===currentUser?.uid;
     const d=new Date(m.ts);const time=d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
     const div=document.createElement('div');div.className='chat-msg'+(isOwn?' own':'');
-    // use cache first, then fallback to msg.avatarUrl, then emoji
     const avUrl=avatarCache[m.uid]||m.avatarUrl||null;
     const avatarHtml=avUrl
-      ?`<div class="chat-avatar" style="overflow:hidden;border-radius:50%;width:28px;height:28px;flex-shrink:0;"><img src="${avUrl}" style="width:100%;height:100%;object-fit:cover;" /></div>`
-      :`<div class="chat-avatar">${getChatEmoji(m.name)}</div>`;
+      ?`<div class="chat-avatar" style="overflow:hidden;border-radius:50%;width:28px;height:28px;flex-shrink:0;cursor:pointer;" onclick="openUserProfile('${m.uid}')"><img src="${avUrl}" style="width:100%;height:100%;object-fit:cover;" /></div>`
+      :`<div class="chat-avatar" style="cursor:pointer;" onclick="openUserProfile('${m.uid}')">${getChatEmoji(m.name)}</div>`;
+    // reactions
+    const reactions=m.reactions||{};
+    const REACTS=['👍','❤️','😂','😮','😢'];
+    const reactPills=Object.entries(reactions).filter(([e,u])=>Object.keys(u||{}).length>0).map(([emoji,users])=>{
+      const count=Object.keys(users).length;
+      const isMine=currentUser&&users[currentUser.uid.replace(/[.#$[\]]/g,'_')];
+      return `<button class="react-pill${isMine?' mine':''}" onclick="toggleReaction('${key}','${emoji}')" title="${emoji}">${emoji}<span class="react-pill-count">${count}</span></button>`;
+    }).join('');
+    const reactBtns=REACTS.map(e=>`<button class="chat-react-btn" onclick="toggleReaction('${key}','${e}')" title="${e}">${e}</button>`).join('');
+    const delBtn=isOwn?`<button class="chat-del-btn" onclick="deleteMyMsg('${key}')" title="löschen">🗑️</button>`:'';
     div.innerHTML=`${avatarHtml}
       <div class="chat-bubble">
-        <div class="chat-name">${m.name}</div>
+        <div class="chat-name" onclick="openUserProfile('${m.uid}')">${escapeHtml(m.name)}</div>
         <div class="chat-text">${escapeHtml(m.text)}</div>
+        ${reactPills?`<div class="chat-reactions">${reactPills}</div>`:''}
+        <div class="chat-actions">${reactBtns}${delBtn}</div>
         <div class="chat-time">${time}</div>
       </div>`;
     container.appendChild(div);
   });
   if(wasAtBottom) container.scrollTop=container.scrollHeight;
 }
+
+async function toggleReaction(msgKey, emoji){
+  if(!currentUser) return;
+  const safeUid=currentUser.uid.replace(/[.#$[\]]/g,'_');
+  const ref=fbDb.ref(`chat7d/${msgKey}/reactions/${emoji}/${safeUid}`);
+  const snap=await ref.once('value');
+  if(snap.exists()) await ref.remove();
+  else await ref.set(true);
+}
+
+async function deleteMyMsg(msgKey){
+  if(!currentUser) return;
+  const snap=await fbDb.ref('chat7d/'+msgKey).once('value');
+  const m=snap.val();
+  if(!m||m.uid!==currentUser.uid) return;
+  if(!confirm('Nachricht löschen?')) return;
+  await fbDb.ref('chat7d/'+msgKey).remove();
+}
+
+// User Profile Overlay
+async function openUserProfile(uid){
+  if(!uid) return;
+  const overlay=document.getElementById('userProfileOverlay');
+  overlay.classList.add('open');
+  // load user data
+  const snap=await fbDb.ref('users/'+uid).once('value');
+  const u=snap.val()||{};
+  const avWrap=document.getElementById('upAvWrap');
+  if(u.avatarUrl) avWrap.innerHTML=`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover;">`;
+  else avWrap.textContent=u.emoji||'🐱';
+  document.getElementById('upName').textContent=u.username||'Unbekannt';
+  const lvl=Math.max(1,Math.floor(Math.log2((u.xp||0)/100+1))+1);
+  document.getElementById('upTitle').textContent='Level '+lvl;
+  document.getElementById('upXp').textContent=u.xp||0;
+  document.getElementById('upLevel').textContent=lvl;
+  document.getElementById('upStreak').textContent=u.streak||0;
+  // badges
+  const badges=u.badges||{};
+  document.getElementById('upBadges').innerHTML=Object.keys(badges).slice(0,8).map(b=>`<span title="${b}" style="font-size:1.4rem;">${badges[b]?.icon||'🏅'}</span>`).join('');
+  // friend button
+  const fbDiv=document.getElementById('upFriendBtn');
+  if(uid===currentUser?.uid){ fbDiv.innerHTML='<span style="font-size:0.8rem;color:var(--text2);">das bist du!! 😄</span>'; return; }
+  const friendSnap=await fbDb.ref(`friends/${currentUser.uid}/${uid}`).once('value');
+  const isFriend=friendSnap.exists();
+  fbDiv.innerHTML=isFriend
+    ?`<button class="friend-btn red" onclick="removeFriend('${uid}')">💔 Freund entfernen</button>`
+    :`<button class="friend-btn" onclick="addFriend('${uid}','${(u.username||'').replace(/'/g,"\\'")}')">➕ Als Freund hinzufügen</button>`;
+}
+
+function closeUserProfile(){
+  document.getElementById('userProfileOverlay').classList.remove('open');
+}
+
+window.openUserProfile=openUserProfile;
+window.closeUserProfile=closeUserProfile;
 
 function escapeHtml(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
 
@@ -5411,6 +5805,241 @@ function tttCheck(p){
 window.tttClick=tttClick;
 window.tttReset=tttReset;
 window.tttSetDiff=tttSetDiff;
+
+// ============================================================
+// 🏠 HOME v7 — Stats & Particles
+// ============================================================
+function updateHomeStats(){
+  const el=n=>document.getElementById(n);
+  if(!currentUser){
+    ['homeStatXp','homeStatLvl','homeStatStreak','homeStatRank'].forEach(id=>{const e=el(id);if(e)e.textContent='–';});
+    const greet=el('homeUserGreet');
+    if(greet) greet.textContent='bitte einloggen um alles zu nutzen!! 👆';
+    return;
+  }
+  if(el('homeStatXp')) el('homeStatXp').textContent=totalXP||0;
+  if(el('homeStatLvl')) el('homeStatLvl').textContent='Lv'+(userLevel||1);
+  if(el('homeStatStreak')){
+    fbDb.ref('users/'+currentUser.uid+'/streak').once('value').then(s=>{
+      el('homeStatStreak').textContent=(s.val()||0)+'🔥';
+    });
+  }
+  // rank from leaderboard
+  if(el('homeStatRank')){
+    fbDb.ref('users').orderByChild('xp').once('value').then(snap=>{
+      const all=Object.entries(snap.val()||{}).sort(([,a],[,b])=>(b.xp||0)-(a.xp||0));
+      const rank=all.findIndex(([uid])=>uid===currentUser.uid)+1;
+      if(el('homeStatRank')) el('homeStatRank').textContent=rank>0?'#'+rank:'–';
+    });
+  }
+  const greet=el('homeUserGreet');
+  const hour=new Date().getHours();
+  const greeting=hour<12?'Guten Morgen':hour<17?'Guten Tag':'Guten Abend';
+  if(greet) greet.textContent=greeting+', '+currentUser.username+'!! 👋';
+}
+
+function initHomeParticles(){
+  const container=document.getElementById('heroParticles');
+  if(!container||container._init) return;
+  container._init=true;
+  for(let i=0;i<18;i++){
+    const p=document.createElement('div');
+    p.className='hero-particle';
+    const size=3+Math.random()*5;
+    p.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${4+Math.random()*6}s;animation-delay:${Math.random()*6}s;opacity:0;`;
+    container.appendChild(p);
+  }
+}
+
+// Also init on load after login
+setTimeout(()=>{initHomeParticles();updateHomeStats();},800);
+
+// ============================================================
+// 👫 FREUNDESLISTE
+// ============================================================
+async function friendSearch(query){
+  const res=document.getElementById('friendSearchResults');
+  if(!query||query.length<2){res.innerHTML='';return;}
+  const snap=await fbDb.ref('users').orderByChild('username').startAt(query).endAt(query+'\uf8ff').limitToFirst(8).once('value');
+  const users=snap.val()||{};
+  const entries=Object.entries(users).filter(([uid])=>uid!==currentUser?.uid);
+  if(!entries.length){res.innerHTML='<div style="font-size:0.8rem;color:var(--text2);padding:0.5rem;">niemanden gefunden</div>';return;}
+  // load friend status
+  const friendSnap=await fbDb.ref('friends/'+currentUser.uid).once('value');
+  const myFriends=friendSnap.val()||{};
+  res.innerHTML=entries.map(([uid,u])=>{
+    const avHtml=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover;">`:(u.emoji||'🐱');
+    const isFriend=myFriends[uid];
+    return `<div class="friend-item">
+      <div class="friend-av">${avHtml}</div>
+      <div style="flex:1;"><div class="friend-name">${escapeHtml(u.username||'?')}</div><div class="friend-lvl">Lv${Math.max(1,Math.floor(Math.log2((u.xp||0)/100+1))+1)}</div></div>
+      ${isFriend
+        ?`<button class="friend-btn red" onclick="removeFriend('${uid}')">💔 entfernen</button>`
+        :`<button class="friend-btn" onclick="addFriend('${uid}','${(u.username||'').replace(/'/g,"\\'")}')">➕ hinzufügen</button>`}
+    </div>`;
+  }).join('');
+}
+
+async function addFriend(uid, username){
+  if(!currentUser) return;
+  await fbDb.ref(`friends/${currentUser.uid}/${uid}`).set({username, addedAt:Date.now()});
+  showEgg('👫 Freund hinzugefügt!!');
+  loadFriends();
+  // refresh search
+  const q=document.getElementById('friendSearch')?.value;
+  if(q) friendSearch(q);
+  // refresh profile overlay if open
+  const overlay=document.getElementById('userProfileOverlay');
+  if(overlay.classList.contains('open')) openUserProfile(uid);
+}
+
+async function removeFriend(uid){
+  if(!currentUser) return;
+  if(!confirm('Freund entfernen?')) return;
+  await fbDb.ref(`friends/${currentUser.uid}/${uid}`).remove();
+  loadFriends();
+  const q=document.getElementById('friendSearch')?.value;
+  if(q) friendSearch(q);
+}
+
+async function loadFriends(){
+  const snap=await fbDb.ref('friends/'+currentUser.uid).once('value');
+  const friends=snap.val()||{};
+  const entries=Object.entries(friends);
+  document.getElementById('friendCount').textContent=entries.length;
+  const listEl=document.getElementById('friendList');
+  if(!listEl) return;
+  if(!entries.length){listEl.innerHTML='<div style="text-align:center;color:var(--text2);padding:1rem;">noch keine freunde... 😢</div>';return;}
+  // load full user data
+  listEl.innerHTML='<div style="text-align:center;color:var(--text2);font-size:0.8rem;">lade...</div>';
+  const rows=await Promise.all(entries.map(async([uid,f])=>{
+    const uSnap=await fbDb.ref('users/'+uid).once('value');
+    const u=uSnap.val()||{};
+    const avHtml=u.avatarUrl?`<img src="${u.avatarUrl}" style="width:100%;height:100%;object-fit:cover;">`:(u.emoji||'🐱');
+    const lvl=Math.max(1,Math.floor(Math.log2((u.xp||0)/100+1))+1);
+    return `<div class="friend-item" onclick="openUserProfile('${uid}')" style="cursor:pointer;">
+      <div class="friend-av">${avHtml}</div>
+      <div style="flex:1;"><div class="friend-name">${escapeHtml(u.username||f.username||'?')}</div><div class="friend-lvl">Lv${lvl} · ${u.xp||0} XP</div></div>
+      <button class="friend-btn red" onclick="event.stopPropagation();removeFriend('${uid}')">💔</button>
+    </div>`;
+  }));
+  listEl.innerHTML=rows.join('');
+}
+
+window.friendSearch=friendSearch;
+window.addFriend=addFriend;
+window.removeFriend=removeFriend;
+window.toggleReaction=toggleReaction;
+window.deleteMyMsg=deleteMyMsg;
+
+// ============================================================
+// 📅 EVENTS & UMFRAGEN
+// ============================================================
+let evCurrentTab='event';
+let evListener=null;
+
+function evSetTab(tab, btn){
+  evCurrentTab=tab;
+  document.querySelectorAll('[id^="evTab"]').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('evCreateEvent').style.display=tab==='event'?'block':'none';
+  document.getElementById('evCreatePoll').style.display=tab==='poll'?'block':'none';
+}
+
+async function evSubmit(type){
+  if(!currentUser){showEgg('❌ bitte erst einloggen!!');return;}
+  const msg=document.getElementById('evMsg');
+  if(type==='event'){
+    const title=document.getElementById('evTitle').value.trim();
+    const desc=document.getElementById('evDesc').value.trim();
+    const date=document.getElementById('evDate').value;
+    if(!title){msg.textContent='❌ titel fehlt!!';return;}
+    await fbDb.ref('events7d').push({type:'event',title,desc,date,uid:currentUser.uid,author:currentUser.username,ts:Date.now()});
+    document.getElementById('evTitle').value='';
+    document.getElementById('evDesc').value='';
+    document.getElementById('evDate').value='';
+    msg.textContent='✅ event erstellt!!';
+    showEgg('📅 Event erstellt!!');
+  } else {
+    const question=document.getElementById('pollQuestion').value.trim();
+    const options=[...document.querySelectorAll('.poll-opt-input')].map(i=>i.value.trim()).filter(v=>v);
+    if(!question){msg.textContent='❌ frage fehlt!!';return;}
+    if(options.length<2){msg.textContent='❌ mindestens 2 optionen!!';return;}
+    await fbDb.ref('events7d').push({type:'poll',title:question,options,uid:currentUser.uid,author:currentUser.username,ts:Date.now(),votes:{}});
+    document.getElementById('pollQuestion').value='';
+    document.querySelectorAll('.poll-opt-input').forEach(i=>i.value='');
+    msg.textContent='✅ umfrage erstellt!!';
+    showEgg('📊 Umfrage erstellt!!');
+  }
+  setTimeout(()=>msg.textContent='',3000);
+}
+
+async function evVote(eventKey, optionIndex){
+  if(!currentUser) return;
+  const safeUid=currentUser.uid.replace(/[.#$[\]]/g,'_');
+  const ref=fbDb.ref(`events7d/${eventKey}/votes/${safeUid}`);
+  const snap=await ref.once('value');
+  if(snap.exists()&&snap.val()===optionIndex){ await ref.remove(); }
+  else { await ref.set(optionIndex); }
+}
+
+async function evDelete(eventKey){
+  if(!currentUser) return;
+  if(!confirm('Event/Umfrage löschen?')) return;
+  await fbDb.ref('events7d/'+eventKey).remove();
+}
+
+function renderEvList(data){
+  const el=document.getElementById('evList');if(!el)return;
+  const entries=Object.entries(data||{}).sort(([,a],[,b])=>b.ts-a.ts);
+  if(!entries.length){el.innerHTML='<div style="text-align:center;color:var(--text2);padding:1.5rem;">noch keine events... erstell eins!! ☝️</div>';return;}
+  const safeUid=currentUser?.uid?.replace(/[.#$[\]]/g,'_');
+  el.innerHTML=entries.map(([key,ev])=>{
+    const isOwn=ev.uid===currentUser?.uid;
+    const d=ev.date?`📅 ${ev.date}`:'';
+    const delBtn=isOwn?`<button class="friend-btn red" style="font-size:0.7rem;padding:0.2rem 0.6rem;" onclick="evDelete('${key}')">🗑️ löschen</button>`:'';
+    if(ev.type==='poll'){
+      const votes=ev.votes||{};
+      const total=Object.values(votes).length;
+      const myVote=safeUid?votes[safeUid]:null;
+      const opts=(ev.options||[]).map((opt,i)=>{
+        const count=Object.values(votes).filter(v=>v===i).length;
+        const pct=total?Math.round(count/total*100):0;
+        const voted=myVote===i;
+        return `<div class="poll-opt${voted?' voted':''}" onclick="evVote('${key}',${i})">
+          <div class="poll-bar" style="width:${pct}%;"></div>
+          <span class="poll-label">${escapeHtml(opt)}</span>
+          <span class="poll-pct">${pct}%</span>
+        </div>`;
+      }).join('');
+      return `<div class="event-card${isOwn?' own':''}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.3rem;">
+          <div class="event-header">📊 ${escapeHtml(ev.title)}</div>${delBtn}
+        </div>
+        <div class="event-meta">von ${escapeHtml(ev.author||'?')} · ${total} stimmen</div>
+        ${opts}
+      </div>`;
+    } else {
+      return `<div class="event-card${isOwn?' own':''}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.3rem;">
+          <div class="event-header">📅 ${escapeHtml(ev.title)}</div>${delBtn}
+        </div>
+        ${ev.desc?`<div class="event-desc">${escapeHtml(ev.desc)}</div>`:''}
+        <div class="event-meta">${d?d+' · ':''}von ${escapeHtml(ev.author||'?')}</div>
+      </div>`;
+    }
+  }).join('');
+}
+
+function initEvents(){
+  if(evListener) fbDb.ref('events7d').off('value',evListener);
+  evListener=fbDb.ref('events7d').limitToLast(30).on('value',snap=>renderEvList(snap.val()||{}));
+}
+
+window.evSetTab=evSetTab;
+window.evSubmit=evSubmit;
+window.evVote=evVote;
+window.evDelete=evDelete;
 
 } // end initApp
 </script></body></html>
