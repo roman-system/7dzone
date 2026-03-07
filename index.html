@@ -382,6 +382,10 @@ header{text-align:center;padding:2rem 1rem 0.8rem;}
 .mute-custom-row span{font-size:0.82rem;color:var(--text2);}
 .mute-btns{display:flex;gap:0.5rem;}
 .mute-btns button{flex:1;}
+.settings-skin-btn{background:var(--card);border:2px solid var(--border);border-radius:14px;padding:1rem 0.5rem;text-align:center;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:0.3rem;}
+.settings-skin-btn:hover,.settings-skin-btn.active{border-color:var(--accent);box-shadow:0 0 12px var(--glow);}
+.settings-skin-btn .skin-label{font-family:'Press Start 2P';font-size:0.42rem;color:var(--accent);}
+.settings-skin-btn .skin-sub{font-size:0.7rem;color:var(--text2);}
 
 /* BANNED OVERLAY */
 #bannedOverlay{position:fixed;inset:0;z-index:999999;background:var(--bg);display:none;align-items:center;justify-content:center;padding:1rem;}
@@ -533,7 +537,7 @@ body.konami-active{animation:konamiFlash 0.4s linear 5;}
 
 <div class="theme-bar">
   <label>SKIN:</label>
-  <button class="tbtn on"  onclick="setTheme('',this)">🟢 Default</button>
+  <button class="tbtn on"  onclick="setTheme('default',this)">🟢 Default</button>
   <button class="tbtn" onclick="setTheme('neon',this)">💜 Neon</button>
   <button class="tbtn" onclick="setTheme('retro',this)">🟠 Retro</button>
   <button class="tbtn" onclick="setTheme('anime',this)">🌸 Anime</button>
@@ -769,6 +773,55 @@ body.konami-active{animation:konamiFlash 0.4s linear 5;}
       <button class="btn red" onclick="authLogout()">🚪 logout</button>
     </div>
   </div>
+
+  <!-- AUSSEHEN -->
+  <div class="card">
+    <div class="card-title">🎨 AUSSEHEN</div>
+    <p style="margin-bottom:1rem;">wähl deinen Skin / Style!!</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:0.7rem;">
+      <div class="settings-skin-btn" onclick="setTheme('default')" data-skin="default">
+        <span style="font-size:1.6rem;">🟢</span>
+        <span class="skin-label">Default</span>
+        <span class="skin-sub">klassisch grün</span>
+      </div>
+      <div class="settings-skin-btn" onclick="setTheme('neon')" data-skin="neon">
+        <span style="font-size:1.6rem;">💜</span>
+        <span class="skin-label">Neon</span>
+        <span class="skin-sub">pink & cyan</span>
+      </div>
+      <div class="settings-skin-btn" onclick="setTheme('retro')" data-skin="retro">
+        <span style="font-size:1.6rem;">🕹️</span>
+        <span class="skin-label">Retro</span>
+        <span class="skin-sub">8-bit style</span>
+      </div>
+      <div class="settings-skin-btn" onclick="setTheme('anime')" data-skin="anime">
+        <span style="font-size:1.6rem;">🌸</span>
+        <span class="skin-label">Anime</span>
+        <span class="skin-sub">pink & lila</span>
+      </div>
+      <div class="settings-skin-btn" onclick="setTheme('ocean')" data-skin="ocean">
+        <span style="font-size:1.6rem;">🌊</span>
+        <span class="skin-label">Ocean</span>
+        <span class="skin-sub">blau & türkis</span>
+      </div>
+      <div class="settings-skin-btn" onclick="setTheme('lava')" data-skin="lava">
+        <span style="font-size:1.6rem;">🌋</span>
+        <span class="skin-label">Lava</span>
+        <span class="skin-sub">rot & orange</span>
+      </div>
+      <div class="settings-skin-btn" onclick="setTheme('galaxy')" data-skin="galaxy">
+        <span style="font-size:1.6rem;">🔮</span>
+        <span class="skin-label">Galaxy</span>
+        <span class="skin-sub">lila & violett</span>
+      </div>
+      <div class="settings-skin-btn" onclick="setTheme('matrix')" data-skin="matrix">
+        <span style="font-size:1.6rem;">💻</span>
+        <span class="skin-label">Matrix</span>
+        <span class="skin-sub">matrix grün</span>
+      </div>
+    </div>
+    <div style="margin-top:1rem;font-size:0.78rem;color:var(--text2);">aktiver skin: <b style="color:var(--accent);" id="currentSkinLabel">Default</b></div>
+  </div>
 </div>
 </div>
 
@@ -882,6 +935,28 @@ body.konami-active{animation:konamiFlash 0.4s linear 5;}
   <div class="card" id="adminUsersCard" style="display:none;">
     <div class="card-title">👥 ALLE ACCOUNTS</div>
     <div id="adminUsersList"></div>
+  </div>
+
+  <!-- XP MANAGEMENT -->
+  <div class="card">
+    <div class="card-title">⭐ XP MANAGEMENT</div>
+    <p>gib einem User XP oder nimm welche weg!!</p>
+    <div style="display:flex;flex-direction:column;gap:0.6rem;margin-top:0.8rem;">
+      <div style="font-size:0.78rem;color:var(--text2);margin-bottom:0.2rem;">User laden um XP zu verwalten:</div>
+      <button class="btn" onclick="adminLoadXpUsers()" style="align-self:flex-start;">👥 User laden</button>
+      <div id="adminXpUserListWrap" style="display:none;margin-top:0.5rem;">
+        <select id="adminXpPerson" style="width:100%;padding:0.55rem 0.8rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.88rem;margin-bottom:0.6rem;"></select>
+        <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.6rem;">
+          <input id="adminXpAmount" type="number" min="1" max="999999" value="100" placeholder="XP Menge" style="flex:1;padding:0.5rem 0.8rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.88rem;outline:none;"/>
+          <span style="font-size:0.82rem;color:var(--text2);">XP</span>
+        </div>
+        <div style="display:flex;gap:0.5rem;">
+          <button class="btn" onclick="adminGiveXP(1)" style="flex:1;">⭐ geben</button>
+          <button class="btn red" onclick="adminGiveXP(-1)" style="flex:1;">➖ abnehmen</button>
+        </div>
+        <div id="adminXpMsg" style="font-size:0.78rem;color:var(--accent);margin-top:0.6rem;min-height:1rem;"></div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -1190,11 +1265,21 @@ function animate(){
   requestAnimationFrame(animate);
 }
 initParticles('');animate();
+// restore saved theme
+(function(){const t=localStorage.getItem('theme7d');if(t&&t!=='default'&&t!==''){setTheme(t);}else{setTheme('');}})();
 
 function setTheme(name,btn){
-  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
-  document.body.setAttribute('data-theme',name);currentTheme=name;initParticles(name);
-  if(musicOn){stopAllMusic();setTimeout(()=>buildMusicForTheme(name),100);}
+  const themeName=name==='default'?'':name;
+  // update top theme bar buttons
+  if(btn){document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
+  else{document.querySelectorAll('.tbtn').forEach(b=>{const oc=b.getAttribute('onclick')||'';b.classList.toggle('on',oc.includes("'"+name+"'")||(name==='default'&&oc.includes("'default'")));});}
+  document.body.setAttribute('data-theme',themeName);currentTheme=themeName;initParticles(themeName);
+  if(musicOn){stopAllMusic();setTimeout(()=>buildMusicForTheme(themeName),100);}
+  // update settings page skin buttons
+  document.querySelectorAll('.settings-skin-btn').forEach(b=>b.classList.toggle('active',b.dataset.skin===(name||'default')));
+  const skinNames={default:'Default',neon:'Neon',retro:'Retro',anime:'Anime',ocean:'Ocean',lava:'Lava',galaxy:'Galaxy',matrix:'Matrix'};
+  const lbl=document.getElementById('currentSkinLabel');if(lbl)lbl.textContent=skinNames[name||'default']||name;
+  localStorage.setItem('theme7d',name||'default');
 }
 
 function goPage(name,btn,bnavBtn){
@@ -1458,22 +1543,22 @@ function showEgg(msg){const t=document.getElementById('eggToast');t.textContent=
 // ===== ADMIN FUNCTIONS V2 =====
 async function adminLoadStats(){
   if(!currentUser?.isAdmin)return;
-  try{
-    const [usersSnap,chatSnap,onlineSnap,votesSnap]=await Promise.all([
-      fbDb.ref('users').once('value'),
-      fbDb.ref('chat7d').once('value'),
-      fbDb.ref('presence7d').once('value'),
-      fbDb.ref('votes7d').once('value'),
-    ]);
-    const users=usersSnap.val()||{};
-    const chat=chatSnap.val()||{};
-    const online=onlineSnap.val()||{};
-    const votes=votesSnap.val()||{};
-    document.getElementById('aStatUsers').textContent=Object.keys(users).length;
-    document.getElementById('aStatOnline').textContent=Object.keys(online).length;
-    document.getElementById('aStatMsgs').textContent=Object.keys(chat).length;
-    document.getElementById('aStatVotes').textContent=Object.values(votes).reduce((a,b)=>a+(b||0),0);
-  }catch(e){console.error(e);}
+  const msg=document.getElementById('adminMsg');
+  msg.textContent='⏳ lädt...';
+  // load each separately so one permission error doesn't break all
+  const safeGet=async(ref)=>{try{return await fbDb.ref(ref).once('value');}catch(e){return null;}};
+  const [usersSnap,chatSnap,onlineSnap,votesSnap]=await Promise.all([
+    safeGet('users'),safeGet('chat7d'),safeGet('presence7d'),safeGet('votes7d')
+  ]);
+  if(usersSnap){document.getElementById('aStatUsers').textContent=Object.keys(usersSnap.val()||{}).length;}
+  else{document.getElementById('aStatUsers').textContent='⚠️';}
+  if(onlineSnap){document.getElementById('aStatOnline').textContent=Object.keys(onlineSnap.val()||{}).length;}
+  else{document.getElementById('aStatOnline').textContent='⚠️';}
+  if(chatSnap){document.getElementById('aStatMsgs').textContent=Object.keys(chatSnap.val()||{}).length;}
+  else{document.getElementById('aStatMsgs').textContent='⚠️';}
+  if(votesSnap){document.getElementById('aStatVotes').textContent=Object.values(votesSnap.val()||{}).reduce((a,b)=>a+(b||0),0);}
+  else{document.getElementById('aStatVotes').textContent='⚠️';}
+  msg.textContent='✅ geladen!!';setTimeout(()=>msg.textContent='',2000);
 }
 
 async function adminLoadLeaderboard(){
@@ -1912,6 +1997,44 @@ function renderChallenges(){const list=document.getElementById('challengeList');
 function updateChallengeStats(){const done=Object.values(challengeDone).filter(Boolean).length;const xp=todayChallenges.filter(c=>challengeDone[c.id]).reduce((s,c)=>s+c.xp,0);document.getElementById('chStatDone').textContent=done;document.getElementById('chStatXp').textContent=xp;document.getElementById('chStatTotal').textContent=done;document.getElementById('profileChallenges').textContent=done;if(done>=5)checkAndAwardBadge('challenges5');}
 function startChallengeTimer(){setInterval(()=>{const el=document.getElementById('challengeTimer');if(!el)return;const now=new Date();const tomorrow=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);const diff=tomorrow-now;const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);el.textContent='reset in: '+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');},1000);}
 
+// ===== ADMIN XP MANAGEMENT =====
+async function adminLoadXpUsers(){
+  if(!currentUser?.isAdmin)return;
+  const wrap=document.getElementById('adminXpUserListWrap');
+  const sel=document.getElementById('adminXpPerson');
+  const msg=document.getElementById('adminXpMsg');
+  msg.textContent='⏳ laden...';
+  try{
+    const snap=await fbDb.ref('users').once('value');
+    const users=snap.val()||{};
+    const entries=Object.entries(users).filter(([_,u])=>u.username).sort((a,b)=>(a[1].username||'').localeCompare(b[1].username||''));
+    sel.innerHTML=entries.map(([uid,u])=>`<option value="${uid}" data-name="${u.username}">${u.username} (${u.xp||0} XP)</option>`).join('');
+    wrap.style.display='block';
+    msg.textContent='';
+  }catch(e){msg.textContent='❌ Fehler: '+e.message;wrap.style.display='none';}
+}
+async function adminGiveXP(dir){
+  if(!currentUser?.isAdmin)return;
+  const sel=document.getElementById('adminXpPerson');
+  const amount=parseInt(document.getElementById('adminXpAmount').value)||0;
+  const msg=document.getElementById('adminXpMsg');
+  if(!sel.value||amount<1){msg.textContent='⚠️ User & Menge wählen!!';return;}
+  const uid=sel.value;
+  const username=sel.options[sel.selectedIndex]?.dataset.name||'?';
+  const realAmount=amount*dir;
+  msg.textContent='⏳...';
+  try{
+    const snap=await fbDb.ref('users/'+uid+'/xp').once('value');
+    const currentXp=snap.val()||0;
+    const newXp=Math.max(0,currentXp+realAmount);
+    await fbDb.ref('users/'+uid+'/xp').set(newXp);
+    msg.textContent=(dir>0?`✅ +${amount} XP`:`➖ ${amount} XP`)+` für ${username}!! (jetzt: ${newXp} XP)`;
+    // refresh dropdown
+    sel.options[sel.selectedIndex].text=`${username} (${newXp} XP)`;
+    showEgg((dir>0?'⭐ +'+amount:' ➖ '+amount)+' XP für '+username+'!!');
+  }catch(e){msg.textContent='❌ Fehler: '+e.message;}
+}
+
 // ===== GLOBAL EXPORTS =====
 window.authLogout=authLogout;window.authSubmit=authSubmit;window.authSwitch=authSwitch;
 window.adminResetVotes=adminResetVotes;window.adminToggle=adminToggle;window.adminGiveVotes=adminGiveVotes;window.adminLoadUsers=adminLoadUsers;window.adminLoadStats=adminLoadStats;window.adminLoadLeaderboard=adminLoadLeaderboard;window.adminLoadBanList=adminLoadBanList;window.adminBanUser=adminBanUser;window.adminUnbanUser=adminUnbanUser;window.adminClearChat=adminClearChat;window.adminSendAnnouncement=adminSendAnnouncement;window.adminDeleteAllAnnouncements=adminDeleteAllAnnouncements;
@@ -1919,6 +2042,7 @@ window.closeHoF=closeHoF;window.closeSurprise=closeSurprise;window.goPage=goPage
 window.dpadDir=function(x,y){if(!snakeRunning)return;if(x===0&&y===0)return;const nd={x,y};if(nd.x===-snakeDir.x&&nd.y===-snakeDir.y)return;snakeDirQueue.push(nd);};
 window.resetStats=resetStats;window.setJokeCat=setJokeCat;window.setMemLevel=setMemLevel;window.setQuizLen=setQuizLen;window.setTheme=setTheme;window.setVol=setVol;window.showGame=showGame;window.showPunch=showPunch;window.startGame=startGame;window.startMemory=startMemory;window.startQuiz=startQuiz;window.answerQuiz=answerQuiz;window.setQuizCat=setQuizCat;window.startSnake=startSnake;window.toggleMusic=toggleMusic;window.toggleVoteSelectPage=toggleVoteSelectPage;window.submitVotePage=submitVotePage;window.resetMyVote=resetMyVote;window.openSurprise=openSurprise;window.openHoF=openHoF;window.renderVotePage=renderVotePage;window.showEgg=showEgg;window.closeLoginBonus=closeLoginBonus;window.closeLevelUp=closeLevelUp;window.sendChat=sendChat;window.deleteChatMsg=deleteChatMsg;window.wordleShare=wordleShare;window.renderChallenges=renderChallenges;window.initChat=initChat;
 window.openMuteModal=openMuteModal;window.closeMuteModal=closeMuteModal;window.selectMuteTime=selectMuteTime;window.confirmMuteUser=confirmMuteUser;window.adminUnmuteUser=adminUnmuteUser;
+window.adminLoadXpUsers=adminLoadXpUsers;window.adminGiveXP=adminGiveXP;
 
 } // end initApp
 </script>
