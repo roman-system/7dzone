@@ -107,6 +107,13 @@ header{text-align:center;padding:2rem 1rem 0.8rem;}
 .btn:hover{background:var(--accent);color:var(--bg);}
 .btn.red{border-color:#ff4444;color:#ff4444;}
 .btn.red:hover{background:#ff4444;color:#fff;}
+.btn.orange{border-color:#ffaa00;color:#ffaa00;}
+.btn.orange:hover{background:#ffaa00;color:#000;}
+.admin-mute-badge{display:inline-block;background:rgba(255,170,0,0.15);border:1px solid #ffaa00;border-radius:100px;padding:0.1rem 0.45rem;font-size:0.6rem;color:#ffaa00;margin-left:0.3rem;}
+.admin-ban-row{display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:0.4rem;font-size:0.82rem;}
+.admin-ban-row:last-child{border-bottom:none;}
+.admin-chat-row{display:flex;justify-content:space-between;align-items:flex-start;padding:0.45rem 0;border-bottom:1px solid var(--border);gap:0.5rem;font-size:0.78rem;}
+.admin-chat-row:last-child{border-bottom:none;}
 .btn-row{display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.8rem;}
 
 .home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1rem;margin-top:0.5rem;}
@@ -117,6 +124,24 @@ header{text-align:center;padding:2rem 1rem 0.8rem;}
 .home-tile:hover .tile-label{color:var(--accent);}
 
 /* GAME */
+/* XP LEADERBOARD */
+.lb-row{display:flex;align-items:center;gap:0.7rem;padding:0.7rem 0.5rem;border-bottom:1px solid var(--border);transition:background 0.15s;}
+.lb-row:last-child{border-bottom:none;}
+.lb-row:hover{background:rgba(255,255,255,0.03);border-radius:10px;}
+.lb-rank{font-family:'Press Start 2P';font-size:0.55rem;color:var(--text2);min-width:1.8rem;text-align:center;}
+.lb-rank.gold{color:#ffd700;text-shadow:0 0 8px #ffd700;}
+.lb-rank.silver{color:#c0c0c0;text-shadow:0 0 6px #c0c0c0;}
+.lb-rank.bronze{color:#cd7f32;text-shadow:0 0 6px #cd7f32;}
+.lb-emoji{font-size:1.4rem;min-width:1.8rem;text-align:center;}
+.lb-info{flex:1;min-width:0;}
+.lb-name{font-weight:900;font-size:0.92rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lb-name.me{color:var(--accent);}
+.lb-sublabel{font-size:0.68rem;color:var(--text2);margin-top:0.1rem;}
+.lb-bar-wrap{height:5px;background:var(--border);border-radius:100px;margin-top:0.3rem;overflow:hidden;}
+.lb-bar-fill{height:100%;border-radius:100px;background:var(--accent);box-shadow:0 0 6px var(--accent);transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+.lb-xp{font-family:'Press Start 2P';font-size:0.48rem;color:var(--accent);white-space:nowrap;text-align:right;}
+.lb-me-marker{font-size:0.6rem;color:var(--accent);margin-left:0.2rem;}
+
 #gameArea{position:relative;width:100%;height:300px;background:var(--bg);border:2px solid var(--border);border-radius:12px;overflow:hidden;cursor:crosshair;user-select:none;}
 .game-emoji{position:absolute;font-size:2.2rem;cursor:pointer;user-select:none;animation:wob 0.6s ease-in-out infinite alternate;}
 @keyframes wob{from{transform:rotate(-7deg);}to{transform:rotate(7deg);}}
@@ -479,6 +504,7 @@ footer span{color:var(--accent);}
   <button class="ptab" onclick="goPage('chat',this)">💬 Chat</button>
   <button class="ptab" onclick="goPage('challenges',this)">🏆 Challenges</button>
   <button class="ptab" onclick="goPage('vote',this)">⭐ Voting</button>
+  <button class="ptab" onclick="goPage('leaderboard',this)">🏆 Rangliste</button>
   <button class="ptab" onclick="goPage('profile',this)">👤 Profil</button>
   <button class="ptab" onclick="goPage('admin',this)" id="adminTab" style="display:none;border-color:#ff4444;color:#ff4444;">👑 Admin</button>
   <button class="ptab" onclick="goPage('settings',this)" id="settingsTab">⚙️ Settings</button>
@@ -733,20 +759,140 @@ footer span{color:var(--accent);}
 <!-- ADMIN PAGE -->
 <div class="page" id="page-admin">
 <div class="wrap">
-  <div class="card">
+
+  <!-- HEADER -->
+  <div class="card" style="border-color:#ff4444;">
     <div class="card-title" style="color:#ff4444;">👑 ADMIN PANEL</div>
-    <p>nur für dich sichtbar!! 🔐</p>
-    <div class="btn-row">
-      <button class="btn red" onclick="adminResetVotes()">🗑️ votes resetten</button>
-      <button class="btn" onclick="adminLoadUsers()">👥 alle accounts laden</button>
+    <p>nur für <b style="color:var(--accent);">Roman-Owner</b> sichtbar!! 🔐</p>
+    <div id="adminMsg" style="font-size:0.82rem;color:var(--accent);margin-top:0.5rem;min-height:1rem;"></div>
+  </div>
+
+  <!-- 📊 LIVE STATS -->
+  <div class="card">
+    <div class="card-title">📊 LIVE STATS</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.6rem;margin-bottom:0.8rem;" id="adminStatGrid">
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:0.8rem;text-align:center;">
+        <div style="font-size:1.8rem;font-weight:900;color:var(--accent);" id="aStatUsers">-</div>
+        <div style="font-size:0.7rem;color:var(--text2);">👥 Accounts</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:0.8rem;text-align:center;">
+        <div style="font-size:1.8rem;font-weight:900;color:#00ff88;" id="aStatOnline">-</div>
+        <div style="font-size:0.7rem;color:var(--text2);">🟢 Online jetzt</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:0.8rem;text-align:center;">
+        <div style="font-size:1.8rem;font-weight:900;color:var(--accent2);" id="aStatMsgs">-</div>
+        <div style="font-size:0.7rem;color:var(--text2);">💬 Chat Msgs</div>
+      </div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:0.8rem;text-align:center;">
+        <div style="font-size:1.8rem;font-weight:900;color:#ffaa00;" id="aStatVotes">-</div>
+        <div style="font-size:0.7rem;color:var(--text2);">🗳️ Votes</div>
+      </div>
     </div>
-    <div id="adminMsg" style="font-size:0.82rem;color:var(--accent);margin-top:0.7rem;min-height:1rem;"></div>
-    <div id="adminVoteGivenSection" style="display:none;margin-top:1rem;background:var(--bg);border-radius:12px;padding:1rem;border:1px solid var(--border);">
-      <div style="font-size:0.85rem;font-weight:700;color:var(--accent);margin-bottom:0.7rem;">🗳️ VOTES MANUELL GEBEN</div>
+    <button class="btn" onclick="adminLoadStats()">🔄 Stats laden</button>
+  </div>
+
+  <!-- 🏆 XP LEADERBOARD -->
+  <div class="card">
+    <div class="card-title">🏆 XP LEADERBOARD</div>
+    <div id="adminXpLeaderboard" style="margin-bottom:0.8rem;"><div style="color:var(--text2);font-size:0.82rem;">⏳ noch nicht geladen</div></div>
+    <button class="btn" onclick="adminLoadLeaderboard()">🔄 laden</button>
+  </div>
+
+  <!-- ⭐ XP MANAGEMENT -->
+  <div class="card">
+    <div class="card-title">⭐ XP MANAGEMENT</div>
+    <p style="margin-bottom:0.8rem;">gib XP, nimm welche weg, oder reset alles!!</p>
+    <div style="display:flex;flex-direction:column;gap:0.6rem;">
+      <button class="btn" onclick="adminLoadXpUsers()" style="align-self:flex-start;">👥 User laden</button>
+      <div id="adminXpUserListWrap" style="display:none;">
+        <select id="adminXpPerson" style="width:100%;padding:0.55rem 0.8rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.88rem;margin-bottom:0.6rem;"></select>
+        <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.6rem;">
+          <input id="adminXpAmount" type="number" min="1" max="999999" value="100" style="flex:1;padding:0.5rem 0.8rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.88rem;outline:none;"/>
+          <span style="font-size:0.82rem;color:var(--text2);">XP</span>
+        </div>
+        <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
+          <button class="btn" onclick="adminGiveXP(1)" style="flex:1;">⭐ geben</button>
+          <button class="btn red" onclick="adminGiveXP(-1)" style="flex:1;">➖ abnehmen</button>
+        </div>
+        <div id="adminXpMsg" style="font-size:0.78rem;color:var(--accent);min-height:1rem;"></div>
+      </div>
+    </div>
+    <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+      <div style="font-size:0.78rem;color:#ff4444;margin-bottom:0.5rem;">⚠️ GEFÄHRLICH:</div>
+      <button class="btn red" onclick="adminResetAllXP()">🔄 ALLE XP auf 0 reset</button>
+    </div>
+  </div>
+
+  <!-- 🚫 BAN MANAGEMENT -->
+  <div class="card">
+    <div class="card-title">🚫 BAN MANAGEMENT</div>
+    <p style="margin-bottom:0.8rem;">sperr oder entsperre User!!</p>
+    <div id="adminBanList"><div style="color:var(--text2);font-size:0.82rem;">⏳ noch nicht geladen</div></div>
+    <button class="btn" style="margin-top:0.8rem;" onclick="adminLoadBanList()">🔄 User laden</button>
+  </div>
+
+  <!-- 🔇 CHAT MUTE -->
+  <div class="card">
+    <div class="card-title">🔇 CHAT MUTE</div>
+    <p style="margin-bottom:0.8rem;">User für eine bestimmte Zeit im Chat stumm schalten!!</p>
+    <div id="adminMuteList"><div style="color:var(--text2);font-size:0.82rem;">⏳ noch nicht geladen</div></div>
+    <button class="btn" style="margin-top:0.8rem;" onclick="adminLoadMuteList()">🔄 User laden</button>
+    <!-- mute time picker (hidden, shown inline) -->
+    <div id="adminMutePicker" style="display:none;margin-top:1rem;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:1rem;">
+      <div style="font-size:0.82rem;font-weight:700;color:#ffaa00;margin-bottom:0.7rem;">🔇 stumm schalten: <span id="adminMuteTargetName" style="color:var(--accent);"></span></div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.4rem;margin-bottom:0.6rem;">
+        <button class="btn" style="font-size:0.42rem;" onclick="adminDoMute(5)">5 Min</button>
+        <button class="btn" style="font-size:0.42rem;" onclick="adminDoMute(15)">15 Min</button>
+        <button class="btn" style="font-size:0.42rem;" onclick="adminDoMute(30)">30 Min</button>
+        <button class="btn" style="font-size:0.42rem;" onclick="adminDoMute(60)">1 Std</button>
+        <button class="btn" style="font-size:0.42rem;" onclick="adminDoMute(360)">6 Std</button>
+        <button class="btn" style="font-size:0.42rem;" onclick="adminDoMute(1440)">24 Std</button>
+      </div>
+      <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;">
+        <input id="adminMuteCustomMin" type="number" min="1" placeholder="eigene Minuten..." style="flex:1;padding:0.45rem 0.7rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.82rem;outline:none;"/>
+        <button class="btn orange" style="font-size:0.42rem;" onclick="adminDoMuteCustom()">✔ OK</button>
+      </div>
+      <button class="btn" style="font-size:0.42rem;" onclick="document.getElementById('adminMutePicker').style.display='none'">✖ abbrechen</button>
+    </div>
+  </div>
+
+  <!-- 📢 ANKÜNDIGUNG -->
+  <div class="card">
+    <div class="card-title">📢 ANKÜNDIGUNG</div>
+    <p style="margin-bottom:0.8rem;">schick eine Nachricht an alle User die gerade online sind!!</p>
+    <textarea id="adminAnnText" placeholder="Deine Ankündigung..." style="width:100%;padding:0.7rem;border-radius:10px;background:var(--bg);border:1.5px solid var(--border);color:var(--text);font-family:'Nunito';font-size:0.92rem;resize:vertical;min-height:80px;outline:none;box-sizing:border-box;" oninput="this.style.borderColor='var(--accent)'"></textarea>
+    <div style="display:flex;gap:0.5rem;margin-top:0.6rem;flex-wrap:wrap;">
+      <button class="btn" onclick="adminSendAnnouncement()">📢 SENDEN</button>
+      <button class="btn red" onclick="adminDeleteAnnouncements()">🗑️ alle löschen</button>
+    </div>
+    <div id="adminAnnMsg" style="font-size:0.78rem;color:var(--accent);margin-top:0.5rem;min-height:1rem;"></div>
+  </div>
+
+  <!-- 💬 CHAT MANAGEMENT -->
+  <div class="card">
+    <div class="card-title">💬 CHAT MANAGEMENT</div>
+    <p style="margin-bottom:0.8rem;">einzelne Nachrichten löschen oder komplett clearen!!</p>
+    <div id="adminChatMsgList"><div style="color:var(--text2);font-size:0.82rem;">⏳ noch nicht geladen</div></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.8rem;flex-wrap:wrap;">
+      <button class="btn" onclick="adminLoadChatMsgs()">🔄 Nachrichten laden</button>
+      <button class="btn red" onclick="adminClearChat()">🗑️ alles löschen</button>
+    </div>
+    <div id="adminChatMgmtMsg" style="font-size:0.78rem;color:var(--accent);margin-top:0.5rem;min-height:1rem;"></div>
+  </div>
+
+  <!-- 🗳️ VOTE MANAGEMENT -->
+  <div class="card">
+    <div class="card-title">🗳️ VOTE MANAGEMENT</div>
+    <div style="display:flex;gap:0.5rem;margin-bottom:0.8rem;flex-wrap:wrap;">
+      <button class="btn red" onclick="adminResetVotes()">🗑️ Votes resetten</button>
+      <button class="btn" onclick="adminLoadUsers()">👥 Accounts laden</button>
+    </div>
+    <div id="adminVoteGivenSection" style="display:none;background:var(--bg);border-radius:12px;padding:1rem;border:1px solid var(--border);">
+      <div style="font-size:0.85rem;font-weight:700;color:var(--accent);margin-bottom:0.7rem;">🗳️ Votes manuell geben</div>
       <div style="display:flex;flex-direction:column;gap:0.5rem;">
         <select id="adminVotePerson" style="padding:0.5rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.82rem;"></select>
-        <input id="adminVoteAmount" type="number" min="1" max="99999" value="1" placeholder="Anzahl Votes" style="padding:0.5rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.82rem;">
-        <div style="display:flex;gap:0.5rem;margin-top:0.2rem;">
+        <input id="adminVoteAmount" type="number" min="1" max="99999" value="1" style="padding:0.5rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.82rem;">
+        <div style="display:flex;gap:0.5rem;">
           <button class="btn" onclick="adminGiveVotes(1)" style="flex:1;">✅ geben</button>
           <button class="btn red" onclick="adminGiveVotes(-1)" style="flex:1;">➖ abnehmen</button>
         </div>
@@ -754,30 +900,33 @@ footer span{color:var(--accent);}
       <div id="adminVoteMsg" style="font-size:0.78rem;color:var(--accent);margin-top:0.5rem;min-height:1rem;"></div>
     </div>
   </div>
+
+  <!-- 🔑 ADMIN-RECHTE -->
+  <div class="card">
+    <div class="card-title">🔑 ADMIN-RECHTE</div>
+    <p style="margin-bottom:0.8rem;">gib anderen Usern Admin-Rechte oder entziehe sie!!</p>
+    <div id="adminUsersCard2"><div style="color:var(--text2);font-size:0.82rem;">⏳ noch nicht geladen</div></div>
+    <button class="btn" style="margin-top:0.8rem;" onclick="adminLoadAdminRights()">🔄 User laden</button>
+  </div>
+
+  <!-- 📝 USERNAME ÄNDERN -->
+  <div class="card">
+    <div class="card-title">📝 USERNAME ÄNDERN</div>
+    <p style="margin-bottom:0.8rem;">ändere den Usernamen eines Users!!</p>
+    <div style="display:flex;flex-direction:column;gap:0.6rem;">
+      <button class="btn" onclick="adminLoadUsernameList()" style="align-self:flex-start;">👥 User laden</button>
+      <div id="adminUsernameWrap" style="display:none;">
+        <select id="adminUsernameSelect" style="width:100%;padding:0.55rem 0.8rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.88rem;margin-bottom:0.6rem;"></select>
+        <input id="adminUsernameNew" type="text" maxlength="20" placeholder="neuer Username..." style="width:100%;padding:0.5rem 0.8rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.88rem;outline:none;box-sizing:border-box;margin-bottom:0.6rem;"/>
+        <button class="btn orange" onclick="adminChangeUsername()">✏️ umbenennen</button>
+        <div id="adminUsernameMsg" style="font-size:0.78rem;color:var(--accent);margin-top:0.5rem;min-height:1rem;"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="card" id="adminUsersCard" style="display:none;">
     <div class="card-title">👥 ALLE ACCOUNTS</div>
     <div id="adminUsersList"></div>
-  </div>
-
-  <!-- XP MANAGEMENT -->
-  <div class="card">
-    <div class="card-title">⭐ XP MANAGEMENT</div>
-    <p>gib einem User XP oder nimm welche weg!!</p>
-    <div style="display:flex;flex-direction:column;gap:0.6rem;margin-top:0.8rem;">
-      <button class="btn" onclick="adminLoadXpUsers()" style="align-self:flex-start;">👥 User laden</button>
-      <div id="adminXpUserListWrap" style="display:none;margin-top:0.4rem;">
-        <select id="adminXpPerson" style="width:100%;padding:0.55rem 0.8rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.88rem;margin-bottom:0.6rem;"></select>
-        <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.6rem;">
-          <input id="adminXpAmount" type="number" min="1" max="999999" value="100" placeholder="XP Menge" style="flex:1;padding:0.5rem 0.8rem;border-radius:8px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:0.88rem;outline:none;"/>
-          <span style="font-size:0.82rem;color:var(--text2);">XP</span>
-        </div>
-        <div style="display:flex;gap:0.5rem;">
-          <button class="btn" onclick="adminGiveXP(1)" style="flex:1;">⭐ geben</button>
-          <button class="btn red" onclick="adminGiveXP(-1)" style="flex:1;">➖ abnehmen</button>
-        </div>
-        <div id="adminXpMsg" style="font-size:0.78rem;color:var(--accent);margin-top:0.6rem;min-height:1rem;"></div>
-      </div>
-    </div>
   </div>
 
 </div>
@@ -874,6 +1023,22 @@ footer span{color:var(--accent);}
 </div>
 
 <!-- PROFILE -->
+<!-- XP LEADERBOARD PAGE -->
+<div class="page" id="page-leaderboard">
+<div class="wrap">
+  <div class="card">
+    <div class="card-title">🏆 XP RANGLISTE</div>
+    <p style="margin-bottom:1rem;">die besten spieler der 7D ZONE!! wer ist der GOAT?? 🐐</p>
+    <div class="btn-row" style="margin-bottom:1rem;">
+      <button class="btn" onclick="loadXpLeaderboard()">🔄 aktualisieren</button>
+    </div>
+    <div id="xpLeaderboardList">
+      <div style="text-align:center;padding:2rem;color:var(--text2);font-size:0.85rem;">⏳ laden...</div>
+    </div>
+  </div>
+</div>
+</div>
+
 <div class="page" id="page-profile">
 <div class="wrap">
   <div class="card" style="text-align:center;">
@@ -1122,6 +1287,7 @@ function goPage(name,btn,bnavBtn){
   if(bnBtn) bnBtn.classList.add('on');
   if(name==='vote'&&currentUser) renderVotePage();
   if(name==='chat'&&currentUser) initChat();
+  if(name==='leaderboard') loadXpLeaderboard();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function goPageByName(name){goPage(name,null,null);}
@@ -2058,38 +2224,294 @@ document.getElementById('score').addEventListener('click',()=>{scoreClicks++;cle
 
 function showEgg(msg){const t=document.getElementById('eggToast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
+// ============================================================
+// ADMIN FUNCTIONS (nur Roman-Owner)
+// ============================================================
+function isOwner(){return currentUser&&currentUser.username===ADMIN_USERNAME;}
+
+async function adminLoadStats(){
+  if(!isOwner())return;
+  const safeGet=async r=>{try{return await fbDb.ref(r).once('value');}catch(e){return null;}};
+  const [us,cs,os,vs]=await Promise.all([safeGet('users'),safeGet('chat7d'),safeGet('presence7d'),safeGet('votes7d')]);
+  document.getElementById('aStatUsers').textContent=us?Object.keys(us.val()||{}).length:'⚠️';
+  document.getElementById('aStatOnline').textContent=os?Object.keys(os.val()||{}).length:'⚠️';
+  document.getElementById('aStatMsgs').textContent=cs?Object.keys(cs.val()||{}).length:'⚠️';
+  document.getElementById('aStatVotes').textContent=vs?Object.values(vs.val()||{}).reduce((a,b)=>a+(b||0),0):'⚠️';
+  document.getElementById('adminMsg').textContent='✅ stats geladen!!';setTimeout(()=>document.getElementById('adminMsg').textContent='',2000);
+}
+
+async function adminLoadLeaderboard(){
+  if(!isOwner())return;
+  const el=document.getElementById('adminXpLeaderboard');
+  el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">⏳...</div>';
+  try{
+    const snap=await fbDb.ref('users').once('value');
+    const users=snap.val()||{};
+    const entries=Object.values(users).filter(u=>u.username).map(u=>({name:u.username,xp:u.xp||0,level:getLevelFromXp(u.xp||0)})).sort((a,b)=>b.xp-a.xp).slice(0,15);
+    if(!entries.length){el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">keine daten</div>';return;}
+    el.innerHTML=entries.map((u,i)=>{
+      const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1);
+      return `<div class="lb-row"><div class="lb-rank ${i<3?['gold','silver','bronze'][i]:''}">${medal}</div><div class="lb-emoji">${LEVEL_EMOJIS[Math.min(u.level-1,LEVEL_EMOJIS.length-1)]}</div><div class="lb-info"><div class="lb-name">${u.name}</div><div class="lb-sublabel">Lv${u.level}</div></div><div class="lb-xp">${u.xp.toLocaleString()} XP</div></div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<div style="color:#ff4444;font-size:0.82rem;">❌ '+e.message+'</div>';}
+}
+
+async function adminLoadXpUsers(){
+  if(!isOwner())return;
+  const wrap=document.getElementById('adminXpUserListWrap');
+  const sel=document.getElementById('adminXpPerson');
+  const msg=document.getElementById('adminXpMsg');
+  msg.textContent='⏳ laden...';
+  try{
+    const snap=await fbDb.ref('users').once('value');
+    const users=snap.val()||{};
+    const entries=Object.entries(users).filter(([_,u])=>u.username).sort((a,b)=>(a[1].username||'').localeCompare(b[1].username||''));
+    sel.innerHTML=entries.map(([uid,u])=>`<option value="${uid}" data-name="${u.username}">${u.username} — ${u.xp||0} XP</option>`).join('');
+    wrap.style.display='block';msg.textContent='';
+  }catch(e){msg.textContent='❌ '+e.message;}
+}
+
+async function adminGiveXP(dir){
+  if(!isOwner())return;
+  const sel=document.getElementById('adminXpPerson');
+  const amount=parseInt(document.getElementById('adminXpAmount').value)||0;
+  const msg=document.getElementById('adminXpMsg');
+  if(!sel.value||amount<1){msg.textContent='⚠️ User & Menge wählen!!';return;}
+  const uid=sel.value;const username=sel.options[sel.selectedIndex]?.dataset.name||'?';
+  msg.textContent='⏳...';
+  try{
+    const snap=await fbDb.ref('users/'+uid+'/xp').once('value');
+    const newXp=Math.max(0,(snap.val()||0)+(amount*dir));
+    await fbDb.ref('users/'+uid+'/xp').set(newXp);
+    msg.textContent=(dir>0?`✅ +${amount} XP`:`➖ ${amount} XP`)+` für ${username}!! (jetzt: ${newXp} XP)`;
+    sel.options[sel.selectedIndex].text=`${username} — ${newXp} XP`;
+    showEgg((dir>0?'⭐ +'+amount:'➖ '+amount)+' XP für '+username+'!!');
+  }catch(e){msg.textContent='❌ '+e.message;}
+}
+
+async function adminResetAllXP(){
+  if(!isOwner())return;
+  if(!confirm('WIRKLICH alle XP auf 0 setzen??'))return;
+  if(!confirm('SICHER?? Alle Level und XP werden gelöscht!!'))return;
+  try{
+    const snap=await fbDb.ref('users').once('value');
+    const users=snap.val()||{};
+    await Promise.all(Object.keys(users).map(uid=>fbDb.ref('users/'+uid+'/xp').set(0)));
+    showEgg('🔄 Alle XP auf 0 gesetzt!!');
+  }catch(e){showEgg('❌ Fehler: '+e.message);}
+}
+
+async function adminLoadBanList(){
+  if(!isOwner())return;
+  const el=document.getElementById('adminBanList');
+  el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">⏳ laden...</div>';
+  try{
+    const snap=await fbDb.ref('users').once('value');
+    const users=snap.val()||{};
+    const entries=Object.entries(users).filter(([_,u])=>u.username&&u.username!==ADMIN_USERNAME);
+    if(!entries.length){el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">keine user</div>';return;}
+    el.innerHTML=entries.map(([uid,u])=>{
+      const banned=u.banned===true;
+      return `<div class="admin-ban-row"><div><span style="font-weight:700;color:${banned?'#ff4444':'var(--text)'};">${u.username}${banned?' 🚫':''}</span></div><div style="display:flex;gap:0.4rem;">${!banned?`<button class="btn red" style="font-size:0.4rem;padding:0.25rem 0.55rem;" onclick="adminBanUser('${uid}','${u.username}')">🚫 bannen</button>`:`<button class="btn" style="font-size:0.4rem;padding:0.25rem 0.55rem;" onclick="adminUnbanUser('${uid}','${u.username}')">✅ entbannen</button>`}</div></div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<div style="color:#ff4444;font-size:0.82rem;">❌ '+e.message+'</div>';}
+}
+
+async function adminBanUser(uid,username){
+  if(!isOwner())return;
+  const reason=prompt(`Grund für Ban von "${username}":`)||'Du wurdest gesperrt.';
+  if(!confirm(`"${username}" wirklich bannen?`))return;
+  await fbDb.ref('users/'+uid+'/banned').set(true);
+  await fbDb.ref('users/'+uid+'/banReason').set(reason);
+  showEgg('🚫 '+username+' gebannt!!');adminLoadBanList();
+}
+
+async function adminUnbanUser(uid,username){
+  if(!isOwner())return;
+  if(!confirm('"'+username+'" entsperren?'))return;
+  await fbDb.ref('users/'+uid+'/banned').remove();
+  await fbDb.ref('users/'+uid+'/banReason').remove();
+  showEgg('✅ '+username+' entsperrt!!');adminLoadBanList();
+}
+
+let muteTargetUid='',muteTargetName='';
+async function adminLoadMuteList(){
+  if(!isOwner())return;
+  const el=document.getElementById('adminMuteList');
+  el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">⏳ laden...</div>';
+  try{
+    const snap=await fbDb.ref('users').once('value');
+    const users=snap.val()||{};const now=Date.now();
+    const entries=Object.entries(users).filter(([_,u])=>u.username&&u.username!==ADMIN_USERNAME);
+    if(!entries.length){el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">keine user</div>';return;}
+    el.innerHTML=entries.map(([uid,u])=>{
+      const muted=u.chatMutedUntil&&u.chatMutedUntil>now;
+      const remain=muted?formatMuteRemain(u.chatMutedUntil-now):'';
+      return `<div class="admin-ban-row"><div><span style="font-weight:700;">${u.username}</span>${muted?`<span class="admin-mute-badge">🔇 ${remain}</span>`:''}</div><div style="display:flex;gap:0.4rem;"><button class="btn orange" style="font-size:0.4rem;padding:0.25rem 0.55rem;" onclick="adminOpenMutePicker('${uid}','${u.username}')">🔇 muten</button>${muted?`<button class="btn" style="font-size:0.4rem;padding:0.25rem 0.55rem;" onclick="adminUnmute('${uid}','${u.username}')">🔊 unmuten</button>`:''}</div></div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<div style="color:#ff4444;font-size:0.82rem;">❌ '+e.message+'</div>';}
+}
+
+function adminOpenMutePicker(uid,username){
+  muteTargetUid=uid;muteTargetName=username;
+  document.getElementById('adminMuteTargetName').textContent=username;
+  document.getElementById('adminMuteCustomMin').value='';
+  document.getElementById('adminMutePicker').style.display='block';
+}
+function formatMuteRemain(ms){const m=Math.floor(ms/60000);if(m<60)return m+'min';return Math.floor(m/60)+'h'+(m%60>0?' '+m%60+'min':'');}
+async function adminDoMute(minutes){
+  if(!isOwner()||!muteTargetUid)return;
+  await fbDb.ref('users/'+muteTargetUid+'/chatMutedUntil').set(Date.now()+minutes*60000);
+  showEgg('🔇 '+muteTargetName+' für '+minutes+' Min stumm!!');
+  document.getElementById('adminMutePicker').style.display='none';
+  adminLoadMuteList();
+}
+async function adminDoMuteCustom(){
+  const min=parseInt(document.getElementById('adminMuteCustomMin').value)||0;
+  if(min<1){showEgg('⚠️ Minuten eingeben!!');return;}
+  await adminDoMute(min);
+}
+async function adminUnmute(uid,username){
+  if(!isOwner())return;
+  await fbDb.ref('users/'+uid+'/chatMutedUntil').remove();
+  showEgg('🔊 '+username+' nicht mehr stumm!!');adminLoadMuteList();
+}
+
+async function adminSendAnnouncement(){
+  if(!isOwner())return;
+  const text=document.getElementById('adminAnnText').value.trim();
+  const msg=document.getElementById('adminAnnMsg');
+  if(!text){msg.textContent='⚠️ text eingeben!!';return;}
+  msg.textContent='⏳ sende...';
+  const key=fbDb.ref('announcements').push().key;
+  await fbDb.ref('announcements/'+key).set({text,by:currentUser.username,ts:Date.now()});
+  document.getElementById('adminAnnText').value='';
+  msg.textContent='✅ gesendet!!';setTimeout(()=>msg.textContent='',3000);showEgg('📢 Ankündigung gesendet!!');
+}
+async function adminDeleteAnnouncements(){
+  if(!isOwner())return;
+  if(!confirm('Alle Ankündigungen löschen?'))return;
+  await fbDb.ref('announcements').remove();
+  document.getElementById('adminAnnMsg').textContent='✅ alle gelöscht!!';setTimeout(()=>document.getElementById('adminAnnMsg').textContent='',2000);
+}
+
+async function adminLoadChatMsgs(){
+  if(!isOwner())return;
+  const el=document.getElementById('adminChatMsgList');
+  el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">⏳ laden...</div>';
+  try{
+    const snap=await fbDb.ref('chat7d').limitToLast(30).once('value');
+    const msgs=snap.val()||{};
+    const entries=Object.entries(msgs).sort((a,b)=>b[1].ts-a[1].ts);
+    if(!entries.length){el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">keine nachrichten</div>';return;}
+    el.innerHTML=entries.map(([key,m])=>`<div class="admin-chat-row"><div style="flex:1;min-width:0;"><span style="color:var(--accent);font-weight:700;">${m.name}:</span> <span style="color:var(--text2);">${escapeHtml(m.text)}</span></div><button style="border:none;background:none;color:#ff4444;cursor:pointer;font-size:1rem;flex-shrink:0;" onclick="adminDeleteMsg('${key}')">🗑️</button></div>`).join('');
+  }catch(e){el.innerHTML='<div style="color:#ff4444;font-size:0.82rem;">❌ '+e.message+'</div>';}
+}
+async function adminDeleteMsg(key){
+  if(!isOwner())return;
+  await fbDb.ref('chat7d/'+key).remove();
+  showEgg('🗑️ Nachricht gelöscht!!');adminLoadChatMsgs();
+}
+async function adminClearChat(){
+  if(!isOwner())return;
+  if(!confirm('KOMPLETTEN CHAT LÖSCHEN??'))return;
+  const msg=document.getElementById('adminChatMgmtMsg');
+  msg.textContent='⏳ lösche...';
+  await fbDb.ref('chat7d').remove().catch(()=>{});
+  msg.textContent='✅ Chat gelöscht!!';setTimeout(()=>msg.textContent='',3000);
+  document.getElementById('adminChatMsgList').innerHTML='<div style="color:var(--text2);font-size:0.82rem;">chat geleert</div>';
+}
+
+async function adminLoadAdminRights(){
+  if(!isOwner())return;
+  const el=document.getElementById('adminUsersCard2');
+  el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">⏳ laden...</div>';
+  try{
+    const snap=await fbDb.ref('users').once('value');
+    const users=snap.val()||{};
+    const entries=Object.entries(users).filter(([_,u])=>u.username&&u.username!==ADMIN_USERNAME);
+    if(!entries.length){el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">keine user</div>';return;}
+    el.innerHTML=entries.map(([uid,u])=>{
+      const isAdm=u.admin===true;
+      return `<div class="admin-ban-row"><div><span style="font-weight:700;">${u.username}</span>${isAdm?' <span style="font-size:0.7rem;color:var(--accent);">👑</span>':''}</div><button onclick="adminToggle('${uid}',${isAdm})" style="padding:0.25rem 0.6rem;border-radius:6px;border:1px solid ${isAdm?'#ff4444':'var(--accent)'};background:transparent;color:${isAdm?'#ff4444':'var(--accent)'};font-size:0.65rem;cursor:pointer;">${isAdm?'❌ entziehen':'👑 geben'}</button></div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<div style="color:#ff4444;font-size:0.82rem;">❌ '+e.message+'</div>';}
+}
+
+async function adminToggle(uid,currentlyAdmin){
+  if(!isOwner())return;
+  await fbDb.ref('users/'+uid+'/admin').set(!currentlyAdmin);
+  showEgg(currentlyAdmin?'❌ Admin entfernt!!':'👑 Admin gegeben!!');adminLoadAdminRights();
+}
+
+async function adminLoadUsernameList(){
+  if(!isOwner())return;
+  const wrap=document.getElementById('adminUsernameWrap');
+  const sel=document.getElementById('adminUsernameSelect');
+  const msg=document.getElementById('adminUsernameMsg');
+  msg.textContent='⏳ laden...';
+  try{
+    const snap=await fbDb.ref('users').once('value');
+    const users=snap.val()||{};
+    const entries=Object.entries(users).filter(([_,u])=>u.username).sort((a,b)=>(a[1].username||'').localeCompare(b[1].username||''));
+    sel.innerHTML=entries.map(([uid,u])=>`<option value="${uid}" data-old="${u.username}">${u.username}</option>`).join('');
+    wrap.style.display='block';msg.textContent='';
+  }catch(e){msg.textContent='❌ '+e.message;}
+}
+async function adminChangeUsername(){
+  if(!isOwner())return;
+  const sel=document.getElementById('adminUsernameSelect');
+  const newName=document.getElementById('adminUsernameNew').value.trim();
+  const msg=document.getElementById('adminUsernameMsg');
+  if(!sel.value||!newName){msg.textContent='⚠️ User & neuen Namen eingeben!!';return;}
+  if(newName.length<2||newName.length>20){msg.textContent='⚠️ 2-20 Zeichen!!';return;}
+  const uid=sel.value;const oldName=sel.options[sel.selectedIndex]?.dataset.old||'?';
+  msg.textContent='⏳...';
+  try{
+    const checkSnap=await fbDb.ref('usernames/'+newName.toLowerCase()).once('value');
+    if(checkSnap.val()){msg.textContent='❌ Name bereits vergeben!!';return;}
+    await fbDb.ref('users/'+uid+'/username').set(newName);
+    await fbDb.ref('usernames/'+newName.toLowerCase()).set(uid);
+    await fbDb.ref('usernames/'+oldName.toLowerCase()).remove();
+    msg.textContent=`✅ "${oldName}" → "${newName}"!!`;
+    sel.options[sel.selectedIndex].text=newName;sel.options[sel.selectedIndex].dataset.old=newName;
+    document.getElementById('adminUsernameNew').value='';showEgg('📝 Username geändert!!');
+  }catch(e){msg.textContent='❌ '+e.message;}
+}
+
 async function adminResetVotes(){
+  if(!isOwner())return;
   const msg=document.getElementById('adminMsg');if(!confirm('ALLE VOTES WIRKLICH LÖSCHEN??'))return;
   msg.textContent='⏳ resette...';await fbDb.ref('votes7d').remove().catch(()=>{});
   const snap=await fbDb.ref('users').once('value');const users=snap.val()||{};const week=getWeekKey();
-  const promises=Object.keys(users).map(uid=>fbDb.ref('users/'+uid+'/voted/'+week).remove());
-  await Promise.all(promises);hofVoted=null;hofSelected=[];liveVotes={};msg.textContent='✅ alle votes resettet!!';setTimeout(()=>msg.textContent='',3000);
-  const voteArea=document.getElementById('votePageArea');if(voteArea) renderVotePage();
+  await Promise.all(Object.keys(users).map(uid=>fbDb.ref('users/'+uid+'/voted/'+week).remove()));
+  hofVoted=null;hofSelected=[];liveVotes={};msg.textContent='✅ votes resettet!!';setTimeout(()=>msg.textContent='',3000);
+  const voteArea=document.getElementById('votePageArea');if(voteArea)renderVotePage();
 }
 
 async function adminLoadUsers(){
+  if(!isOwner())return;
   const card=document.getElementById('adminUsersCard');const list=document.getElementById('adminUsersList');
   card.style.display='';list.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">⏳ laden...</div>';
   try{
-    const snap=await Promise.race([fbDb.ref('users').once('value'),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000))]);
-    const users=snap.val()||{};const week=getWeekKey();const isOwner=currentUser&&currentUser.username===ADMIN_USERNAME;
+    const snap=await fbDb.ref('users').once('value');
+    const users=snap.val()||{};const week=getWeekKey();
     const entries=Object.entries(users);
-    if(entries.length===0){list.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">keine accounts gefunden</div>';return;}
-    const rows=entries.map(([uid,u])=>{
+    if(!entries.length){list.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">keine accounts</div>';return;}
+    list.innerHTML=entries.map(([uid,u])=>{
       const voted=u.voted&&u.voted[week]?'✅':'❌';const isAdm=u.admin===true;
-      const adminBtn=isOwner&&u.username!==ADMIN_USERNAME?`<button onclick="adminToggle('${uid}',${isAdm})" style="padding:0.2rem 0.5rem;border-radius:6px;border:1px solid ${isAdm?'#ff4444':'var(--accent)'};background:transparent;color:${isAdm?'#ff4444':'var(--accent)'};font-size:0.65rem;cursor:pointer;">${isAdm?'❌ weg':'👑 geben'}</button>`:'';
-      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:0.45rem 0;border-bottom:1px solid var(--border);font-size:0.82rem;flex-wrap:wrap;gap:0.3rem;"><span style="font-weight:700;color:var(--text);">👤 ${u.username||'?'}${isAdm?' 👑':''}</span><span style="color:var(--text2);">${voted}</span>${adminBtn}</div>`;
-    });
-    list.innerHTML=rows.join('');
-  }catch(e){list.innerHTML='<div style="color:#ff4444;font-size:0.82rem;">fehler beim laden — prüf deine verbindung!</div>';}
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:0.45rem 0;border-bottom:1px solid var(--border);font-size:0.82rem;flex-wrap:wrap;gap:0.3rem;"><span style="font-weight:700;color:var(--text);">👤 ${u.username||'?'}${isAdm?' 👑':''}${u.banned?' 🚫':''}</span><span style="color:var(--text2);">${voted}</span></div>`;
+    }).join('');
+    document.getElementById('adminVoteGivenSection').style.display='';adminFillVoteSelect();
+  }catch(e){list.innerHTML='<div style="color:#ff4444;font-size:0.82rem;">❌ '+e.message+'</div>';}
 }
 
 async function adminGiveVotes(dir){
-  if(!currentUser||!currentUser.isAdmin)return;
+  if(!isOwner())return;
   const person=document.getElementById('adminVotePerson').value;const amount=(parseInt(document.getElementById('adminVoteAmount').value)||1)*dir;
   const msg=document.getElementById('adminVoteMsg');if(!person){msg.textContent='⚠️ person wählen!!';return;}
   msg.textContent='⏳...';const k=voteKey(person);
-  await fbDb.ref('votes7d/'+k).transaction(cur=>(cur||0)+amount < 0 ? 0 : (cur||0)+amount).catch(e=>{msg.textContent='❌ fehler!!';return;});
+  await fbDb.ref('votes7d/'+k).transaction(cur=>(cur||0)+amount<0?0:(cur||0)+amount).catch(()=>{msg.textContent='❌ fehler!!';});
   msg.textContent=`${dir>0?'✅ +'+amount+' votes':'➖ '+Math.abs(amount)+' votes'} für ${person}!!`;setTimeout(()=>msg.textContent='',3000);
 }
 
@@ -2099,54 +2521,31 @@ function adminFillVoteSelect(){
   sel.innerHTML=hofMembers.map(m=>`<option value="${m.name}">${m.name}</option>`).join('');
 }
 
-async function adminToggle(uid,currentlyAdmin){
-  if(!currentUser||currentUser.username!==ADMIN_USERNAME)return;
-  await fbDb.ref('users/'+uid+'/admin').set(!currentlyAdmin);adminLoadUsers();showEgg(currentlyAdmin?'❌ Admin entfernt!!':'👑 Admin gegeben!!');
-}
-
-async function adminLoadXpUsers(){
-  if(!currentUser?.isAdmin)return;
-  const wrap=document.getElementById('adminXpUserListWrap');
-  const sel=document.getElementById('adminXpPerson');
-  const msg=document.getElementById('adminXpMsg');
-  msg.textContent='⏳ laden...';
+async function loadXpLeaderboard(){
+  const el=document.getElementById('xpLeaderboardList');
+  if(!el)return;
+  el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);font-size:0.85rem;">⏳ laden...</div>';
   try{
     const snap=await fbDb.ref('users').once('value');
     const users=snap.val()||{};
-    const entries=Object.entries(users)
-      .filter(([_,u])=>u.username)
-      .sort((a,b)=>(a[1].username||'').localeCompare(b[1].username||''));
-    sel.innerHTML=entries.map(([uid,u])=>
-      `<option value="${uid}" data-name="${u.username}">${u.username} — ${u.xp||0} XP</option>`
-    ).join('');
-    wrap.style.display='block';
-    msg.textContent='';
-  }catch(e){msg.textContent='❌ Fehler: '+e.message;}
+    const entries=Object.values(users).filter(u=>u.username&&(u.xp||0)>=0).map(u=>({name:u.username,xp:u.xp||0,level:getLevelFromXp(u.xp||0)})).sort((a,b)=>b.xp-a.xp).slice(0,20);
+    if(!entries.length){el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">noch keine daten!!</div>';return;}
+    const maxXp=entries[0].xp||1;
+    el.innerHTML=entries.map((u,i)=>{
+      const isMe=currentUser&&u.name===currentUser.username;
+      const pct=Math.round((u.xp/maxXp)*100);
+      const lvlTitle=LEVEL_TITLES[Math.min(u.level-1,LEVEL_TITLES.length-1)];
+      const lvlEmoji=LEVEL_EMOJIS[Math.min(u.level-1,LEVEL_EMOJIS.length-1)];
+      const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+      const rankClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+      return `<div class="lb-row"><div class="lb-rank ${rankClass}">${medal||('#'+(i+1))}</div><div class="lb-emoji">${lvlEmoji}</div><div class="lb-info"><div class="lb-name${isMe?' me':''}">${u.name}${isMe?'<span class="lb-me-marker">← du</span>':''}</div><div class="lb-sublabel">Lv${u.level} · ${lvlTitle}</div><div class="lb-bar-wrap"><div class="lb-bar-fill" style="width:${pct}%"></div></div></div><div class="lb-xp">${u.xp.toLocaleString()}<br>XP</div></div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<div style="text-align:center;padding:1rem;color:#ff4444;font-size:0.82rem;">❌ '+e.message+'</div>';}
 }
 
-async function adminGiveXP(dir){
-  if(!currentUser?.isAdmin)return;
-  const sel=document.getElementById('adminXpPerson');
-  const amount=parseInt(document.getElementById('adminXpAmount').value)||0;
-  const msg=document.getElementById('adminXpMsg');
-  if(!sel.value||amount<1){msg.textContent='⚠️ User & Menge wählen!!';return;}
-  const uid=sel.value;
-  const username=sel.options[sel.selectedIndex]?.dataset.name||'?';
-  msg.textContent='⏳...';
-  try{
-    const snap=await fbDb.ref('users/'+uid+'/xp').once('value');
-    const currentXp=snap.val()||0;
-    const newXp=Math.max(0,currentXp+(amount*dir));
-    await fbDb.ref('users/'+uid+'/xp').set(newXp);
-    msg.textContent=(dir>0?`✅ +${amount} XP`:`➖ ${amount} XP`)+` für ${username}!! (jetzt: ${newXp} XP)`;
-    sel.options[sel.selectedIndex].text=`${username} — ${newXp} XP`;
-    showEgg((dir>0?'⭐ +'+amount:'➖ '+amount)+' XP für '+username+'!!');
-  }catch(e){msg.textContent='❌ Fehler: '+e.message;}
-}
-
-window.authLogout=authLogout;window.authSubmit=authSubmit;window.adminResetVotes=adminResetVotes;window.adminToggle=adminToggle;window.adminGiveVotes=adminGiveVotes;window.adminLoadUsers=adminLoadUsers;window.adminLoadXpUsers=adminLoadXpUsers;window.adminGiveXP=adminGiveXP;window.authSwitch=authSwitch;window.closeHoF=closeHoF;window.closeSurprise=closeSurprise;window.goPage=goPage;window.goPageByName=goPageByName;window.hofTab=hofTab;window.newJoke=newJoke;window.rateJoke=rateJoke;window.resetGame=resetGame;window.resetSnake=resetSnake;
+window.authLogout=authLogout;window.authSubmit=authSubmit;window.adminResetVotes=adminResetVotes;window.adminToggle=adminToggle;window.adminGiveVotes=adminGiveVotes;window.adminLoadUsers=adminLoadUsers;window.adminLoadXpUsers=adminLoadXpUsers;window.adminGiveXP=adminGiveXP;window.adminResetAllXP=adminResetAllXP;window.adminLoadBanList=adminLoadBanList;window.adminBanUser=adminBanUser;window.adminUnbanUser=adminUnbanUser;window.adminLoadMuteList=adminLoadMuteList;window.adminOpenMutePicker=adminOpenMutePicker;window.adminDoMute=adminDoMute;window.adminDoMuteCustom=adminDoMuteCustom;window.adminUnmute=adminUnmute;window.adminSendAnnouncement=adminSendAnnouncement;window.adminDeleteAnnouncements=adminDeleteAnnouncements;window.adminLoadChatMsgs=adminLoadChatMsgs;window.adminDeleteMsg=adminDeleteMsg;window.adminClearChat=adminClearChat;window.adminLoadAdminRights=adminLoadAdminRights;window.adminLoadStats=adminLoadStats;window.adminLoadLeaderboard=adminLoadLeaderboard;window.adminLoadUsernameList=adminLoadUsernameList;window.adminChangeUsername=adminChangeUsername;window.authSwitch=authSwitch;window.closeHoF=closeHoF;window.closeSurprise=closeSurprise;window.goPage=goPage;window.goPageByName=goPageByName;window.hofTab=hofTab;window.newJoke=newJoke;window.rateJoke=rateJoke;window.resetGame=resetGame;window.resetSnake=resetSnake;
 window.dpadDir=function(x,y){if(!snakeRunning)return;if(x===0&&y===0)return;const nd={x,y};if(nd.x===-snakeDir.x&&nd.y===-snakeDir.y)return;snakeDirQueue.push(nd);};
-window.resetStats=resetStats;window.setJokeCat=setJokeCat;window.setMemLevel=setMemLevel;window.setQuizLen=setQuizLen;window.setTheme=setTheme;window.setVol=setVol;window.showGame=showGame;window.showPunch=showPunch;window.startGame=startGame;window.startMemory=startMemory;window.startQuiz=startQuiz;window.answerQuiz=answerQuiz;window.setQuizCat=setQuizCat;window.startSnake=startSnake;window.toggleMusic=toggleMusic;window.toggleVoteSelectPage=toggleVoteSelectPage;window.submitVotePage=submitVotePage;window.resetMyVote=resetMyVote;window.openSurprise=openSurprise;window.openHoF=openHoF;window.renderVotePage=renderVotePage;window.updateLeaderboard=updateLeaderboard;window.showEgg=showEgg;
+window.resetStats=resetStats;window.setJokeCat=setJokeCat;window.setMemLevel=setMemLevel;window.setQuizLen=setQuizLen;window.setTheme=setTheme;window.setVol=setVol;window.showGame=showGame;window.showPunch=showPunch;window.startGame=startGame;window.startMemory=startMemory;window.startQuiz=startQuiz;window.answerQuiz=answerQuiz;window.setQuizCat=setQuizCat;window.startSnake=startSnake;window.toggleMusic=toggleMusic;window.toggleVoteSelectPage=toggleVoteSelectPage;window.submitVotePage=submitVotePage;window.resetMyVote=resetMyVote;window.openSurprise=openSurprise;window.openHoF=openHoF;window.renderVotePage=renderVotePage;window.updateLeaderboard=updateLeaderboard;window.showEgg=showEgg;window.loadXpLeaderboard=loadXpLeaderboard;
 // ============================================================
 // XP & LEVEL SYSTEM
 // ============================================================
