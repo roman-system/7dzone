@@ -749,7 +749,9 @@ fbAuth.onAuthStateChanged(async user=>{
     const su=document.getElementById('settingsUsername');
     if(su) su.textContent=uname;
     const voteSnap=await fbDb.ref('users/'+user.uid+'/voted/'+getWeekKey()).once('value');
-    hofVoted=voteSnap.val()||null;
+    const voteRaw=voteSnap.val()||null;
+    if(voteRaw){try{hofVoted=JSON.stringify(JSON.parse(voteRaw));}catch(e){hofVoted=voteRaw;}}
+    else hofVoted=null;
     const voteArea=document.getElementById('votePageArea');
     if(voteArea) renderVotePage();
     const adminSnap=await fbDb.ref('users/'+user.uid+'/admin').once('value');
@@ -1664,12 +1666,13 @@ function voteCountdownBlock(){
   return `<div style="text-align:center;margin:0.8rem 0 0.2rem;"><div style="font-family:'Press Start 2P';font-size:0.42rem;color:var(--text2);margin-bottom:0.3rem;">⏳ reset in</div><div id="voteCountdown" style="font-family:'Press Start 2P';font-size:0.75rem;color:var(--accent);letter-spacing:0.08em;text-shadow:0 0 10px var(--glow);">${formatCountdown(diff)}</div></div>`;
 }
 
+function parseVotedDisplay(v){try{const a=JSON.parse(v);return Array.isArray(a)?a.join(', '):v;}catch(e){return v||'';}}
 async function renderVotePage(){
   await checkWeeklyReset();const area=document.getElementById('votePageArea');if(!area)return;
   if(voteInterval){try{voteInterval.off();}catch(e){clearInterval(voteInterval);}voteInterval=null;}
   voteInterval=fbListen(data=>{liveVotes=data||{};updateLeaderboard();});
   if(hofVoted){
-    area.innerHTML=`<div style="text-align:center;padding:1rem 0 0.3rem;"><div style="font-size:2.5rem;margin-bottom:0.5rem;">✅</div><div style="font-family:'Press Start 2P';font-size:0.55rem;color:var(--accent);margin-bottom:0.5rem;">DANKE FÜR DEINEN VOTE!!</div><div style="font-size:0.85rem;color:var(--text2);margin-bottom:0.6rem;">du hast gewählt: <b style="color:var(--accent)">${hofVoted}</b></div><button class="btn red" onclick="resetMyVote()" style="font-size:0.42rem;margin-bottom:0.4rem;">🔄 stimme zurücksetzen</button></div>${voteCountdownBlock()}<div style="font-family:'Press Start 2P';font-size:0.5rem;color:var(--accent);margin:1.1rem 0 0.6rem;text-align:center;">🏆 LIVE LEADERBOARD</div><div id="liveLeaderboard"><div style="color:var(--text2);text-align:center;padding:1rem;">laden... ⏳</div></div>`;
+    area.innerHTML=`<div style="text-align:center;padding:1rem 0 0.3rem;"><div style="font-size:2.5rem;margin-bottom:0.5rem;">✅</div><div style="font-family:'Press Start 2P';font-size:0.55rem;color:var(--accent);margin-bottom:0.5rem;">DANKE FÜR DEINEN VOTE!!</div><div style="font-size:0.85rem;color:var(--text2);margin-bottom:0.6rem;">du hast gewählt: <b style="color:var(--accent)">${parseVotedDisplay(hofVoted)}</b></div><button class="btn red" onclick="resetMyVote()" style="font-size:0.42rem;margin-bottom:0.4rem;">🔄 stimme zurücksetzen</button></div>${voteCountdownBlock()}<div style="font-family:'Press Start 2P';font-size:0.5rem;color:var(--accent);margin:1.1rem 0 0.6rem;text-align:center;">🏆 LIVE LEADERBOARD</div><div id="liveLeaderboard"><div style="color:var(--text2);text-align:center;padding:1rem;">laden... ⏳</div></div>`;
     startCountdown();return;
   }
   hofSelected=[];
@@ -1681,24 +1684,26 @@ async function resetMyVote(){
   if(!confirm('Vote wirklich zurücksetzen? Du kannst dann neu abstimmen 🗳️'))return;
   if(!currentUser)return;
   const week=getWeekKey();
-  // Get the names this user voted for
   const snap=await fbDb.ref('users/'+currentUser.uid+'/voted/'+week).once('value').catch(()=>null);
-  const votedStr=snap?snap.val():null;
-  if(votedStr&&votedStr!=='pending'){
-    // Parse voted names and decrement each one in Firebase
-    const votedNames=votedStr.split(', ');
+  const votedRaw=snap?snap.val():null;
+  if(votedRaw&&votedRaw!=='pending'){
+    let votedNames=[];
+    try{
+      const parsed=JSON.parse(votedRaw);
+      votedNames=Array.isArray(parsed)?parsed:votedRaw.split(', ');
+    }catch(e){votedNames=votedRaw.split(', ');}
     const currentSnap=await fbDb.ref('votes7d').once('value').catch(()=>null);
     const current=currentSnap?currentSnap.val()||{}:{};
-    const updates={};
+    const removeKeys=[];const updates={};
     votedNames.forEach(n=>{
       const k=voteKey(n);
       const newVal=(current[k]||0)-1;
-      if(newVal<=0) updates['votes7d/'+k]=null; // delete from DB if 0 or less
+      if(newVal<=0) removeKeys.push(k);
       else updates['votes7d/'+k]=newVal;
     });
-    await fbDb.ref().update(updates).catch(()=>{});
+    if(Object.keys(updates).length>0) await fbDb.ref().update(updates).catch(()=>{});
+    await Promise.all(removeKeys.map(k=>fbDb.ref('votes7d/'+k).remove().catch(()=>{}))); 
   }
-  // Remove user's vote record
   await fbDb.ref('users/'+currentUser.uid+'/voted/'+week).remove().catch(()=>{});
   hofVoted=null;hofSelected=[];
   renderVotePage();showEgg('🔄 Vote zurückgesetzt!! neu abstimmen!!');
@@ -1726,12 +1731,12 @@ function toggleVoteSelectPage(name,btn){
 
 async function submitVotePage(){
   if(hofSelected.length<1||hofVoted||!currentUser||voteSubmitting)return;
-  hofVoted='pending'; // lock immediately to prevent double submit
-  const choiceStr=hofSelected.join(', ');const sb=document.getElementById('submitVotePageBtn');
+  hofVoted='pending';
+  const sb=document.getElementById('submitVotePageBtn');
   if(sb){sb.textContent='⏳ wird gespeichert...';sb.style.opacity='0.6';sb.style.pointerEvents='none';}
   await fbIncrement(hofSelected);
-  hofVoted=choiceStr;
-  await fbDb.ref('users/'+currentUser.uid+'/voted/'+getWeekKey()).set(choiceStr);
+  hofVoted=JSON.stringify(hofSelected);
+  await fbDb.ref('users/'+currentUser.uid+'/voted/'+getWeekKey()).set(hofVoted);
   renderVotePage();
 }
 
