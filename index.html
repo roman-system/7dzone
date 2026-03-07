@@ -2397,6 +2397,8 @@ function goPage(name,btn,bnavBtn){
   if(name==='friends'&&currentUser) loadFriends();
   if(name==='home'){setTimeout(()=>{updateHomeStats();initHomeParticles();},50);}
   if(name==='leaderboard'){loadXpLeaderboard();loadGameLeaderboard('snake',document.querySelector('#gameRankTabRow .tbtn'));}
+  if(name==='admin'){setTimeout(()=>{adminLoadWordFilter();adminLoadStats();},50);}
+  if(name==='profile'){setTimeout(()=>{loadProfileExtras();},50);}
   if(name==='gaming'){
     document.getElementById('gameSelectGrid').style.display='block';
     document.getElementById('gameBackBar').style.display='none';
@@ -4203,7 +4205,7 @@ async function loadXpLeaderboard(){
   }catch(e){el.innerHTML='<div style="text-align:center;padding:1rem;color:#ff4444;font-size:0.82rem;">❌ '+e.message+'</div>';}
 }
 
-window.authLogout=authLogout;window.authSubmit=authSubmit;window.adminResetVotes=adminResetVotes;window.adminToggle=adminToggle;window.adminGiveVotes=adminGiveVotes;window.adminLoadUsers=adminLoadUsers;window.adminLoadXpUsers=adminLoadXpUsers;window.adminGiveXP=adminGiveXP;window.adminResetAllXP=adminResetAllXP;window.adminLoadBanList=adminLoadBanList;window.adminBanUser=adminBanUser;window.adminUnbanUser=adminUnbanUser;window.adminLoadMuteList=adminLoadMuteList;window.adminOpenMutePicker=adminOpenMutePicker;window.adminDoMute=adminDoMute;window.adminDoMuteCustom=adminDoMuteCustom;window.adminUnmute=adminUnmute;window.adminSendAnnouncement=adminSendAnnouncement;window.adminDeleteAnnouncements=adminDeleteAnnouncements;window.adminLoadChatMsgs=adminLoadChatMsgs;window.adminDeleteMsg=adminDeleteMsg;window.adminClearChat=adminClearChat;window.adminLoadAdminRights=adminLoadAdminRights;window.adminLoadStats=adminLoadStats;window.adminLoadLeaderboard=adminLoadLeaderboard;window.adminLoadUsernameList=adminLoadUsernameList;window.adminChangeUsername=adminChangeUsername;window.authSwitch=authSwitch;window.closeHoF=closeHoF;window.closeSurprise=closeSurprise;window.goPage=goPage;window.goPageByName=goPageByName;window.hofTab=hofTab;window.newJoke=newJoke;window.rateJoke=rateJoke;window.resetGame=resetGame;window.resetSnake=resetSnake;
+window.authLogout=authLogout;window.authSubmit=authSubmit;window.adminResetVotes=adminResetVotes;window.adminToggle=adminToggle;window.adminGiveVotes=adminGiveVotes;window.adminLoadUsers=adminLoadUsers;window.adminLoadXpUsers=adminLoadXpUsers;window.adminGiveXP=adminGiveXP;window.adminResetAllXP=adminResetAllXP;window.adminLoadBanList=adminLoadBanList;window.adminBanUser=adminBanUser;window.adminUnbanUser=adminUnbanUser;window.adminLoadMuteList=adminLoadMuteList;window.adminOpenMutePicker=adminOpenMutePicker;window.adminDoMute=adminDoMute;window.adminDoMuteCustom=adminDoMuteCustom;window.adminUnmute=adminUnmute;window.adminSendAnnouncement=adminSendAnnouncement;window.adminDeleteAnnouncements=adminDeleteAnnouncements;window.adminLoadChatMsgs=adminLoadChatMsgs;window.adminDeleteMsg=adminDeleteMsg;window.adminClearChat=adminClearChat;window.adminLoadAdminRights=adminLoadAdminRights;window.adminLoadStats=adminLoadStats;window.adminLoadLeaderboard=adminLoadLeaderboard;window.adminLoadUsernameList=adminLoadUsernameList;window.adminChangeUsername=adminChangeUsername;window.authSwitch=authSwitch;window.closeHoF=closeHoF;window.closeSurprise=closeSurprise;window.goPage=goPage;window.goPageByName=goPageByName;window.hofTab=hofTab;window.newJoke=newJoke;window.rateJoke=rateJoke;window.resetGame=resetGame;window.resetSnake=resetSnake;window.adminLoadEvents=adminLoadEvents;window.adminDeleteEvent=adminDeleteEvent;window.adminSendNotif=adminSendNotif;window.adminLoadActivity=adminLoadActivity;window.adminAddWord=adminAddWord;window.adminRemoveWord=adminRemoveWord;window.adminLoadWordFilter=adminLoadWordFilter;window.setUserStatus=setUserStatus;window.saveBio=saveBio;window.loadProfileExtras=loadProfileExtras;window.saveGameScore=saveGameScore;window.loadGameLeaderboard=loadGameLeaderboard;window.loadBadWords=loadBadWords;window.toggleNotifDropdown=toggleNotifDropdown;window.clearAllNotifs=clearAllNotifs;window.readNotif=readNotif;window.timeAgo=timeAgo;
 window.dpadDir=function(x,y){if(!snakeRunning)return;if(x===0&&y===0)return;const nd={x,y};if(nd.x===-snakeDir.x&&nd.y===-snakeDir.y)return;snakeDirQueue.push(nd);};
 window.resetStats=resetStats;window.setJokeCat=setJokeCat;window.setMemLevel=setMemLevel;window.setQuizLen=setQuizLen;window.setTheme=setTheme;window.setVol=setVol;window.showGame=showGame;window.showPunch=showPunch;window.startGame=startGame;window.startMemory=startMemory;window.startQuiz=startQuiz;window.answerQuiz=answerQuiz;window.setQuizCat=setQuizCat;window.startSnake=startSnake;window.toggleMusic=toggleMusic;window.toggleVoteSelectPage=toggleVoteSelectPage;window.submitVotePage=submitVotePage;window.resetMyVote=resetMyVote;window.openSurprise=openSurprise;window.openHoF=openHoF;window.renderVotePage=renderVotePage;window.updateLeaderboard=updateLeaderboard;window.showEgg=showEgg;window.loadXpLeaderboard=loadXpLeaderboard;window.handleAvatarUpload=handleAvatarUpload;window.removeAvatar=removeAvatar;
 // ============================================================
@@ -5565,10 +5567,6 @@ body.midnight,[data-theme="midnight"]{--bg:#080818;--card:#10102a;--border:#2525
 // ============================================================
 // PAGE NAVIGATION - updated
 // ============================================================
-// goPage already exists, just make sure new pages load their data
-const _origGoPage=goPage;
-
-// ============================================================
 // EXPOSE NEW FUNCTIONS
 // ============================================================
 window.pinnwandPost=pinnwandPost;
@@ -6137,12 +6135,6 @@ async function loadMyHighscores(){
     </div>`).join('');
 }
 // Hook into existing game over functions
-const _origSnakeOver=window.snakeGameOver;
-function patchGameScores(){
-  // Snake
-  const origSnakeTick_end=`document.getElementById('snakeMsg').textContent=\`GAME OVER!! Score: \${snakeScore}\${snakeScore>=snakeBest?' 🏆 REKORD!!':''}\``;
-  // We'll hook via saveGameScore calls after score updates
-}
 window.saveGameScore=saveGameScore;
 
 // ============================================================
@@ -6197,13 +6189,6 @@ async function adminLoadWordFilter(){
     `<span class="word-chip">${w}<button onclick="adminRemoveWord('${k}')">✕</button></span>`
   ).join('');
 }
-// load on admin page open
-const _gp2=window.goPage;
-window.goPage=function(name,btn,bnavBtn){
-  _gp2&&_gp2(name,btn,bnavBtn);
-  if(name==='admin'){adminLoadWordFilter();adminLoadStats();}
-  if(name==='profile'){loadProfileExtras();}
-};
 window.adminAddWord=adminAddWord;
 window.adminRemoveWord=adminRemoveWord;
 window.adminLoadWordFilter=adminLoadWordFilter;
