@@ -1277,7 +1277,7 @@ fbDb=firebase.database();
 fbAuth.onAuthStateChanged(async user=>{
   if(user){
     const snap=await fbDb.ref('users/'+user.uid+'/username').once('value');
-    const uname=snap.val()||user.email.split('@')[0];
+    const uname=(snap.val()||user.email.split('@')[0]).trim();
     currentUser={uid:user.uid,username:uname,isAdmin:false};
     document.getElementById('authOverlay').style.display='none';
     document.getElementById('userBar').style.display='flex';
@@ -1291,9 +1291,12 @@ fbAuth.onAuthStateChanged(async user=>{
     const voteArea=document.getElementById('votePageArea');
     if(voteArea) renderVotePage();
     const adminSnap=await fbDb.ref('users/'+user.uid+'/admin').once('value');
-    const isAdmin=adminSnap.val()===true||uname.toLowerCase()===ADMIN_USERNAME;
-    const isOwner=uname.toLowerCase()===ADMIN_USERNAME;
+    const isOwnerFlag=uname.toLowerCase()===ADMIN_USERNAME.toLowerCase();
+    const isAdmin=adminSnap.val()===true||isOwnerFlag;
     currentUser.isAdmin=isAdmin;
+    currentUser.isOwner=isOwnerFlag;
+    // ensure owner always has admin flag in DB
+    if(isOwnerFlag&&adminSnap.val()!==true) await fbDb.ref('users/'+user.uid+'/admin').set(true);
     document.getElementById('adminTab').style.display=isAdmin?'':'none';
     document.getElementById('bn-admin').style.display=isAdmin?'':'none';
     if(isAdmin){document.getElementById('adminVoteGivenSection').style.display='';adminFillVoteSelect();}
@@ -2288,14 +2291,16 @@ function parseVotedDisplay(v){try{const a=JSON.parse(v);return Array.isArray(a)?
 async function renderVotePage(){
   await checkWeeklyReset();const area=document.getElementById('votePageArea');if(!area)return;
   if(voteInterval){try{voteInterval.off();}catch(e){clearInterval(voteInterval);}voteInterval=null;}
+  // load votes immediately, then listen for updates
+  const initVotes=await fbGet();liveVotes=initVotes;
   voteInterval=fbListen(data=>{liveVotes=data||{};updateLeaderboard();});
   if(hofVoted){
     area.innerHTML=`<div style="text-align:center;padding:1rem 0 0.3rem;"><div style="font-size:2.5rem;margin-bottom:0.5rem;">✅</div><div style="font-family:'Press Start 2P';font-size:0.55rem;color:var(--accent);margin-bottom:0.5rem;">DANKE FÜR DEINEN VOTE!!</div><div style="font-size:0.85rem;color:var(--text2);margin-bottom:0.6rem;">du hast gewählt: <b style="color:var(--accent)">${parseVotedDisplay(hofVoted)}</b></div><button class="btn red" onclick="resetMyVote()" style="font-size:0.46rem;margin-bottom:0.4rem;">🔄 stimme zurücksetzen</button></div>${voteCountdownBlock()}<div style="font-family:'Press Start 2P';font-size:0.5rem;color:var(--accent);margin:1.1rem 0 0.6rem;text-align:center;">🏆 LIVE LEADERBOARD</div><div id="liveLeaderboard"><div style="color:var(--text2);text-align:center;padding:1rem;">laden... ⏳</div></div>`;
-    startCountdown();return;
+    startCountdown();updateLeaderboard();return;
   }
   hofSelected=[];
   area.innerHTML=`<div style="font-size:0.82rem;color:var(--text2);margin-bottom:0.4rem;">wähl bis zu <b style="color:var(--accent)">8 personen</b> aus!! nur 1x möglich 🗳️</div><div style="font-size:0.78rem;color:var(--text2);margin-bottom:0.7rem;" id="votePageCounter">0 / 8 ausgewählt</div><div class="vote-grid" id="votePageGrid">${hofMembers.map(m=>`<button class="vote-btn" id="vpbtn-${m.name}" onclick="toggleVoteSelectPage('${m.name}',this)">${m.name}</button>`).join('')}</div><div style="text-align:center;margin-top:0.8rem;"><button class="btn" id="submitVotePageBtn" onclick="submitVotePage()" style="opacity:0.4;pointer-events:none;">✅ jetzt abstimmen</button></div>${voteCountdownBlock()}<div style="font-family:'Press Start 2P';font-size:0.5rem;color:var(--accent);margin:1.1rem 0 0.6rem;text-align:center;">🏆 LIVE LEADERBOARD</div><div id="liveLeaderboard2"><div style="color:var(--text2);text-align:center;padding:1rem;">laden... ⏳</div></div>`;
-  startCountdown();
+  startCountdown();updateLeaderboard();
 }
 
 async function resetMyVote(){
@@ -2328,14 +2333,19 @@ async function resetMyVote(){
 }
 
 function updateLeaderboard(){
-  const el=document.getElementById('liveLeaderboard');if(!el)return;
   const sorted=hofMembers.map(m=>({...m,votes:liveVotes[voteKey(m.name)]||0})).filter(m=>m.votes>0).sort((a,b)=>b.votes-a.votes);
   const maxV=sorted[0]?.votes||1;
-  if(sorted.length===0){el.innerHTML=`<div style="color:var(--text2);text-align:center;padding:0.8rem;font-size:0.82rem;">noch keine votes! sei der erste 🗳️</div>`;return;}
-  el.innerHTML=sorted.map((m,i)=>{
-    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';const rankColor=i===0?'#ffd700':i===1?'#c0c0c0':i===2?'#cd7f32':'var(--text2)';const pct=Math.round((m.votes/maxV)*100);
-    return `<div style="display:grid;grid-template-columns:2rem 1fr auto;align-items:center;gap:0.5rem;padding:0.4rem 0.6rem;margin-bottom:0.3rem;background:var(--card);border-radius:10px;border:1px solid var(--border);"><span style="font-size:0.9rem;font-weight:900;color:${rankColor};text-align:center;">${medal||('#'+(i+1))}</span><div><div style="font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;">${m.name}</div><div style="background:var(--border);border-radius:100px;height:6px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:var(--accent);border-radius:100px;transition:width 0.6s;"></div></div></div><span style="font-size:0.85rem;color:var(--accent);font-weight:900;min-width:1.5rem;text-align:right;">${m.votes}</span></div>`;
-  }).join('');
+  const html=sorted.length===0
+    ?`<div style="color:var(--text2);text-align:center;padding:0.8rem;font-size:0.82rem;">noch keine votes! sei der erste 🗳️</div>`
+    :sorted.map((m,i)=>{
+      const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';const rankColor=i===0?'#ffd700':i===1?'#c0c0c0':i===2?'#cd7f32':'var(--text2)';const pct=Math.round((m.votes/maxV)*100);
+      return `<div style="display:grid;grid-template-columns:2rem 1fr auto;align-items:center;gap:0.5rem;padding:0.4rem 0.6rem;margin-bottom:0.3rem;background:var(--card);border-radius:10px;border:1px solid var(--border);"><span style="font-size:0.9rem;font-weight:900;color:${rankColor};text-align:center;">${medal||('#'+(i+1))}</span><div><div style="font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;">${m.name}</div><div style="background:var(--border);border-radius:100px;height:6px;overflow:hidden;"><div style="height:100%;width:${pct}%;background:var(--accent);border-radius:100px;transition:width 0.6s;"></div></div></div><span style="font-size:0.85rem;color:var(--accent);font-weight:900;min-width:1.5rem;text-align:right;">${m.votes}</span></div>`;
+    }).join('');
+  // update both possible leaderboard containers (voted view + not-yet-voted view)
+  const el1=document.getElementById('liveLeaderboard');
+  const el2=document.getElementById('liveLeaderboard2');
+  if(el1) el1.innerHTML=html;
+  if(el2) el2.innerHTML=html;
 }
 
 function toggleVoteSelectPage(name,btn){
@@ -2392,7 +2402,13 @@ function showEgg(msg){const t=document.getElementById('eggToast');t.textContent=
 // ============================================================
 // ADMIN FUNCTIONS (nur Roman-Owner)
 // ============================================================
-function isOwner(){return currentUser&&currentUser.username&&currentUser.username.toLowerCase()===ADMIN_USERNAME.toLowerCase();}
+function isOwner(){
+  if(!currentUser) return false;
+  // use cached flag set at login, fallback to string compare
+  if(currentUser.isOwner===true) return true;
+  if(!currentUser.username) return false;
+  return currentUser.username.toLowerCase().trim()===ADMIN_USERNAME.toLowerCase().trim();
+}
 
 async function adminLoadStats(){
   if(!isOwner()){showEgg('❌ kein Zugriff: '+( currentUser?.username||'kein user'));return;}
@@ -2588,13 +2604,16 @@ async function adminClearChat(){
 }
 
 async function adminLoadAdminRights(){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isOwner()){
+    showEgg("❌ user: '"+( currentUser?.username||"null")+"' owner: '"+ADMIN_USERNAME+"'");
+    return;
+  }
   const el=document.getElementById('adminUsersCard2');
   el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">⏳ laden...</div>';
   try{
     const snap=await fbDb.ref('users').once('value');
     const users=snap.val()||{};
-    const entries=Object.entries(users).filter(([_,u])=>u.username&&u.username!==ADMIN_USERNAME);
+    const entries=Object.entries(users).filter(([_,u])=>u.username&&u.username.toLowerCase()!==ADMIN_USERNAME.toLowerCase());
     if(!entries.length){el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">keine user</div>';return;}
     el.innerHTML=entries.map(([uid,u])=>{
       const isAdm=u.admin===true;
