@@ -235,6 +235,9 @@ footer span{color:var(--accent);}
 .bnav-btn .bnav-icon{font-size:1.35rem;line-height:1;}
 .bnav-btn.on{color:var(--accent);}
 .bnav-btn.on .bnav-icon{filter:drop-shadow(0 0 5px var(--accent));}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.more-btn{display:flex;flex-direction:column;align-items:center;gap:0.3rem;padding:0.7rem 0.3rem;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:0.7rem;font-weight:700;cursor:pointer;transition:all 0.15s;-webkit-tap-highlight-color:transparent;min-height:70px;justify-content:center;}
+.more-btn:active{background:var(--card);border-color:var(--accent);color:var(--accent);}
 
 @media(max-width:600px){
   .bottom-nav{display:flex;}
@@ -1142,16 +1145,30 @@ footer span{color:var(--accent);}
 
 <footer>made by <span>halil 🐱</span> & <span>roman 🦫</span></footer>
 
+<!-- BOTTOM NAV -->
 <nav class="bottom-nav" id="bottomNav">
   <button class="bnav-btn on" onclick="goPage('home',null,this)" id="bn-home"><span class="bnav-icon">🏠</span>Home</button>
-  <button class="bnav-btn" onclick="goPage('gaming',null,this)" id="bn-gaming"><span class="bnav-icon">🎮</span>Spiele</button>
-  <button class="bnav-btn" onclick="goPage('wordle',null,this)" id="bn-wordle"><span class="bnav-icon">🟩</span>Wordle</button>
   <button class="bnav-btn" onclick="goPage('chat',null,this)" id="bn-chat"><span class="bnav-icon">💬</span>Chat</button>
-  <button class="bnav-btn" onclick="goPage('challenges',null,this)" id="bn-challenges"><span class="bnav-icon">🏆</span>Challenges</button>
+  <button class="bnav-btn" onclick="goPage('vote',null,this)" id="bn-vote"><span class="bnav-icon">⭐</span>Voting</button>
   <button class="bnav-btn" onclick="goPage('profile',null,this)" id="bn-profile"><span class="bnav-icon">👤</span>Profil</button>
-  <button class="bnav-btn" onclick="goPage('admin',null,this)" id="bn-admin" style="display:none;color:#ff4444;"><span class="bnav-icon">👑</span>Admin</button>
-  <button class="bnav-btn" onclick="goPage('settings',null,this)" id="bn-settings"><span class="bnav-icon">⚙️</span>Settings</button>
+  <button class="bnav-btn" onclick="toggleMoreMenu()" id="bn-more"><span class="bnav-icon">☰</span>Mehr</button>
 </nav>
+
+<!-- MORE MENU POPUP -->
+<div id="moreMenuOverlay" onclick="closeMoreMenu()" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.5);"></div>
+<div id="moreMenu" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:401;background:var(--card);border-top:2px solid var(--accent);border-radius:20px 20px 0 0;padding:1rem 1rem max(1.2rem,env(safe-area-inset-bottom));animation:slideUp 0.25s ease;">
+  <div style="width:36px;height:4px;background:var(--border);border-radius:100px;margin:0 auto 1rem;"></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;">
+    <button onclick="goPageFromMore('gaming')" class="more-btn"><span style="font-size:1.5rem;">🎮</span><span>Spiele</span></button>
+    <button onclick="goPageFromMore('jokes')" class="more-btn"><span style="font-size:1.5rem;">😂</span><span>Witze</span></button>
+    <button onclick="goPageFromMore('quiz')" class="more-btn"><span style="font-size:1.5rem;">🎲</span><span>Quiz</span></button>
+    <button onclick="goPageFromMore('wordle')" class="more-btn"><span style="font-size:1.5rem;">🟩</span><span>Wordle</span></button>
+    <button onclick="goPageFromMore('challenges')" class="more-btn"><span style="font-size:1.5rem;">🏆</span><span>Challenges</span></button>
+    <button onclick="goPageFromMore('leaderboard')" class="more-btn"><span style="font-size:1.5rem;">📊</span><span>Rangliste</span></button>
+    <button onclick="goPageFromMore('settings')" class="more-btn"><span style="font-size:1.5rem;">⚙️</span><span>Settings</span></button>
+    <button onclick="goPageFromMore('admin')" class="more-btn" id="bn-admin" style="display:none;color:#ff4444;"><span style="font-size:1.5rem;">👑</span><span>Admin</span></button>
+  </div>
+</div>
 
 <script>
 let fbAuth=null,fbDb=null,currentUser=null,authMode='login';
@@ -1344,7 +1361,33 @@ function setTheme(name,btn){
   }
 }
 
+function toggleMoreMenu(){
+  const overlay=document.getElementById('moreMenuOverlay');
+  const menu=document.getElementById('moreMenu');
+  const open=menu.style.display==='block';
+  overlay.style.display=open?'none':'block';
+  menu.style.display=open?'none':'block';
+}
+function closeMoreMenu(){
+  document.getElementById('moreMenuOverlay').style.display='none';
+  document.getElementById('moreMenu').style.display='none';
+}
+function goPageFromMore(name){
+  closeMoreMenu();
+  goPage(name,null,null);
+  // highlight "Mehr" btn if not a main nav page
+  const mainPages=['home','chat','vote','profile'];
+  if(!mainPages.includes(name)){
+    document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('on'));
+    document.getElementById('bn-more').classList.add('on');
+  }
+}
+window.toggleMoreMenu=toggleMoreMenu;
+window.closeMoreMenu=closeMoreMenu;
+window.goPageFromMore=goPageFromMore;
+
 function goPage(name,btn,bnavBtn){
+  closeMoreMenu();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('on'));
   document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('on'));
