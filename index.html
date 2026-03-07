@@ -1528,6 +1528,7 @@ function endQuiz(){
 }
 
 const hofMembers=[
+  {name:'👑 Melissa 👑',emoji:'👑',title:'Queen'},
   {name:'👑 Alessia 👑 ⟡',emoji:'👑',title:'Vibe Queen'},
   {name:'🦫 Roman 🦫',emoji:'🦫',title:'Co-Founder'},
   {name:'👑 Annika 👑 ⟡',emoji:'👑',title:'Energie Boss'},
@@ -1581,28 +1582,19 @@ function getNextMonday(){
 let weekResetDone=false;
 async function checkWeeklyReset(){
   const thisWeek=getWeekKey();
-  // Only reset if we were previously on a different week AND it's actually a new week
-  const lastWeek=localStorage.getItem('voteWeek7d');
-  if(!lastWeek){
-    // First time on this device — just save week, don't wipe Firebase
-    localStorage.setItem('voteWeek7d',thisWeek);
+  localStorage.setItem('voteWeek7d',thisWeek);
+  if(weekResetDone)return;
+  const marker=await fbDb.ref('voteWeekMarker').once('value').catch(()=>null);
+  const fbWeek=marker?marker.val():null;
+  if(!fbWeek){
+    await fbDb.ref('voteWeekMarker').set(thisWeek).catch(()=>{});
     return;
   }
-  if(lastWeek!==thisWeek&&!weekResetDone){
-    weekResetDone=true;
-    // Check Firebase for a week marker before wiping
-    const marker=await fbDb.ref('voteWeekMarker').once('value').catch(()=>null);
-    const fbWeek=marker?marker.val():null;
-    if(fbWeek&&fbWeek!==thisWeek){
-      // New week confirmed by Firebase too — safe to reset
-      await fbDb.ref('votes7d').remove().catch(()=>{});
-      await fbDb.ref('voteWeekMarker').set(thisWeek).catch(()=>{});
-    } else if(!fbWeek){
-      await fbDb.ref('voteWeekMarker').set(thisWeek).catch(()=>{});
-    }
-    localStorage.setItem('voteWeek7d',thisWeek);
-    hofVoted=null;
-  }
+  if(fbWeek===thisWeek){return;}
+  weekResetDone=true;
+  await fbDb.ref('votes7d').remove().catch(()=>{});
+  await fbDb.ref('voteWeekMarker').set(thisWeek).catch(()=>{});
+  hofVoted=null;
 }
 function formatCountdown(ms){
   if(ms<=0)return'00:00:00:00';
@@ -1642,7 +1634,7 @@ async function fbIncrement(names){
 function fbListen(cb){
   const ref=fbDb.ref('votes7d');
   ref.on('value',snap=>{cb(snap.val()||{});});
-  return ref; // return ref so we can call ref.off() to stop
+  return ref;
 }
 
 let voteInterval=null;
@@ -1702,7 +1694,7 @@ async function resetMyVote(){
       else updates['votes7d/'+k]=newVal;
     });
     if(Object.keys(updates).length>0) await fbDb.ref().update(updates).catch(()=>{});
-    await Promise.all(removeKeys.map(k=>fbDb.ref('votes7d/'+k).remove().catch(()=>{}))); 
+    await Promise.all(removeKeys.map(k=>fbDb.ref('votes7d/'+k).remove().catch(()=>{})));
   }
   await fbDb.ref('users/'+currentUser.uid+'/voted/'+week).remove().catch(()=>{});
   hofVoted=null;hofSelected=[];
