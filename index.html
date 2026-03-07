@@ -1290,16 +1290,20 @@ fbAuth.onAuthStateChanged(async user=>{
     else hofVoted=null;
     const voteArea=document.getElementById('votePageArea');
     if(voteArea) renderVotePage();
-    const adminSnap=await fbDb.ref('users/'+user.uid+'/admin').once('value');
     const isOwnerFlag=uname.toLowerCase()===ADMIN_USERNAME.toLowerCase();
-    const isAdmin=adminSnap.val()===true||isOwnerFlag;
-    currentUser.isAdmin=isAdmin;
     currentUser.isOwner=isOwnerFlag;
     // ensure owner always has admin flag in DB
-    if(isOwnerFlag&&adminSnap.val()!==true) await fbDb.ref('users/'+user.uid+'/admin').set(true);
-    document.getElementById('adminTab').style.display=isAdmin?'':'none';
-    document.getElementById('bn-admin').style.display=isAdmin?'':'none';
-    if(isAdmin){document.getElementById('adminVoteGivenSection').style.display='';adminFillVoteSelect();}
+    if(isOwnerFlag) fbDb.ref('users/'+user.uid+'/admin').set(true);
+    // LIVE listener for admin flag - updates instantly when owner grants/revokes
+    fbDb.ref('users/'+user.uid+'/admin').on('value', snap=>{
+      if(!currentUser||currentUser.uid!==user.uid) return;
+      const isAdmin=snap.val()===true||isOwnerFlag;
+      currentUser.isAdmin=isAdmin;
+      document.getElementById('adminTab').style.display=isAdmin?'':'none';
+      document.getElementById('bn-admin').style.display=isAdmin?'':'none';
+      if(isAdmin){document.getElementById('adminVoteGivenSection').style.display='';adminFillVoteSelect();}
+      else{document.getElementById('adminVoteGivenSection').style.display='none';}
+    });
     // v5: init new systems
     await loadUserXP();
     await checkLoginBonus();
@@ -2404,14 +2408,16 @@ function showEgg(msg){const t=document.getElementById('eggToast');t.textContent=
 // ============================================================
 function isOwner(){
   if(!currentUser) return false;
-  // use cached flag set at login, fallback to string compare
   if(currentUser.isOwner===true) return true;
   if(!currentUser.username) return false;
   return currentUser.username.toLowerCase().trim()===ADMIN_USERNAME.toLowerCase().trim();
 }
+function isAdmin(){
+  return currentUser&&(currentUser.isAdmin===true||isOwner());
+}
 
 async function adminLoadStats(){
-  if(!isOwner()){showEgg('❌ kein Zugriff: '+( currentUser?.username||'kein user'));return;}
+  if(!isAdmin()){showEgg('❌ kein Admin-Zugriff');return;}
   const safeGet=async r=>{try{return await fbDb.ref(r).once('value');}catch(e){return null;}};
   const [us,cs,os,vs]=await Promise.all([safeGet('users'),safeGet('chat7d'),safeGet('presence7d'),safeGet('votes7d')]);
   document.getElementById('aStatUsers').textContent=us?Object.keys(us.val()||{}).length:'⚠️';
@@ -2422,7 +2428,7 @@ async function adminLoadStats(){
 }
 
 async function adminLoadLeaderboard(){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   const el=document.getElementById('adminXpLeaderboard');
   el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">⏳...</div>';
   try{
@@ -2438,7 +2444,7 @@ async function adminLoadLeaderboard(){
 }
 
 async function adminLoadXpUsers(){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   const wrap=document.getElementById('adminXpUserListWrap');
   const sel=document.getElementById('adminXpPerson');
   const msg=document.getElementById('adminXpMsg');
@@ -2453,7 +2459,7 @@ async function adminLoadXpUsers(){
 }
 
 async function adminGiveXP(dir){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   const sel=document.getElementById('adminXpPerson');
   const amount=parseInt(document.getElementById('adminXpAmount').value)||0;
   const msg=document.getElementById('adminXpMsg');
@@ -2483,7 +2489,7 @@ async function adminResetAllXP(){
 }
 
 async function adminLoadBanList(){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   const el=document.getElementById('adminBanList');
   el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">⏳ laden...</div>';
   try{
@@ -2499,7 +2505,7 @@ async function adminLoadBanList(){
 }
 
 async function adminBanUser(uid,username){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   const reason=prompt(`Grund für Ban von "${username}":`)||'Du wurdest gesperrt.';
   if(!confirm(`"${username}" wirklich bannen?`))return;
   await fbDb.ref('users/'+uid+'/banned').set(true);
@@ -2508,7 +2514,7 @@ async function adminBanUser(uid,username){
 }
 
 async function adminUnbanUser(uid,username){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   if(!confirm('"'+username+'" entsperren?'))return;
   await fbDb.ref('users/'+uid+'/banned').remove();
   await fbDb.ref('users/'+uid+'/banReason').remove();
@@ -2517,7 +2523,7 @@ async function adminUnbanUser(uid,username){
 
 let muteTargetUid='',muteTargetName='';
 async function adminLoadMuteList(){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   const el=document.getElementById('adminMuteList');
   el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">⏳ laden...</div>';
   try{
@@ -2553,13 +2559,13 @@ async function adminDoMuteCustom(){
   await adminDoMute(min);
 }
 async function adminUnmute(uid,username){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   await fbDb.ref('users/'+uid+'/chatMutedUntil').remove();
   showEgg('🔊 '+username+' nicht mehr stumm!!');adminLoadMuteList();
 }
 
 async function adminSendAnnouncement(){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   const text=document.getElementById('adminAnnText').value.trim();
   const msg=document.getElementById('adminAnnMsg');
   if(!text){msg.textContent='⚠️ text eingeben!!';return;}
@@ -2570,14 +2576,14 @@ async function adminSendAnnouncement(){
   msg.textContent='✅ gesendet!!';setTimeout(()=>msg.textContent='',3000);showEgg('📢 Ankündigung gesendet!!');
 }
 async function adminDeleteAnnouncements(){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   if(!confirm('Alle Ankündigungen löschen?'))return;
   await fbDb.ref('announcements').remove();
   document.getElementById('adminAnnMsg').textContent='✅ alle gelöscht!!';setTimeout(()=>document.getElementById('adminAnnMsg').textContent='',2000);
 }
 
 async function adminLoadChatMsgs(){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   const el=document.getElementById('adminChatMsgList');
   el.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">⏳ laden...</div>';
   try{
@@ -2589,12 +2595,12 @@ async function adminLoadChatMsgs(){
   }catch(e){el.innerHTML='<div style="color:#ff4444;font-size:0.82rem;">❌ '+e.message+'</div>';}
 }
 async function adminDeleteMsg(key){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   await fbDb.ref('chat7d/'+key).remove();
   showEgg('🗑️ Nachricht gelöscht!!');adminLoadChatMsgs();
 }
 async function adminClearChat(){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   if(!confirm('KOMPLETTEN CHAT LÖSCHEN??'))return;
   const msg=document.getElementById('adminChatMgmtMsg');
   msg.textContent='⏳ lösche...';
@@ -2623,7 +2629,7 @@ async function adminLoadAdminRights(){
 }
 
 async function adminToggle(uid,currentlyAdmin){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   await fbDb.ref('users/'+uid+'/admin').set(!currentlyAdmin);
   showEgg(currentlyAdmin?'❌ Admin entfernt!!':'👑 Admin gegeben!!');adminLoadAdminRights();
 }
@@ -2664,7 +2670,7 @@ async function adminChangeUsername(){
 }
 
 async function adminResetVotes(){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   const msg=document.getElementById('adminMsg');if(!confirm('ALLE VOTES WIRKLICH LÖSCHEN??'))return;
   msg.textContent='⏳ resette...';await fbDb.ref('votes7d').remove().catch(()=>{});
   const snap=await fbDb.ref('users').once('value');const users=snap.val()||{};const week=getWeekKey();
@@ -2674,7 +2680,7 @@ async function adminResetVotes(){
 }
 
 async function adminLoadUsers(){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   const card=document.getElementById('adminUsersCard');const list=document.getElementById('adminUsersList');
   card.style.display='';list.innerHTML='<div style="color:var(--text2);font-size:0.82rem;">⏳ laden...</div>';
   try{
@@ -2691,7 +2697,7 @@ async function adminLoadUsers(){
 }
 
 async function adminGiveVotes(dir){
-  if(!isOwner()){showEgg("❌ "+( currentUser?.username||"?")+" kein owner");return;}
+  if(!isAdmin()){showEgg("❌ kein Admin-Zugriff");return;}
   const person=document.getElementById('adminVotePerson').value;const amount=(parseInt(document.getElementById('adminVoteAmount').value)||1)*dir;
   const msg=document.getElementById('adminVoteMsg');if(!person){msg.textContent='⚠️ person wählen!!';return;}
   msg.textContent='⏳...';const k=voteKey(person);
