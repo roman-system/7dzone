@@ -72,6 +72,7 @@ body.matrix,[data-theme="matrix"]{--bg:#000800;--card:#001500;--border:#003300;-
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;transition:background 0.4s,color 0.3s;}
+button,a,[onclick]{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer;}
 
 #musicBar{position:fixed;bottom:1rem;right:1rem;z-index:999;display:flex;align-items:center;gap:0.5rem;background:rgba(0,0,0,0.7);border:1px solid var(--border);border-radius:100px;padding:0.4rem 0.9rem;backdrop-filter:blur(10px);cursor:pointer;transition:all 0.2s;}
 #musicBar:hover{border-color:var(--accent);box-shadow:0 0 12px var(--glow);}
@@ -79,7 +80,7 @@ body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-
 #musicBar .mtext{font-family:'Press Start 2P';font-size:0.46rem;color:var(--accent);}
 #musicBar .mvol{width:60px;accent-color:var(--accent);cursor:pointer;}
 
-.theme-bar{position:sticky;top:0;z-index:200;display:flex;justify-content:center;flex-wrap:wrap;align-items:center;gap:0.4rem;padding:0.55rem 1rem;background:rgba(0,0,0,0.75);border-bottom:1px solid var(--border);backdrop-filter:blur(10px);}
+.theme-bar{position:sticky;top:0;z-index:50;display:flex;justify-content:center;flex-wrap:wrap;align-items:center;gap:0.4rem;padding:0.55rem 1rem;background:rgba(0,0,0,0.75);border-bottom:1px solid var(--border);backdrop-filter:blur(10px);}
 .theme-bar label{font-family:'Press Start 2P';font-size:0.5rem;color:var(--text2);margin-right:0.2rem;}
 .tbtn{padding:0.28rem 0.75rem;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--text2);font-family:'Nunito';font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
 .tbtn:hover,.tbtn.on{border-color:var(--accent);color:var(--accent);box-shadow:0 0 8px var(--glow);}
@@ -93,18 +94,18 @@ header{text-align:center;padding:2rem 1rem 0.8rem;}
 .ptab:hover,.ptab.on{border-color:var(--accent);color:var(--accent);box-shadow:0 0 8px var(--glow);}
 
 .page{display:none;animation:fadeIn 0.3s ease;}
-.page.active{display:block;}
+.page.active{display:block;position:relative;z-index:1;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
-.wrap{max-width:800px;margin:0 auto;padding:0 1.2rem 6rem;}
+.wrap{max-width:800px;margin:0 auto;padding:0 1.2rem 6rem;position:relative;z-index:1;}
 
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.6rem;margin-bottom:1.3rem;transition:all 0.2s;}
-.card:hover{border-color:var(--accent);}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.6rem;margin-bottom:1.3rem;transition:border-color 0.2s;position:relative;z-index:1;}
+@media(hover:hover){.card:hover{border-color:var(--accent);}}
 .card-title{font-family:'Press Start 2P',monospace;font-size:0.7rem;color:var(--accent);margin-bottom:1rem;}
 .card p{font-size:0.92rem;color:var(--text2);line-height:1.7;margin-bottom:0.7rem;}
 
-.btn{padding:0.5rem 1.2rem;border-radius:8px;border:2px solid var(--accent);background:transparent;color:var(--accent);font-family:'Press Start 2P',monospace;font-size:0.56rem;cursor:pointer;transition:all 0.2s;}
-.btn:hover{background:var(--accent);color:var(--bg);}
+.btn{padding:0.5rem 1.2rem;border-radius:8px;border:2px solid var(--accent);background:transparent;color:var(--accent);font-family:'Press Start 2P',monospace;font-size:0.56rem;cursor:pointer;transition:all 0.2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+@media(hover:hover){.btn:hover{background:var(--accent);color:var(--bg);}}
 .btn.red{border-color:#ff4444;color:#ff4444;}
 .btn.red:hover{background:#ff4444;color:#fff;}
 .btn.orange{border-color:#ffaa00;color:#ffaa00;}
@@ -347,7 +348,8 @@ footer span{color:var(--accent);}
 .auth-btn:hover{background:var(--accent);color:var(--bg);}
 #authMsg{font-size:0.78rem;color:#ff4444;min-height:1.1rem;margin-top:0.5rem;}
 #authMsg.ok{color:var(--accent);}
-#userBar{position:fixed;top:0.45rem;right:0.8rem;z-index:201;display:flex;align-items:center;gap:0.5rem;}
+#userBar{position:fixed;top:0.45rem;right:0.8rem;z-index:51;display:flex;align-items:center;gap:0.5rem;pointer-events:none;}
+#userBar>*{pointer-events:auto;}
 #userBar .uname{font-family:'Press Start 2P';font-size:0.46rem;color:var(--accent);}
 #userBar .ulogout{background:none;border:1px solid var(--border);border-radius:100px;color:var(--text2);font-size:0.68rem;padding:0.15rem 0.5rem;cursor:pointer;transition:all 0.2s;}
 #userBar .ulogout:hover{border-color:#ff4444;color:#ff4444;}
