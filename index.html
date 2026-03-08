@@ -2109,6 +2109,8 @@ footer span{color:var(--accent);}
 
 <script>
 let hofVoted=null,hofSelected=[],liveVotes={};
+let evListener=null;
+let tttBoard=Array(9).fill(''),tttTurn='X',tttDiff='medium',tttDone=false;
 const CHALLENGE_DEFS=[
   {id:'quiz5',icon:'🧠',title:'Quiz-Starter',desc:'Beantworte 5 Quiz-Fragen',xp:30,target:5,type:'quiz'},
   {id:'quiz15',icon:'📚',title:'Quiz-Profi',desc:'Beantworte 15 Quiz-Fragen richtig',xp:80,target:15,type:'quizCorrect'},
@@ -5764,7 +5766,29 @@ function tttCheck(p){
   return null;
 }
 
+function tttReset(){
+  tttBoard=Array(9).fill('');
+  tttTurn='X';tttDone=false;
+  renderTTT();
+  if(document.getElementById('tttMsg')) document.getElementById('tttMsg').textContent='du bist ❌ — mach den ersten Zug!!';
+}
+function loadPinnwand(){
+  if(typeof renderPinnwand==='function') renderPinnwand();
+}
+function loadBoard(){
+  if(typeof renderBoard==='function') renderBoard();
+}
+function loadAchievements(){
+  if(typeof renderAchievements==='function') renderAchievements();
+}
+
+
 window.tttClick=tttClick;
+
+window.tttReset=tttReset;
+window.loadPinnwand=loadPinnwand;
+window.loadBoard=loadBoard;
+window.loadAchievements=loadAchievements;
 window.tttReset=tttReset;
 window.tttSetDiff=tttSetDiff;
 
@@ -6183,7 +6207,6 @@ window.deleteMyMsg=deleteMyMsg;
 // 📅 EVENTS & UMFRAGEN
 // ============================================================
 let evCurrentTab='event';
-let evListener=null;
 
 function evSetTab(tab, btn){
   evCurrentTab=tab;
