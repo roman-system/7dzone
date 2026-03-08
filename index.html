@@ -1166,20 +1166,19 @@ footer span{color:var(--accent);}
         <div class="gsc-title">Dino Run</div>
         <div class="gsc-desc">Springe über Hindernisse!!</div>
       </div>
-      <div class="game-select-card" onclick="showGame('ttt')">
-        <div class="gsc-icon">❌</div>
       <div class="game-select-card" onclick="showGame('wordle')">
         <div class="gsc-icon">🟩</div>
         <div class="gsc-title">Wordle</div>
         <div class="gsc-desc">Errate das Wort!!</div>
       </div>
+      <div class="game-select-card" onclick="showGame('ttt')">
+        <div class="gsc-icon">❌</div>
         <div class="gsc-title">Tic Tac Toe</div>
         <div class="gsc-desc">Schlage die KI!!</div>
       </div>
-      <div class="gsc-title">Wordle</div>
-        <div class="gsc-desc">Rate das 5-Buchstaben Wort!!</div>
-      </div>
-      <div class="gsc-title">Quiz</div>
+      <div class="game-select-card" onclick="showGame('quizgame')">
+        <div class="gsc-icon">🎲</div>
+        <div class="gsc-title">Quiz</div>
         <div class="gsc-desc">300 Fragen – wer weiß mehr?!</div>
       </div>
     </div>
@@ -1345,6 +1344,29 @@ footer span{color:var(--accent);}
   </div>
 
   <!-- TIC TAC TOE vs KI -->
+  <div id="game-wordle" style="display:none;">
+  <div class="card">
+    <div class="card-title">🟩 WORDLE</div>
+    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;">errate das 5-buchstaben-wort in 6 versuchen!!</p>
+    <div class="game-hud">
+      <div class="hud-box">Versuch: <span id="gWordleAttempt">0</span>/6</div>
+      <div class="hud-box">Wins: <span id="gWordleWins">0</span></div>
+      <div class="hud-box">Streak: <span id="gWordleStreak">0</span></div>
+    </div>
+    <div id="gWordleGrid" style="display:grid;grid-template-columns:repeat(5,46px);gap:5px;justify-content:center;margin:1rem 0;"></div>
+    <div id="gWordleMsg" style="text-align:center;font-size:0.9rem;font-weight:700;color:var(--accent);min-height:1.4rem;margin-bottom:0.7rem;"></div>
+    <div id="gWordleKeyboard" style="display:flex;flex-direction:column;gap:6px;align-items:center;"></div>
+    <div class="btn-row" style="margin-top:1rem;">
+      <button class="btn" onclick="gWordleReset()">🔄 neues wort</button>
+    </div>
+  </div>
+  </div>
+
+  <!-- TIC TAC TOE -->
+
+  <!-- QUIZ IM SPIELE-TAB -->
+
+
   <div id="game-ttt" style="display:none;">
   <div class="card">
     <div class="card-title">❌ TIC TAC TOE vs KI</div>
@@ -1364,31 +1386,6 @@ footer span{color:var(--accent);}
     <div id="tttMsg" style="text-align:center;font-family:'Press Start 2P';font-size:0.6rem;color:var(--accent);min-height:1.3rem;margin-bottom:0.8rem;"></div>
     <div class="btn-row" style="justify-content:center;">
       <button class="btn" onclick="tttReset()">🔄 NEUES SPIEL</button>
-    </div>
-  </div>
-  </div>
-
-  <!-- WORDLE -->
-  
-
-  <!-- QUIZ IM SPIELE-TAB -->
-  
-
-
-  <div id="game-wordle" style="display:none;">
-  <div class="card">
-    <div class="card-title">🟩 WORDLE</div>
-    <p style="font-size:0.82rem;color:var(--text2);margin-bottom:1rem;">errate das 5-buchstaben-wort in 6 versuchen!!</p>
-    <div class="game-hud">
-      <div class="hud-box">Versuch: <span id="gWordleAttempt">0</span>/6</div>
-      <div class="hud-box">Wins: <span id="gWordleWins">0</span></div>
-      <div class="hud-box">Streak: <span id="gWordleStreak">0</span></div>
-    </div>
-    <div id="gWordleGrid" style="display:grid;grid-template-columns:repeat(5,46px);gap:5px;justify-content:center;margin:1rem 0;"></div>
-    <div id="gWordleMsg" style="text-align:center;font-size:0.9rem;font-weight:700;color:var(--accent);min-height:1.4rem;margin-bottom:0.7rem;"></div>
-    <div id="gWordleKeyboard" style="display:flex;flex-direction:column;gap:6px;align-items:center;"></div>
-    <div class="btn-row" style="margin-top:1rem;">
-      <button class="btn" onclick="gWordleReset()">🔄 neues wort</button>
     </div>
   </div>
   </div>
