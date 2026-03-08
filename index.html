@@ -2649,132 +2649,323 @@ function buildMusicForTheme(theme){
     src.buffer=buf;src.connect(f);f.connect(g);g.connect(master);src.start(startTime);
   }
 
-  if(theme===''){ // DEFAULT — lofi chill
-    const bassNotes=[55,55,82.5,55,73.4,55,82.5,55];let bi=0;
-    const bi1=setInterval(()=>{const now=audioCtx.currentTime;const f=audioCtx.createBiquadFilter();f.type='lowpass';f.frequency.value=200;const o=audioCtx.createOscillator();const g=audioCtx.createGain();o.type='sawtooth';o.frequency.value=bassNotes[bi%bassNotes.length];g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(0.12,now+0.02);g.gain.exponentialRampToValueAtTime(0.001,now+0.3);o.connect(f);f.connect(g);g.connect(master);o.start(now);o.stop(now+0.35);bi++;},250);
-    const chords=[[220,277,330],[196,247,294],[174,220,261],[185,233,277]];let ci=0;
-    const ci1=setInterval(()=>{const now=audioCtx.currentTime;chords[ci%chords.length].forEach(f=>{osc('sine',f,0.018,4.5,now);});ci++;},4000);
-    const hi1=setInterval(()=>{noise(0.06,0.04,audioCtx.currentTime,8000);},250);
-    const ki1=setInterval(()=>{osc('sine',150,0.5,0.3,audioCtx.currentTime);},500);
-    const arpNotes=[440,523,659,784,659,523,440,392];let ai=0;
-    const ai1=setInterval(()=>{osc('triangle',arpNotes[ai%arpNotes.length],0.04,0.2,audioCtx.currentTime);ai++;},125);
-    musicNodes.push({stop:()=>{clearInterval(bi1);clearInterval(ci1);clearInterval(hi1);clearInterval(ki1);clearInterval(ai1);}});
+  // ── helper: smooth pitched note with attack+release ──────────────────────
+  function note(type,freq,vol,dur,t,dest){
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.type=type; o.frequency.value=freq;
+    const atk=Math.min(0.04,dur*0.1);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(vol,t+atk);
+    g.gain.setValueAtTime(vol,t+dur-atk);
+    g.gain.linearRampToValueAtTime(0,t+dur);
+    o.connect(g); g.connect(dest||master); o.start(t); o.stop(t+dur+0.01);
+  }
+  // ── helper: reverb-like pad (detuned pair) ───────────────────────────────
+  function pad(freq,vol,dur,t){
+    note('sine',freq,vol,dur,t);
+    note('sine',freq*1.004,vol*0.4,dur,t); // slight detune for richness
+  }
 
-  } else if(theme==='neon'){ // NEON — synthwave
-    const bassline=[55,55,73.4,55,82.5,55,65.4,55];let bi=0;
-    const b1=setInterval(()=>{const now=audioCtx.currentTime;osc('sawtooth',bassline[bi%bassline.length]*2,0.15,0.18,now);bi++;},187);
-    const lead=[523,659,784,880,784,659,523,440];let li=0;
-    const l1=setInterval(()=>{const now=audioCtx.currentTime;osc('sawtooth',lead[li%lead.length],0.06,0.22,now);li++;},250);
-    const pad=[[196,247,311],[220,277,349],[174,220,261],[185,233,293]];let pi=0;
-    const p1=setInterval(()=>{const now=audioCtx.currentTime;pad[pi%pad.length].forEach(f=>{osc('sawtooth',f,0.025,3.8,now);});pi++;},4000);
-    const k1=setInterval(()=>{osc('sine',80,0.6,0.25,audioCtx.currentTime);},500);
-    const h1=setInterval(()=>{noise(0.08,0.03,audioCtx.currentTime,10000);},250);
-    musicNodes.push({stop:()=>{clearInterval(b1);clearInterval(l1);clearInterval(p1);clearInterval(k1);clearInterval(h1);}});
+  if(theme===''){ // DEFAULT — warm lofi hip-hop
+    // Slow chord pads in Cmaj7 / Am7 / Fmaj7 / G7
+    const chords=[[261,330,392,494],[220,261,330,440],[174,220,261,349],[196,247,294,392]];
+    let ci=0;
+    const c1=setInterval(()=>{
+      const now=audioCtx.currentTime;
+      chords[ci%chords.length].forEach(f=>pad(f,0.016,3.8,now));
+      ci++;
+    },4000);
+    // Laid-back bass (quarter notes, lowpass filtered)
+    const bassline=[65,65,98,65,87,65,98,87]; let bi=0;
+    const b1=setInterval(()=>{
+      const now=audioCtx.currentTime;
+      const lp=audioCtx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=260;
+      note('triangle',bassline[bi%bassline.length],0.18,0.38,now,lp); lp.connect(master); bi++;
+    },375);
+    // Soft melody (pentatonic, triangle wave = warm)
+    const mel=[523,659,784,659,523,440,392,440,523,659,523,392]; let mi=0;
+    const m1=setInterval(()=>{ note('triangle',mel[mi%mel.length],0.038,0.55,audioCtx.currentTime); mi++; },375);
+    // Vinyl hi-hat texture
+    const h1=setInterval(()=>{ noise(0.03,0.025,audioCtx.currentTime,9000); },375);
+    // Soft kick
+    const k1=setInterval(()=>{ note('sine',100,0.35,0.35,audioCtx.currentTime); },750);
+    musicNodes.push({stop:()=>{ clearInterval(c1);clearInterval(b1);clearInterval(m1);clearInterval(h1);clearInterval(k1); }});
 
-  } else if(theme==='retro'){ // RETRO — 8-bit chiptune
-    const melody=[523,523,659,784,784,659,523,440,392,392,440,523,523,440,440];let mi=0;
-    const m1=setInterval(()=>{const now=audioCtx.currentTime;osc('square',melody[mi%melody.length],0.08,0.18,now);mi++;},150);
-    const bass8=[130,130,196,130,174,130,196,130];let bi=0;
-    const b1=setInterval(()=>{const now=audioCtx.currentTime;osc('square',bass8[bi%bass8.length],0.1,0.12,now);bi++;},300);
-    const k1=setInterval(()=>{noise(0.12,0.05,audioCtx.currentTime,4000);},600);
-    const h1=setInterval(()=>{noise(0.07,0.02,audioCtx.currentTime,12000);},150);
-    musicNodes.push({stop:()=>{clearInterval(m1);clearInterval(b1);clearInterval(k1);clearInterval(h1);}});
-
-  } else if(theme==='anime'){ // ANIME — kawaii jpop
-    const mel=[659,784,880,1047,880,784,659,587,523,587,659,784];let mi=0;
-    const m1=setInterval(()=>{const now=audioCtx.currentTime;osc('sine',mel[mi%mel.length],0.07,0.35,now);osc('triangle',mel[mi%mel.length]*2,0.02,0.35,now);mi++;},200);
-    const chords=[[261,329,392],[293,369,440],[329,415,494],[246,311,369]];let ci=0;
-    const c1=setInterval(()=>{const now=audioCtx.currentTime;chords[ci%chords.length].forEach(f=>{osc('sine',f,0.022,1.8,now);});ci++;},2000);
-    const k1=setInterval(()=>{osc('sine',120,0.3,0.15,audioCtx.currentTime);},500);
-    const h1=setInterval(()=>{noise(0.04,0.025,audioCtx.currentTime,11000);},250);
-    const bell=[1047,1319,1568,2093];let beli=0;
-    const bell1=setInterval(()=>{osc('sine',bell[beli%bell.length],0.04,0.6,audioCtx.currentTime);beli++;},600);
-    musicNodes.push({stop:()=>{clearInterval(m1);clearInterval(c1);clearInterval(k1);clearInterval(h1);clearInterval(bell1);}});
-
-  } else if(theme==='ocean'){ // OCEAN — ambient waves
-    const amb=[[110,138,165],[123,155,184],[98,123,146],[130,164,195]];let ai=0;
-    const a1=setInterval(()=>{const now=audioCtx.currentTime;amb[ai%amb.length].forEach(f=>{osc('sine',f,0.02,5,now);});ai++;},5000);
-    const wave1=setInterval(()=>{
-      const now=audioCtx.currentTime;const buf=audioCtx.createBuffer(1,audioCtx.sampleRate*2,audioCtx.sampleRate);
-      const d=buf.getChannelData(0);for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.sin(i/audioCtx.sampleRate*2)*Math.exp(-i/(audioCtx.sampleRate*1.5));
-      const src=audioCtx.createBufferSource();const g=audioCtx.createGain();const f=audioCtx.createBiquadFilter();
-      f.type='lowpass';f.frequency.value=600;g.gain.value=0.08;
-      src.buffer=buf;src.connect(f);f.connect(g);g.connect(master);src.start(now);
-    },3000);
-    const mel=[329,369,440,493,440,369,329,293];let mi=0;
-    const m1=setInterval(()=>{osc('sine',mel[mi%mel.length],0.025,1.2,audioCtx.currentTime);mi++;},700);
-    musicNodes.push({stop:()=>{clearInterval(a1);clearInterval(wave1);clearInterval(m1);}});
-
-  } else if(theme==='lava'){ // LAVA — heavy bass/metal
-    const bass=[41,41,55,41,46,41,55,41];let bi=0;
-    const b1=setInterval(()=>{const now=audioCtx.currentTime;osc('sawtooth',bass[bi%bass.length],0.2,0.1,now);bi++;},125);
-    const k1=setInterval(()=>{const now=audioCtx.currentTime;osc('sine',60,0.8,0.3,now);osc('sine',120,0.4,0.15,now);},250);
-    const snare=setInterval(()=>{noise(0.15,0.08,audioCtx.currentTime,2000);},500);
-    const h1=setInterval(()=>{noise(0.06,0.02,audioCtx.currentTime,9000);},125);
-    const riff=[220,220,293,220,261,220,293,196];let ri=0;
-    const r1=setInterval(()=>{osc('sawtooth',riff[ri%riff.length],0.08,0.1,audioCtx.currentTime);ri++;},125);
-    musicNodes.push({stop:()=>{clearInterval(b1);clearInterval(k1);clearInterval(snare);clearInterval(h1);clearInterval(r1);}});
-
-  } else if(theme==='galaxy'){ // GALAXY — space ambient
-    const pads=[[55,69,82],[61,77,92],[52,65,77],[58,73,87]];let pi=0;
-    const p1=setInterval(()=>{const now=audioCtx.currentTime;pads[pi%pads.length].forEach(f=>{osc('sine',f,0.025,7,now);osc('sine',f*2,0.012,7,now);});pi++;},7000);
-    const sparkle=[2093,2349,2637,3136,2637,2349];let si=0;
-    const s1=setInterval(()=>{if(Math.random()>0.4){osc('sine',sparkle[si%sparkle.length],0.015,1.5,audioCtx.currentTime);}si++;},800);
-    const sweep=setInterval(()=>{
-      const now=audioCtx.currentTime;const o=audioCtx.createOscillator();const g=audioCtx.createGain();
-      o.type='sine';o.frequency.setValueAtTime(80,now);o.frequency.linearRampToValueAtTime(200,now+4);
-      g.gain.setValueAtTime(0,now);g.gain.linearRampToValueAtTime(0.03,now+1);g.gain.linearRampToValueAtTime(0,now+4);
-      o.connect(g);g.connect(master);o.start(now);o.stop(now+4.1);
+  } else if(theme==='neon'){ // NEON — dreamy 80s synthwave (not aggressive)
+    // Lush detuned pad chords
+    const chords=[[196,247,311,370],[220,277,370,440],[185,233,293,349],[208,261,311,392]]; let ci=0;
+    const c1=setInterval(()=>{
+      const now=audioCtx.currentTime;
+      chords[ci%chords.length].forEach(f=>{ pad(f,0.022,7.5,now); }); ci++;
     },8000);
-    musicNodes.push({stop:()=>{clearInterval(p1);clearInterval(s1);clearInterval(sweep);}});
+    // Smooth sawtooth bass (soft attack)
+    const bass=[55,55,82,55,73,55,82,65]; let bi=0;
+    const b1=setInterval(()=>{
+      const now=audioCtx.currentTime;
+      const lp=audioCtx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=320; lp.Q.value=1.5;
+      note('sawtooth',bass[bi%bass.length]*2,0.08,0.22,now,lp); lp.connect(master); bi++;
+    },250);
+    // Gated arpeggio (classic synthwave feel, gentle)
+    const arp=[523,659,784,1047,784,659,523,440]; let ai=0;
+    const a1=setInterval(()=>{
+      const now=audioCtx.currentTime;
+      note('sawtooth',arp[ai%arp.length],0.03,0.18,now); ai++;
+    },333);
+    // Soft kick+snare
+    const k1=setInterval(()=>{ note('sine',75,0.3,0.28,audioCtx.currentTime); },500);
+    const sn=setInterval(()=>{ noise(0.05,0.06,audioCtx.currentTime,3500); },1000);
+    const h1=setInterval(()=>{ noise(0.025,0.02,audioCtx.currentTime,12000); },250);
+    musicNodes.push({stop:()=>{ clearInterval(c1);clearInterval(b1);clearInterval(a1);clearInterval(k1);clearInterval(sn);clearInterval(h1); }});
 
-  } else if(theme==='matrix'){ // MATRIX — glitchy industrial
-    const bass=[36,36,43,36,40,36,48,36];let bi=0;
-    const b1=setInterval(()=>{const now=audioCtx.currentTime;osc('square',bass[bi%bass.length],0.15,0.08,now);bi++;},125);
-    const glitch=setInterval(()=>{if(Math.random()>0.6){const now=audioCtx.currentTime;osc('square',Math.random()>0.5?1200:800,0.05,0.05,now);}},100);
-    const k1=setInterval(()=>{const now=audioCtx.currentTime;osc('sine',55,0.7,0.2,now);noise(0.1,0.04,now,3000);},500);
-    const h1=setInterval(()=>{noise(0.09,0.02,audioCtx.currentTime,8000);},125);
-    const seq=[220,0,293,0,220,261,0,220];let qi=0;
-    const q1=setInterval(()=>{if(seq[qi%seq.length]>0){osc('square',seq[qi%seq.length],0.06,0.1,audioCtx.currentTime);}qi++;},150);
-    musicNodes.push({stop:()=>{clearInterval(b1);clearInterval(glitch);clearInterval(k1);clearInterval(h1);clearInterval(q1);}});
+  } else if(theme==='retro'){ // RETRO — cheerful 8-bit chiptune
+    // Two-voice melody (Cmaj pentatonic, bouncy)
+    const mel=[523,659,784,659,523,659,784,880,784,659,523,440,392,440,523,659]; let mi=0;
+    const m1=setInterval(()=>{ note('square',mel[mi%mel.length],0.07,0.14,audioCtx.currentTime); mi++; },150);
+    // Harmony a third above
+    const harm=[659,784,988,784,659,784,988,1047,988,784,659,523,494,523,659,784]; let hi2=0;
+    const m2=setInterval(()=>{ note('square',harm[hi2%harm.length],0.025,0.14,audioCtx.currentTime); hi2++; },150);
+    // Walking bass
+    const bass=[130,130,196,130,174,196,130,165]; let bi=0;
+    const b1=setInterval(()=>{ note('square',bass[bi%bass.length],0.09,0.28,audioCtx.currentTime); bi++; },300);
+    // Chip percussion
+    const k1=setInterval(()=>{ noise(0.09,0.04,audioCtx.currentTime,3000); },600);
+    const h1=setInterval(()=>{ noise(0.05,0.015,audioCtx.currentTime,14000); },150);
+    musicNodes.push({stop:()=>{ clearInterval(m1);clearInterval(m2);clearInterval(b1);clearInterval(k1);clearInterval(h1); }});
 
-  } else if(theme==='cyberpunk'){ // CYBERPUNK — dark electro
-    const bass=[41,41,55,41,49,41,61,41];let bi=0;
-    const b1=setInterval(()=>{const now=audioCtx.currentTime;osc('sawtooth',bass[bi%bass.length],0.18,0.12,now);bi++;},150);
-    const arp=[880,1047,1318,1047,880,784,880,1047];let ai=0;
-    const a1=setInterval(()=>{const now=audioCtx.currentTime;osc('sawtooth',arp[ai%arp.length],0.05,0.15,now);ai++;},150);
-    const k1=setInterval(()=>{osc('sine',65,0.7,0.2,audioCtx.currentTime);noise(0.12,0.04,audioCtx.currentTime,3000);},500);
-    const h1=setInterval(()=>{noise(0.07,0.025,audioCtx.currentTime,10000);},150);
-    musicNodes.push({stop:()=>{clearInterval(b1);clearInterval(a1);clearInterval(k1);clearInterval(h1);}});
+  } else if(theme==='anime'){ // ANIME — bright, emotional J-pop / OST
+    // Sparkling bell lead
+    const mel=[784,880,1047,880,784,659,784,880,784,659,523,587,659,784,880,1047]; let mi=0;
+    const m1=setInterval(()=>{
+      const now=audioCtx.currentTime;
+      note('sine',mel[mi%mel.length],0.065,0.32,now);
+      note('triangle',mel[mi%mel.length]*2,0.015,0.32,now); // octave shimmer
+      mi++;
+    },200);
+    // Warm piano-like chords (Gmaj7 / Em7 / Cmaj7 / D)
+    const chords=[[196,246,293,370],[165,196,246,329],[130,165,196,261],[146,184,220,293]]; let ci=0;
+    const c1=setInterval(()=>{
+      const now=audioCtx.currentTime;
+      chords[ci%chords.length].forEach(f=>pad(f,0.02,1.9,now)); ci++;
+    },2000);
+    // Soft bass
+    const bass=[98,98,130,98,110,98,130,110]; let bi=0;
+    const b1=setInterval(()=>{ note('sine',bass[bi%bass.length],0.12,0.32,audioCtx.currentTime); bi++; },250);
+    // Light kick + hi-hat
+    const k1=setInterval(()=>{ note('sine',115,0.22,0.18,audioCtx.currentTime); },500);
+    const h1=setInterval(()=>{ noise(0.028,0.018,audioCtx.currentTime,13000); },250);
+    musicNodes.push({stop:()=>{ clearInterval(m1);clearInterval(c1);clearInterval(b1);clearInterval(k1);clearInterval(h1); }});
 
-  } else if(theme==='midnight'){ // MIDNIGHT — dreamy synth
-    const mel=[329,370,440,494,440,370,329,294,329,370,440,523];let mi=0;
-    const m1=setInterval(()=>{osc('sine',mel[mi%mel.length],0.05,0.8,audioCtx.currentTime);osc('triangle',mel[mi%mel.length]*1.5,0.015,0.8,audioCtx.currentTime);mi++;},400);
-    const pads=[[196,247,294],[220,277,330],[174,220,261]];let pi=0;
-    const p1=setInterval(()=>{const now=audioCtx.currentTime;pads[pi%pads.length].forEach(f=>{osc('sine',f,0.02,5,now);});pi++;},5000);
-    const h1=setInterval(()=>{noise(0.03,0.04,audioCtx.currentTime,9000);},500);
-    musicNodes.push({stop:()=>{clearInterval(m1);clearInterval(p1);clearInterval(h1);}});
+  } else if(theme==='ocean'){ // OCEAN — deep, breathing ambient
+    // Slow breathing pad clusters
+    const clusters=[[110,138,165,220],[103,130,155,207],[116,146,174,232],[98,123,146,195]]; let ci=0;
+    const c1=setInterval(()=>{
+      const now=audioCtx.currentTime;
+      clusters[ci%clusters.length].forEach(f=>pad(f,0.018,6,now)); ci++;
+    },6000);
+    // Rolling ocean noise (lowpass filtered, slow amplitude envelope)
+    const wave1=setInterval(()=>{
+      const now=audioCtx.currentTime;
+      const dur=3.5+Math.random()*2;
+      const buf=audioCtx.createBuffer(1,Math.ceil(audioCtx.sampleRate*dur),audioCtx.sampleRate);
+      const d=buf.getChannelData(0);
+      for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(Math.sin(Math.PI*i/d.length),0.7);
+      const src=audioCtx.createBufferSource(),g=audioCtx.createGain(),lp=audioCtx.createBiquadFilter();
+      lp.type='lowpass'; lp.frequency.value=350; g.gain.value=0.07;
+      src.buffer=buf; src.connect(lp); lp.connect(g); g.connect(master); src.start(now);
+    },3500);
+    // Distant seagull-like flute notes (random, sparse)
+    const flute=[659,784,880,1047,784,659]; let fi=0;
+    const fl1=setInterval(()=>{
+      if(Math.random()>0.55) note('sine',flute[fi%flute.length],0.018,1.8,audioCtx.currentTime);
+      fi++;
+    },1200);
+    // Deep sub-bass rumble
+    const sub=setInterval(()=>{ note('sine',55,0.04,5,audioCtx.currentTime); },6000);
+    musicNodes.push({stop:()=>{ clearInterval(c1);clearInterval(wave1);clearInterval(fl1);clearInterval(sub); }});
 
-  } else if(theme==='christmas'){ // CHRISTMAS — festive bells
-    const jingle=[523,523,523,523,523,523,523,659,392,440,523];let ji=0;
-    const j1=setInterval(()=>{const now=audioCtx.currentTime;osc('sine',jingle[ji%jingle.length],0.08,0.35,now);osc('triangle',jingle[ji%jingle.length]*2,0.02,0.35,now);ji++;},280);
-    const bells=[1047,1319,1568,1047,1319,2093];let bi=0;
-    const b1=setInterval(()=>{osc('sine',bells[bi%bells.length],0.03,0.8,audioCtx.currentTime);bi++;},700);
-    const chords=[[261,329,392],[246,311,369],[220,277,330],[293,369,440]];let ci=0;
-    const c1=setInterval(()=>{const now=audioCtx.currentTime;chords[ci%chords.length].forEach(f=>{osc('sine',f,0.018,3,now);});ci++;},3000);
-    const k1=setInterval(()=>{noise(0.04,0.06,audioCtx.currentTime,7000);},600);
-    musicNodes.push({stop:()=>{clearInterval(j1);clearInterval(b1);clearInterval(c1);clearInterval(k1);}});
+  } else if(theme==='lava'){ // LAVA — powerful & intense but musical (not just noise)
+    // Distorted power bass (low tuned, driving)
+    const bassline=[41,41,55,41,49,41,55,49]; let bi=0;
+    const b1=setInterval(()=>{
+      const now=audioCtx.currentTime;
+      // Distortion via waveshaper
+      const ws=audioCtx.createWaveShaper();
+      const curve=new Float32Array(256); for(let i=0;i<256;i++) curve[i]=((i/128-1)*4)/(1+Math.abs((i/128-1)*4));
+      ws.curve=curve;
+      const lp=audioCtx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=280;
+      note('sawtooth',bassline[bi%bassline.length],0.22,0.12,now,ws); ws.connect(lp); lp.connect(master); bi++;
+    },167);
+    // Heavy riff (distorted sawtooth, pentatonic minor)
+    const riff=[220,0,261,0,220,196,0,220,0,261,220,0,175,0,196,0]; let ri=0;
+    const r1=setInterval(()=>{
+      if(riff[ri%riff.length]>0){
+        const now=audioCtx.currentTime; note('sawtooth',riff[ri%riff.length],0.09,0.13,now);
+      } ri++;
+    },150);
+    // Hard kick
+    const k1=setInterval(()=>{
+      const now=audioCtx.currentTime; note('sine',62,0.6,0.25,now); note('sine',120,0.25,0.1,now);
+    },333);
+    // Tight snare
+    const sn=setInterval(()=>{ noise(0.12,0.065,audioCtx.currentTime,1800); },667);
+    // Ride hi-hat
+    const h1=setInterval(()=>{ noise(0.04,0.018,audioCtx.currentTime,9000); },167);
+    // Atmosphere: slow low rumble
+    const atm=setInterval(()=>{ note('sawtooth',55,0.03,4,audioCtx.currentTime); },4500);
+    musicNodes.push({stop:()=>{ clearInterval(b1);clearInterval(r1);clearInterval(k1);clearInterval(sn);clearInterval(h1);clearInterval(atm); }});
 
-  } else if(theme==='summer'){ // SUMMER — sunny vibes
-    const mel=[659,784,880,784,659,587,523,587,659,784,880,1047];let mi=0;
-    const m1=setInterval(()=>{osc('triangle',mel[mi%mel.length],0.06,0.3,audioCtx.currentTime);mi++;},220);
-    const bass=[110,110,146,110,130,110,146,130];let bi=0;
-    const b1=setInterval(()=>{const now=audioCtx.currentTime;osc('sine',bass[bi%bass.length],0.1,0.25,now);bi++;},250);
-    const chords=[[261,329,392],[293,369,440],[329,415,494],[246,311,369]];let ci=0;
-    const c1=setInterval(()=>{const now=audioCtx.currentTime;chords[ci%chords.length].forEach(f=>{osc('sine',f,0.015,2,now);});ci++;},2000);
-    const k1=setInterval(()=>{osc('sine',130,0.4,0.15,audioCtx.currentTime);},500);
-    const h1=setInterval(()=>{noise(0.05,0.03,audioCtx.currentTime,10000);},200);
-    musicNodes.push({stop:()=>{clearInterval(m1);clearInterval(b1);clearInterval(c1);clearInterval(k1);clearInterval(h1);}});
+  } else if(theme==='galaxy'){ // GALAXY — vast cinematic space ambient
+    // Huge slow-evolving pad (parallel 5ths for epic feel)
+    const roots=[55,61,52,58,49]; let pi=0;
+    const p1=setInterval(()=>{
+      const now=audioCtx.currentTime; const r=roots[pi%roots.length];
+      pad(r,0.022,9,now); pad(r*1.5,0.015,9,now); pad(r*2,0.01,9,now); // root + 5th + octave
+      pi++;
+    },9000);
+    // Distant star-sparkle (very soft, random high notes)
+    const stars=[2093,2349,2637,3136,1760,2093]; let si=0;
+    const s1=setInterval(()=>{
+      if(Math.random()>0.45){ note('sine',stars[si%stars.length],0.008,2.5,audioCtx.currentTime); }
+      si++;
+    },900);
+    // Rising cosmic sweep
+    const sweep=setInterval(()=>{
+      const now=audioCtx.currentTime;
+      const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+      o.type='sine'; o.frequency.setValueAtTime(60,now); o.frequency.exponentialRampToValueAtTime(240,now+6);
+      g.gain.setValueAtTime(0,now); g.gain.linearRampToValueAtTime(0.025,now+2); g.gain.linearRampToValueAtTime(0,now+6);
+      o.connect(g); g.connect(master); o.start(now); o.stop(now+6.1);
+    },10000);
+    // Soft sub pulse (like a slow heartbeat in space)
+    const pulse=setInterval(()=>{ note('sine',40,0.04,1.5,audioCtx.currentTime); },4000);
+    musicNodes.push({stop:()=>{ clearInterval(p1);clearInterval(s1);clearInterval(sweep);clearInterval(pulse); }});
+
+  } else if(theme==='matrix'){ // MATRIX — cold digital, minimal, NOT aggressive
+    // Sparse, precise square-wave sequence (feels like code running)
+    const seq=[220,0,0,293,0,220,0,0,261,0,220,0,0,246,0,0]; let qi=0;
+    const q1=setInterval(()=>{
+      if(seq[qi%seq.length]>0) note('square',seq[qi%seq.length],0.04,0.08,audioCtx.currentTime);
+      qi++;
+    },200);
+    // Deep slow bass (minimal, cold)
+    const bass=[55,0,55,0,73,0,55,0]; let bi=0;
+    const b1=setInterval(()=>{
+      if(bass[bi%bass.length]>0) note('square',bass[bi%bass.length],0.08,0.18,audioCtx.currentTime);
+      bi++;
+    },400);
+    // Soft digital hat ticks
+    const h1=setInterval(()=>{ noise(0.03,0.012,audioCtx.currentTime,14000); },200);
+    // Occasional glitch accent (rare, quiet)
+    const gl=setInterval(()=>{
+      if(Math.random()>0.75){
+        const now=audioCtx.currentTime; const gf=Math.random()>0.5?880:440;
+        note('square',gf,0.02,0.04,now);
+      }
+    },600);
+    // Low ambient drone (cold, machine-like)
+    const drone=setInterval(()=>{ note('sawtooth',36,0.025,3.5,audioCtx.currentTime); note('sawtooth',36.3,0.015,3.5,audioCtx.currentTime); },4000);
+    // Rain-like white noise layer (very soft)
+    const rain=setInterval(()=>{ noise(0.018,0.1,audioCtx.currentTime,5000); },5500);
+    musicNodes.push({stop:()=>{ clearInterval(q1);clearInterval(b1);clearInterval(h1);clearInterval(gl);clearInterval(drone);clearInterval(rain); }});
+
+  } else if(theme==='cyberpunk'){ // CYBERPUNK — dark but groovy electro
+    // Punchy bass groove
+    const bass=[41,41,55,0,41,49,0,41]; let bi=0;
+    const b1=setInterval(()=>{
+      if(bass[bi%bass.length]>0){
+        const now=audioCtx.currentTime;
+        const lp=audioCtx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=400;
+        note('sawtooth',bass[bi%bass.length]*2,0.13,0.14,now,lp); lp.connect(master);
+      } bi++;
+    },150);
+    // Lead arp (filtered, dark)
+    const arp=[880,0,1047,0,880,784,0,880,0,1047,1318,0,1047,880,0,784]; let ai=0;
+    const a1=setInterval(()=>{
+      if(arp[ai%arp.length]>0){
+        const now=audioCtx.currentTime;
+        const hp=audioCtx.createBiquadFilter(); hp.type='bandpass'; hp.frequency.value=arp[ai%arp.length]; hp.Q.value=2;
+        note('sawtooth',arp[ai%arp.length],0.04,0.12,now,hp); hp.connect(master);
+      } ai++;
+    },150);
+    // Slow dark pad
+    const pads=[[82,103,123],[87,110,130],[77,98,116],[92,116,138]]; let cyi=0;
+    const cy1=setInterval(()=>{
+      const now=audioCtx.currentTime; pads[cyi%pads.length].forEach(f=>pad(f,0.018,4,now)); cyi++;
+    },4000);
+    // Kick + snare
+    const k1=setInterval(()=>{ note('sine',62,0.5,0.22,audioCtx.currentTime); },500);
+    const sn=setInterval(()=>{ noise(0.07,0.06,audioCtx.currentTime,3000); },1000);
+    const h1=setInterval(()=>{ noise(0.03,0.015,audioCtx.currentTime,12000); },150);
+    musicNodes.push({stop:()=>{ clearInterval(b1);clearInterval(a1);clearInterval(cy1);clearInterval(k1);clearInterval(sn);clearInterval(h1); }});
+
+  } else if(theme==='midnight'){ // MIDNIGHT — slow, melancholic jazz-synth
+    // Lush jazz chord pads (Cmaj9 / Am9 / Fmaj9 / G13)
+    const chords=[[130,165,196,247,294],[110,138,165,196,220],[87,110,130,165,196],[98,123,146,185,220]]; let ci=0;
+    const c1=setInterval(()=>{
+      const now=audioCtx.currentTime; chords[ci%chords.length].forEach(f=>pad(f,0.018,6,now)); ci++;
+    },6000);
+    // Slow soulful melody (saxophone-like: sine + slight detune)
+    const mel=[329,0,370,440,0,494,440,0,370,329,0,294,329,0,370,294]; let mi=0;
+    const m1=setInterval(()=>{
+      if(mel[mi%mel.length]>0){
+        const now=audioCtx.currentTime;
+        note('sine',mel[mi%mel.length],0.055,0.75,now);
+        note('sine',mel[mi%mel.length]*1.003,0.018,0.75,now); // breath texture
+      } mi++;
+    },450);
+    // Walking bass (pluck-like triangle)
+    const bass=[65,65,87,65,73,65,87,73]; let bi=0;
+    const b1=setInterval(()=>{ note('triangle',bass[bi%bass.length],0.1,0.38,audioCtx.currentTime); bi++; },450);
+    // Brushed snare texture
+    const h1=setInterval(()=>{ noise(0.022,0.05,audioCtx.currentTime,8000); },450);
+    musicNodes.push({stop:()=>{ clearInterval(c1);clearInterval(m1);clearInterval(b1);clearInterval(h1); }});
+
+  } else if(theme==='christmas'){ // CHRISTMAS — warm, cozy festive
+    // Jingle Bells melody (iconic, sine = warm bell)
+    const jingle=[392,392,392,0,392,392,392,0,392,494,261,329,392,0,0,0,
+                  440,440,440,440,440,392,392,392,392,329,329,392,329,0,494,0]; let ji=0;
+    const j1=setInterval(()=>{
+      if(jingle[ji%jingle.length]>0){
+        const now=audioCtx.currentTime;
+        note('sine',jingle[ji%jingle.length],0.07,0.32,now);
+        note('triangle',jingle[ji%jingle.length]*2,0.015,0.32,now); // bell shimmer
+      } ji++;
+    },280);
+    // Warm chord pads (Gmaj / Cmaj / Dmaj / Gmaj — classic Christmas)
+    const chords=[[196,246,293],[130,165,196],[146,184,220],[196,246,293]]; let ci=0;
+    const c1=setInterval(()=>{
+      const now=audioCtx.currentTime; chords[ci%chords.length].forEach(f=>pad(f,0.02,3.2,now)); ci++;
+    },3500);
+    // Soft bass
+    const bass=[98,98,65,98]; let bi=0;
+    const b1=setInterval(()=>{ note('sine',bass[bi%bass.length],0.12,0.55,audioCtx.currentTime); bi++; },700);
+    // Snow-like hi-hat shimmer
+    const h1=setInterval(()=>{ noise(0.025,0.04,audioCtx.currentTime,10000); },350);
+    musicNodes.push({stop:()=>{ clearInterval(j1);clearInterval(c1);clearInterval(b1);clearInterval(h1); }});
+
+  } else if(theme==='summer'){ // SUMMER — upbeat tropical, breezy & positive
+    // Bright marimba-like melody (triangle = wooden, warm)
+    const mel=[659,784,880,1047,880,784,880,784,659,784,659,587,659,784,880,784]; let mi=0;
+    const m1=setInterval(()=>{ note('triangle',mel[mi%mel.length],0.065,0.28,audioCtx.currentTime); mi++; },220);
+    // Ukulele-like chord strum (fast multiple sines)
+    const chords=[[261,329,392,523],[293,369,440,587],[329,415,494,659],[246,311,369,494]]; let ci=0;
+    const c1=setInterval(()=>{
+      const now=audioCtx.currentTime;
+      chords[ci%chords.length].forEach((f,i)=>{ note('triangle',f,0.02,0.18+i*0.04,now+i*0.02); });
+      ci++;
+    },1000);
+    // Punchy bass (slap-like)
+    const bass=[65,65,87,65,73,65,87,73]; let bi=0;
+    const b1=setInterval(()=>{ note('sine',bass[bi%bass.length],0.14,0.22,audioCtx.currentTime); bi++; },220);
+    // Bright kick
+    const k1=setInterval(()=>{ note('sine',120,0.3,0.12,audioCtx.currentTime); },440);
+    // Shaker
+    const h1=setInterval(()=>{ noise(0.04,0.022,audioCtx.currentTime,11000); },110);
+    // Seagulls / bird-like occasional high notes
+    const bird=setInterval(()=>{
+      if(Math.random()>0.6){ note('sine',1760+Math.random()*400,0.012,0.4,audioCtx.currentTime); }
+    },800);
+    musicNodes.push({stop:()=>{ clearInterval(m1);clearInterval(c1);clearInterval(b1);clearInterval(k1);clearInterval(h1);clearInterval(bird); }});
   }
   updateMusicUI();
 }
@@ -4167,25 +4358,39 @@ async function loadGameLeaderboard(game,btn){
 }
 window.loadGameLeaderboard=loadGameLeaderboard;
 
+let _xpLbCache=null, _xpLbCacheTime=0;
 async function loadXpLeaderboard(){
   const el=document.getElementById('xpLeaderboardList');
   if(!el)return;
+  // Use cache if less than 60 seconds old
+  if(_xpLbCache&&(Date.now()-_xpLbCacheTime)<60000){
+    el.innerHTML=_xpLbCache; return;
+  }
   el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);font-size:0.85rem;">⏳ laden...</div>';
   try{
-    const snap=await fbDb.ref('users').once('value');
-    const users=snap.val()||{};
-    const entries=Object.values(users).filter(u=>u.username&&(u.xp||0)>=0).map(u=>({name:u.username,xp:u.xp||0,level:getLevelFromXp(u.xp||0)})).sort((a,b)=>b.xp-a.xp).slice(0,20);
+    // Only fetch xp leaderboard data, not full user objects
+    const snap=await fbDb.ref('leaderboard7d').orderByChild('xp').limitToLast(20).once('value');
+    let users=snap.val()||{};
+    let entries=Object.values(users).filter(u=>u.username).map(u=>({name:u.username,xp:u.xp||0,level:getLevelFromXp(u.xp||0)})).sort((a,b)=>b.xp-a.xp).slice(0,20);
+    // Fallback: load from users node if leaderboard7d is empty
+    if(!entries.length){
+      const snap2=await fbDb.ref('users').orderByChild('xp').limitToLast(20).once('value');
+      const users2=snap2.val()||{};
+      entries=Object.values(users2).filter(u=>u.username&&(u.xp||0)>0).map(u=>({name:u.username,xp:u.xp||0,level:getLevelFromXp(u.xp||0)})).sort((a,b)=>b.xp-a.xp).slice(0,20);
+    }
     if(!entries.length){el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">noch keine daten!!</div>';return;}
     const maxXp=entries[0].xp||1;
-    el.innerHTML=entries.map((u,i)=>{
+    const html=entries.map((u,i)=>{
       const isMe=currentUser&&u.name===currentUser.username;
       const pct=Math.round((u.xp/maxXp)*100);
       const lvlTitle=LEVEL_TITLES[Math.min(u.level-1,LEVEL_TITLES.length-1)];
       const lvlEmoji=LEVEL_EMOJIS[Math.min(u.level-1,LEVEL_EMOJIS.length-1)];
       const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
       const rankClass=i===0?'gold':i===1?'silver':i===2?'bronze':'';
-      return `<div class="lb-row"><div class="lb-rank ${rankClass}">${medal||('#'+(i+1))}</div><div class="lb-emoji">${lvlEmoji}</div><div class="lb-info"><div class="lb-name${isMe?' me':''}">${u.name}${isMe?'<span class="lb-me-marker">← du</span>':''}</div><div class="lb-sublabel">Lv${u.level} · ${lvlTitle}</div><div class="lb-bar-wrap"><div class="lb-bar-fill" style="width:${pct}%"></div></div></div><div class="lb-xp">${u.xp.toLocaleString()}<br>XP</div></div>`;
+      return '<div class="lb-row"><div class="lb-rank '+rankClass+'">'+(medal||('#'+(i+1)))+'</div><div class="lb-emoji">'+lvlEmoji+'</div><div class="lb-info"><div class="lb-name'+(isMe?' me':'')+'">'+u.name+(isMe?'<span class="lb-me-marker">← du</span>':'')+'</div><div class="lb-sublabel">Lv'+u.level+' · '+lvlTitle+'</div><div class="lb-bar-wrap"><div class="lb-bar-fill" style="width:'+pct+'%"></div></div></div><div class="lb-xp">'+u.xp.toLocaleString()+'<br>XP</div></div>';
     }).join('');
+    el.innerHTML=html;
+    _xpLbCache=html; _xpLbCacheTime=Date.now();
   }catch(e){el.innerHTML='<div style="text-align:center;padding:1rem;color:#ff4444;font-size:0.82rem;">❌ '+e.message+'</div>';}
 }
 
@@ -5773,8 +5978,92 @@ function tttReset(){
   renderTTT();
   if(document.getElementById('tttMsg')) document.getElementById('tttMsg').textContent='du bist ❌ — mach den ersten Zug!!';
 }
+// ============================================================
+// 📸 PINNWAND
+// ============================================================
+let pinnwandSelectedFile=null, pinnwandSelectedDataUrl=null;
+
+function pinnwandFileChanged(input){
+  const file=input.files[0];
+  if(!file) return;
+  if(file.size>5*1024*1024){showEgg('❌ Bild max 5MB!!');return;}
+  pinnwandSelectedFile=file;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    pinnwandSelectedDataUrl=e.target.result;
+    const lbl=document.getElementById('pinnwandFileLabel');
+    if(lbl) lbl.textContent='✅ '+file.name.slice(0,24);
+  };
+  reader.readAsDataURL(file);
+}
+
+async function pinnwandPost(){
+  if(!currentUser){showEgg('❌ bitte erst einloggen!!');return;}
+  const caption=(document.getElementById('pinnwandCaption')||{}).value||'';
+  if(!pinnwandSelectedDataUrl&&!caption.trim()){showEgg('❌ bild oder text fehlt!!');return;}
+  try{
+    const postData={
+      uid:currentUser.uid,
+      author:currentUser.username,
+      caption:caption.trim(),
+      img:pinnwandSelectedDataUrl||null,
+      ts:Date.now()
+    };
+    await fbDb.ref('pinnwand7d').push(postData);
+    const cap=document.getElementById('pinnwandCaption');
+    const lbl=document.getElementById('pinnwandFileLabel');
+    if(cap) cap.value='';
+    if(lbl) lbl.textContent='bild auswaehlen...';
+    pinnwandSelectedFile=null; pinnwandSelectedDataUrl=null;
+    const fi=document.getElementById('pinnwandFile');
+    if(fi) fi.value='';
+    showEgg('📸 gepostet!!');
+    renderPinnwand();
+  }catch(e){showEgg('❌ fehler: '+e.message);}
+}
+
+async function renderPinnwand(){
+  const feed=document.getElementById('pinnwandFeed');
+  if(!feed) return;
+  feed.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">⏳ laden...</div>';
+  try{
+    const snap=await fbDb.ref('pinnwand7d').orderByChild('ts').limitToLast(30).once('value');
+    const data=snap.val()||{};
+    const posts=Object.entries(data).map(([k,v])=>({...v,key:k})).sort((a,b)=>b.ts-a.ts);
+    if(!posts.length){feed.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">noch keine posts!! sei der erste 📸</div>';return;}
+    feed.innerHTML=posts.map(p=>{
+      const isMe=currentUser&&p.uid===currentUser.uid;
+      const d=Date.now()-p.ts;
+      const timeAgo=d<60000?'gerade eben':d<3600000?Math.floor(d/60000)+'m':d<86400000?Math.floor(d/3600000)+'h':Math.floor(d/86400000)+'d';
+      return '<div class="pinnwand-post">'
+        +(p.img?'<img class="pinnwand-img" src="'+p.img+'" loading="lazy" alt="post"/>':'')
+        +'<div class="pinnwand-meta">'
+        +'<span class="pinnwand-user">@'+(p.author||'?')+'</span>'
+        +(isMe?'<button class="pinnwand-del" onclick="pinnwandDelete(\''+p.key+'\')">🗑️</button>':'')
+        +(p.caption?'<div class="pinnwand-caption">'+p.caption+'</div>':'')
+        +'<div class="pinnwand-time">'+timeAgo+'</div>'
+        +'</div></div>';
+    }).join('');
+  }catch(e){feed.innerHTML='<div style="text-align:center;padding:1rem;color:#ff4444;">❌ '+e.message+'</div>';}
+}
+
+async function pinnwandDelete(key){
+  if(!currentUser) return;
+  if(!confirm('Post wirklich loeschen?')) return;
+  try{
+    await fbDb.ref('pinnwand7d/'+key).remove();
+    showEgg('🗑️ geloescht!!');
+    renderPinnwand();
+  }catch(e){showEgg('❌ '+e.message);}
+}
+
+window.pinnwandFileChanged=pinnwandFileChanged;
+window.pinnwandPost=pinnwandPost;
+window.renderPinnwand=renderPinnwand;
+window.pinnwandDelete=pinnwandDelete;
+
 function loadPinnwand(){
-  if(typeof renderPinnwand==='function') renderPinnwand();
+  renderPinnwand();
 }
 function loadBoard(){
   if(typeof renderBoard==='function') renderBoard();
@@ -6312,7 +6601,36 @@ function renderEvList(data){
 
 
 
+  // Export event & XP functions
+  window.evSetTab=evSetTab;
+  window.evSubmit=evSubmit;
+  window.evVote=evVote;
+  window.evDelete=evDelete;
+  window.renderEvList=renderEvList;
+
 } // end initApp
+
+// ============================================================
+// ⚡ giveXP — grants XP to current user & updates leaderboard7d
+// ============================================================
+async function giveXP(amount, reason){
+  if(!currentUser||!fbDb) return;
+  try{
+    const ref=fbDb.ref('users/'+currentUser.uid);
+    const snap=await ref.child('xp').once('value');
+    const newXp=(snap.val()||0)+amount;
+    await ref.update({xp:newXp});
+    // also update leaderboard node for fast reads
+    await fbDb.ref('leaderboard7d/'+currentUser.uid).set({
+      username:currentUser.username,
+      xp:newXp
+    });
+    _xpLbCache=null; // invalidate cache
+    if(typeof updateXpBar==='function') updateXpBar(newXp);
+    if(typeof updateHomeStats==='function') updateHomeStats();
+  }catch(e){console.warn('giveXP error:',e);}
+}
+window.giveXP=giveXP;
 
 function initEvents(){
   if(evListener) fbDb.ref('events7d').off('value',evListener);
