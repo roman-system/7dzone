@@ -2109,6 +2109,57 @@ footer span{color:var(--accent);}
 
 <script>
 let hofVoted=null,hofSelected=[],liveVotes={};
+const CHALLENGE_DEFS=[
+  {id:'quiz5',icon:'🧠',title:'Quiz-Starter',desc:'Beantworte 5 Quiz-Fragen',xp:30,target:5,type:'quiz'},
+  {id:'quiz15',icon:'📚',title:'Quiz-Profi',desc:'Beantworte 15 Quiz-Fragen richtig',xp:80,target:15,type:'quizCorrect'},
+  {id:'catch30',icon:'🎮',title:'Catch-Champion',desc:'Erreiche 30 Punkte in Catch-Emoji',xp:50,target:30,type:'catchScore'},
+  {id:'snake5',icon:'🐍',title:'Snake-Starter',desc:'Erreiche Level 5 in Snake',xp:60,target:5,type:'snakeLevel'},
+  {id:'joke3',icon:'😂',title:'Witz-Freak',desc:'Lies 3 Witze',xp:20,target:3,type:'joke'},
+  {id:'wordle1',icon:'🟩',title:'Wordle-Tag',desc:'Löse das heutige Wordle',xp:50,target:1,type:'wordleWin'},
+  {id:'chat5',icon:'💬',title:'Chatter',desc:'Sende 5 Chat-Nachrichten',xp:25,target:5,type:'chatMsg'},
+  {id:'login',icon:'🎁',title:'Täglicher Login',desc:'Melde dich an',xp:10,target:1,type:'auto'},
+];
+let weekResetDone=false;
+const hofQuotes=[
+  {text:"wir sind einfach anders. und das ist gut so.",author:"— 7D Klassen-Weisheit"},
+  {text:"andere klassen gucken zu, wir machen einfach.",author:"— unbekannter 7D Legende"},
+  {text:"wenn du 7D sagst, meinen alle GOATS.",author:"— Roman 🦫"},
+  {text:"hausaufgaben? noch nie gehört.",author:"— jedes 7D mitglied"},
+  {text:"wir kommen zu spät aber wir kommen KRASS.",author:"— 7D gang"},
+  {text:"der lehrer erklärt. wir nicken. wir checken es eh nicht.",author:"— ehrlichste aussage ever"},
+  {text:"7D till i die no cap fr fr.",author:"— Halil 🐱"},
+  {text:"pause ist heilig. unterricht ist optional.",author:"— 7D Philosophie"},
+  {text:"wir sind nicht laut. wir sind PRÄSENT.",author:"— Klasse 7D"},
+];
+// ===== hofMembers: Melissa ans Ende verschoben =====
+const hofMembers=[
+  {name:'👑 Alessia 👑 ⟡',emoji:'👑',title:'Vibe Queen'},
+  {name:'🦫 Roman 🦫',emoji:'🦫',title:'Co-Founder'},
+  {name:'👑 Annika 👑 ⟡',emoji:'👑',title:'Energie Boss'},
+  {name:'🐱 Halil 🐱',emoji:'🐱',title:'Web Dev OG'},
+  {name:'⚡ Emir ⚡',emoji:'⚡',title:'Blitz-Boy'},
+  {name:'🏄 Finn 🏄',emoji:'🏄',title:'Chill King'},
+  {name:'🎯 Joscha 🎯',emoji:'🎯',title:'Ziel-Getter'},
+  {name:'🦁 Cornelius 🦁',emoji:'🦁',title:'Der Löwe'},
+  {name:'🚀 Jonas 🚀',emoji:'🚀',title:'Rocket Man'},
+  {name:'🎸 Theodor 🎸',emoji:'🎸',title:'Rock Star'},
+  {name:'👑 Mara 👑',emoji:'👑',title:'Butterfly'},
+  {name:'👑 Frida 👑',emoji:'👑',title:'Artist'},
+  {name:'👑 Malena 👑',emoji:'👑',title:'Shooting Star'},
+  {name:'👑 Jolie 👑',emoji:'👑',title:'Rainbow'},
+  {name:'👑 Julie 👑',emoji:'👑',title:'Lucky Charm'},
+  {name:'🦆 👑 Vanessa 👑 🦆 ⟡',emoji:'👑',title:'Queen'},
+  {name:'👑 Jood 👑',emoji:'👑',title:'Fire Girl'},
+  {name:'🐰 👑 Kiara 👑 🐰',emoji:'👑',title:'Cheetah'},
+  {name:'👑 Clara 👑',emoji:'👑',title:'Moonchild'},
+  {name:'👑 Danelle 👑',emoji:'👑',title:'Diamond'},
+  {name:'👑 Tori 👑',emoji:'👑',title:'Showtime'},
+  {name:'👑 Helene 👑',emoji:'👑',title:'Sunshine'},
+  {name:'🐶 👑 Emily 👑 🐶',emoji:'👑',title:'Music Soul'},
+  {name:'🐈 👑 Emilie 👑 🐈',emoji:'👑',title:'Blüte'},
+  {name:'👑 Emma 👑',emoji:'👑',title:'Unicorn'},
+  {name:'👑 Melissa 👑',emoji:'👑',title:'Queen'},
+];
 let fbAuth=null,fbDb=null,currentUser=null,authMode='login';
 const ADMIN_USERNAME='roman-owner';
 
@@ -3127,7 +3178,7 @@ resizeSnakeCanvas();window.addEventListener('resize',()=>{if(!snakeRunning)resiz
 const CELL=20;
 let COLS=Math.floor(sc.width/CELL),ROWS=Math.floor(sc.height/CELL);
 let snake,snakeDir,snakeDirQueue=[],snakeFoods=[],snakeRunning=false,snakeScore=0,snakeBest=parseInt(localStorage.getItem('snakeBest7d')||'0'),snakeLevel=1,snakeInterval=null;
-document.getElementById('snakeBest').textContent=snakeBest;
+if(document.getElementById('snakeBest')){document.getElementById('snakeBest').textContent=snakeBest;}
 
 function startSnake(){
   resizeSnakeCanvas();COLS=Math.floor(sc.width/CELL);ROWS=Math.floor(sc.height/CELL);
@@ -3156,7 +3207,7 @@ function snakeTick(){
   if(eatenIdx!==-1){
     snakeFoods.splice(eatenIdx,1);snakeFoods.push(randomFood());snakeScore+=snakeLevel;
     document.getElementById('snakeScore').textContent=snakeScore;
-    if(snakeScore>snakeBest){snakeBest=snakeScore;localStorage.setItem('snakeBest7d',snakeBest);document.getElementById('snakeBest').textContent=snakeBest;}
+    if(snakeScore>snakeBest){snakeBest=snakeScore;localStorage.setItem('snakeBest7d',snakeBest);if(document.getElementById('snakeBest')){document.getElementById('snakeBest').textContent=snakeBest;}}
     if(snakeScore%5===0){snakeLevel=Math.min(snakeLevel+1,10);document.getElementById('snakeLevel').textContent=snakeLevel;clearInterval(snakeInterval);snakeInterval=setInterval(snakeTick,Math.max(100,280-snakeLevel*15));}
   } else snake.pop();
   drawSnake();
@@ -3206,8 +3257,8 @@ const memAllEmojis=['🎮','👾','🔥','⭐','🍕','🐸','🦊','🎯','🦄
 let memLevel=1,memCols=4,memPairCount=8;
 let memCards=[],memFlipped=[],memMatched=0,memMoves=0,memLock=false;
 let memBests={1:parseInt(localStorage.getItem('memBest7d_1')||'999'),2:parseInt(localStorage.getItem('memBest7d_2')||'999'),3:parseInt(localStorage.getItem('memBest7d_3')||'999')};
-document.getElementById('memBest').textContent=memBests[1]===999?'-':memBests[1];
-document.getElementById('mlvl-1').classList.add('on');
+if(document.getElementById('memBest')){document.getElementById('memBest').textContent=memBests[1]===999?'-':memBests[1];}
+if(document.getElementById('mlvl-1')){document.getElementById('mlvl-1').classList.add('on');}
 
 function setMemLevel(lvl,btn){
   memLevel=lvl;document.querySelectorAll('[id^="mlvl-"]').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
@@ -3543,7 +3594,7 @@ function setQuizLen(n,btn){
 }
 
 let quizQuestions=[],qIdx=0,qScore=0,qBest=parseInt(localStorage.getItem('qb7d')||'0'),qRunning=false;
-document.getElementById('qBest').textContent=qBest;document.getElementById('qTotal').textContent=quizLength;
+if(document.getElementById('qBest')){document.getElementById('qBest').textContent=qBest;document.getElementById('qTotal').textContent=quizLength;}
 
 function startQuiz(force){
   if(qRunning&&!force){if(!confirm('Quiz abbrechen und neu starten?'))return;}
@@ -3582,47 +3633,7 @@ function endQuiz(){
   addXP(qScore*3,'Quiz abgeschlossen!! 🎲');
 }
 
-// ===== hofMembers: Melissa ans Ende verschoben =====
-const hofMembers=[
-  {name:'👑 Alessia 👑 ⟡',emoji:'👑',title:'Vibe Queen'},
-  {name:'🦫 Roman 🦫',emoji:'🦫',title:'Co-Founder'},
-  {name:'👑 Annika 👑 ⟡',emoji:'👑',title:'Energie Boss'},
-  {name:'🐱 Halil 🐱',emoji:'🐱',title:'Web Dev OG'},
-  {name:'⚡ Emir ⚡',emoji:'⚡',title:'Blitz-Boy'},
-  {name:'🏄 Finn 🏄',emoji:'🏄',title:'Chill King'},
-  {name:'🎯 Joscha 🎯',emoji:'🎯',title:'Ziel-Getter'},
-  {name:'🦁 Cornelius 🦁',emoji:'🦁',title:'Der Löwe'},
-  {name:'🚀 Jonas 🚀',emoji:'🚀',title:'Rocket Man'},
-  {name:'🎸 Theodor 🎸',emoji:'🎸',title:'Rock Star'},
-  {name:'👑 Mara 👑',emoji:'👑',title:'Butterfly'},
-  {name:'👑 Frida 👑',emoji:'👑',title:'Artist'},
-  {name:'👑 Malena 👑',emoji:'👑',title:'Shooting Star'},
-  {name:'👑 Jolie 👑',emoji:'👑',title:'Rainbow'},
-  {name:'👑 Julie 👑',emoji:'👑',title:'Lucky Charm'},
-  {name:'🦆 👑 Vanessa 👑 🦆 ⟡',emoji:'👑',title:'Queen'},
-  {name:'👑 Jood 👑',emoji:'👑',title:'Fire Girl'},
-  {name:'🐰 👑 Kiara 👑 🐰',emoji:'👑',title:'Cheetah'},
-  {name:'👑 Clara 👑',emoji:'👑',title:'Moonchild'},
-  {name:'👑 Danelle 👑',emoji:'👑',title:'Diamond'},
-  {name:'👑 Tori 👑',emoji:'👑',title:'Showtime'},
-  {name:'👑 Helene 👑',emoji:'👑',title:'Sunshine'},
-  {name:'🐶 👑 Emily 👑 🐶',emoji:'👑',title:'Music Soul'},
-  {name:'🐈 👑 Emilie 👑 🐈',emoji:'👑',title:'Blüte'},
-  {name:'👑 Emma 👑',emoji:'👑',title:'Unicorn'},
-  {name:'👑 Melissa 👑',emoji:'👑',title:'Queen'},
-];
 
-const hofQuotes=[
-  {text:"wir sind einfach anders. und das ist gut so.",author:"— 7D Klassen-Weisheit"},
-  {text:"andere klassen gucken zu, wir machen einfach.",author:"— unbekannter 7D Legende"},
-  {text:"wenn du 7D sagst, meinen alle GOATS.",author:"— Roman 🦫"},
-  {text:"hausaufgaben? noch nie gehört.",author:"— jedes 7D mitglied"},
-  {text:"wir kommen zu spät aber wir kommen KRASS.",author:"— 7D gang"},
-  {text:"der lehrer erklärt. wir nicken. wir checken es eh nicht.",author:"— ehrlichste aussage ever"},
-  {text:"7D till i die no cap fr fr.",author:"— Halil 🐱"},
-  {text:"pause ist heilig. unterricht ist optional.",author:"— 7D Philosophie"},
-  {text:"wir sind nicht laut. wir sind PRÄSENT.",author:"— Klasse 7D"},
-];
 
 const FB_URL='https://dzone-9946c-default-rtdb.europe-west1.firebasedatabase.app/votes7d';
 
@@ -3635,7 +3646,6 @@ function getNextMonday(){
   const d=new Date();const day=d.getDay();const daysUntilMon=day===0?1:8-day;
   const mon=new Date(d.getFullYear(),d.getMonth(),d.getDate()+daysUntilMon);mon.setHours(0,0,0,0);return mon;
 }
-let weekResetDone=false;
 async function checkWeeklyReset(){
   const thisWeek=getWeekKey();
   localStorage.setItem('voteWeek7d',thisWeek);
@@ -4569,6 +4579,7 @@ function showLoginBonusUI(streak,xp){
   launchConfetti();
 }
 function closeLoginBonus(){document.getElementById('loginBonusOverlay').classList.remove('show');}
+window.closeLoginBonus=closeLoginBonus;
 
 // ============================================================
 // WORDLE
@@ -4900,16 +4911,6 @@ async function sendChat(){
 // ============================================================
 // DAILY CHALLENGES
 // ============================================================
-const CHALLENGE_DEFS=[
-  {id:'quiz5',icon:'🧠',title:'Quiz-Starter',desc:'Beantworte 5 Quiz-Fragen',xp:30,target:5,type:'quiz'},
-  {id:'quiz15',icon:'📚',title:'Quiz-Profi',desc:'Beantworte 15 Quiz-Fragen richtig',xp:80,target:15,type:'quizCorrect'},
-  {id:'catch30',icon:'🎮',title:'Catch-Champion',desc:'Erreiche 30 Punkte in Catch-Emoji',xp:50,target:30,type:'catchScore'},
-  {id:'snake5',icon:'🐍',title:'Snake-Starter',desc:'Erreiche Level 5 in Snake',xp:60,target:5,type:'snakeLevel'},
-  {id:'joke3',icon:'😂',title:'Witz-Freak',desc:'Lies 3 Witze',xp:20,target:3,type:'joke'},
-  {id:'wordle1',icon:'🟩',title:'Wordle-Tag',desc:'Löse das heutige Wordle',xp:50,target:1,type:'wordleWin'},
-  {id:'chat5',icon:'💬',title:'Chatter',desc:'Sende 5 Chat-Nachrichten',xp:25,target:5,type:'chatMsg'},
-  {id:'login',icon:'🎁',title:'Täglicher Login',desc:'Melde dich an',xp:10,target:1,type:'auto'},
-];
 
 let challengeProgress={},challengeDone={},todayChallenges=[];
 
