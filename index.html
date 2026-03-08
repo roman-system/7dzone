@@ -3407,7 +3407,7 @@ function startSnake(){
   for(let i=0;i<3;i++) snakeFoods.push(randomFood());
   snakeRunning=true;snakeScore=0;snakeLevel=1;
   document.getElementById('snakeScore').textContent=0;document.getElementById('snakeLevel').textContent=1;document.getElementById('snakeMsg').textContent='';
-  clearInterval(snakeInterval);snakeInterval=setInterval(snakeTick,200);
+  clearInterval(snakeInterval);snakeInterval=setInterval(snakeTick,350);
 }
 function resetSnake(){clearInterval(snakeInterval);snakeRunning=false;sctx.clearRect(0,0,sc.width,sc.height);document.getElementById('snakeMsg').textContent='drück start!!';}
 function randomFood(){
@@ -3428,7 +3428,7 @@ function snakeTick(){
     snakeFoods.splice(eatenIdx,1);snakeFoods.push(randomFood());snakeScore+=snakeLevel;
     document.getElementById('snakeScore').textContent=snakeScore;
     if(snakeScore>snakeBest){snakeBest=snakeScore;localStorage.setItem('snakeBest7d',snakeBest);if(document.getElementById('snakeBest')){document.getElementById('snakeBest').textContent=snakeBest;}}
-    if(snakeScore%5===0){snakeLevel=Math.min(snakeLevel+1,10);document.getElementById('snakeLevel').textContent=snakeLevel;clearInterval(snakeInterval);snakeInterval=setInterval(snakeTick,Math.max(80,200-snakeLevel*12));}
+    if(snakeScore%5===0){snakeLevel=Math.min(snakeLevel+1,10);document.getElementById('snakeLevel').textContent=snakeLevel;clearInterval(snakeInterval);snakeInterval=setInterval(snakeTick,Math.max(130,350-snakeLevel*18));}
   } else snake.pop();
   drawSnake();
 }
@@ -5310,15 +5310,15 @@ window.initChat=initChat;
 // ============================================================
 
 const FB={
-  IW:288, IH:512,         // Interne Spielauflösung
-  GH:112,                 // Ground height in pixels
-  GRAV:0.18,              // Sanftere Schwerkraft (war 0.25)
-  JUMP:-4.4,              // Stärkerer Sprung (war -5.0)
-  PW:52,                  // Pipe Breite
-  PGAP:145,               // Größere Lücke (war 100)
-  PSPAWN:110,             // Mehr Abstand zwischen Pipes (war 90)
-  PSPEED:2.2,             // Langsamere Pipes (war 3.0)
-  BW:34, BH:26            // Bird Breite & Höhe
+  IW:288, IH:512,         // Original Auflösung
+  GH:112,                 // Ground height
+  GRAV:0.25,              // Original Schwerkraft
+  JUMP:-5.0,              // Original Sprungkraft
+  PW:52,                  // Original Pipe Breite
+  PGAP:100,               // Original Lücke
+  PSPAWN:90,              // Original Spawn-Abstand
+  PSPEED:3.0,             // Original Geschwindigkeit
+  BW:34, BH:26            // Original Bird Größe
 };
 
 let fbRunning=false,fbAF=null,fbScore=0,fbBest=0;
@@ -5411,66 +5411,121 @@ function flappyDraw(){
   const ctx=c.getContext('2d'),W=c.width,H=c.height,sc=W/FB.IW;
   const GH=FB.GH*sc, skyH=H-GH;
 
-  // Himmel
+  // ── Himmel: Tagesverlauf je nach Score ─────────────────────────────
+  const dayPhase=Math.min(1,(fbScore||0)/20); // 0=Tag, 1=Nacht
+  const skyTop=dayPhase<0.5
+    ? `hsl(${200-dayPhase*40},${85-dayPhase*20}%,${65-dayPhase*20}%)`
+    : `hsl(${220-dayPhase*30},${60-dayPhase*30}%,${25-dayPhase*10}%)`;
+  const skyBot=dayPhase<0.5
+    ? `hsl(${195-dayPhase*30},90%,${78-dayPhase*15}%)`
+    : `hsl(${215-dayPhase*20},50%,${35-dayPhase*15}%)`;
   const sky=ctx.createLinearGradient(0,0,0,skyH);
-  sky.addColorStop(0,'#4dc8f5');sky.addColorStop(1,'#9ae8ff');
-  ctx.fillStyle=sky;ctx.fillRect(0,0,W,skyH);
+  sky.addColorStop(0,skyTop); sky.addColorStop(1,skyBot);
+  ctx.fillStyle=sky; ctx.fillRect(0,0,W,skyH);
 
-  // Stadt-Silhouette im Hintergrund
-  ctx.fillStyle='#c4e8a8';ctx.fillRect(0,skyH-30*sc,W,30*sc);
-  [[18,22,14],[55,14,12],[95,28,16],[150,16,14],[200,24,18],[255,12,13],[295,26,17]].forEach(([bx,bh,bw])=>{
-    ctx.fillStyle='#d0e8b0';ctx.fillRect(bx*sc,skyH-30*sc-bh*sc,bw*sc,bh*sc);
+  // ── Sterne (bei Nacht) ─────────────────────────────────────────────
+  if(dayPhase>0.3){
+    ctx.globalAlpha=Math.min(1,(dayPhase-0.3)*1.5)*0.8;
+    ctx.fillStyle='#fff';
+    [[30,20],[80,35],[140,15],[190,40],[240,22],[270,38],[60,55],[170,60]].forEach(([sx,sy])=>{
+      ctx.beginPath(); ctx.arc(sx*sc,sy*sc,0.9*sc,0,Math.PI*2); ctx.fill();
+    });
+    ctx.globalAlpha=1;
+  }
+
+  // ── Sonne / Mond ──────────────────────────────────────────────────
+  if(dayPhase<0.6){
+    // Sonne
+    const sunAlpha=1-dayPhase*1.5;
+    ctx.globalAlpha=Math.max(0,sunAlpha);
+    const sunG=ctx.createRadialGradient(240*sc,50*sc,2*sc,240*sc,50*sc,18*sc);
+    sunG.addColorStop(0,'#fff7a0'); sunG.addColorStop(0.5,'#ffd700'); sunG.addColorStop(1,'rgba(255,200,0,0)');
+    ctx.fillStyle=sunG; ctx.fillRect(222*sc,32*sc,36*sc,36*sc);
+    ctx.globalAlpha=1;
+  } else {
+    // Mond
+    ctx.globalAlpha=Math.min(1,(dayPhase-0.6)*2.5);
+    ctx.fillStyle='#f0f0d0';
+    ctx.beginPath(); ctx.arc(240*sc,50*sc,11*sc,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=skyTop;
+    ctx.beginPath(); ctx.arc(246*sc,46*sc,9*sc,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha=1;
+  }
+
+  // ── Hintergrund-Wolken (langsam, Parallax-Ebene 1) ─────────────────
+  const cloudColor=dayPhase<0.4?'rgba(255,255,255,0.92)':'rgba(180,200,255,0.3)';
+  ctx.fillStyle=cloudColor;
+  const cf=fbFrame*0.18; // langsamer als Pipes
+  [[0,52,18],[110,40,14],[210,62,20],[310,44,16]].forEach(([ox,cy,cr])=>{
+    const cx=((cf*sc+ox*sc)%(W+60*sc)+W+60*sc)%(W+60*sc)-30*sc;
+    ctx.beginPath(); ctx.arc(cx,cy*sc,cr*sc,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx+cr*sc*0.8,cy*sc,cr*0.6*sc,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx-cr*sc*0.5,(cy+6)*sc,cr*0.5*sc,0,Math.PI*2); ctx.fill();
   });
 
-  // Wolken (parallax scrollend)
-  ctx.fillStyle='rgba(255,255,255,0.94)';
-  const cf=fbFrame*0.32;
-  [[8,48,20],[140,36,16],[260,58,22]].forEach(([ox,cy,cr])=>{
-    const cx=((cf+ox*sc)%W+W)%W;
-    ctx.beginPath();ctx.arc(cx,cy*sc,cr*sc,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(cx+cr*sc,cy*sc,cr*0.65*sc,0,Math.PI*2);ctx.fill();
-    ctx.beginPath();ctx.arc(cx-cr*0.6*sc,(cy+5)*sc,cr*0.55*sc,0,Math.PI*2);ctx.fill();
+  // ── Hügel-Silhouette (Parallax-Ebene 2) ───────────────────────────
+  const hillColor=dayPhase<0.4?'#5cb85c':'#1a3a1a';
+  ctx.fillStyle=hillColor;
+  ctx.globalAlpha=0.55;
+  ctx.beginPath(); ctx.moveTo(0,skyH);
+  const hOff=(fbFrame*0.5)%(W*2);
+  [[-60,40],[20,55],[80,35],[150,60],[220,40],[290,50],[360,38]].forEach(([hx,hh])=>{
+    const x=((hx*sc-hOff+W*3)%(W*2))-30*sc;
+    ctx.quadraticCurveTo(x,skyH-hh*sc,x+50*sc,skyH);
   });
+  ctx.lineTo(W,skyH); ctx.fill(); ctx.globalAlpha=1;
 
-  // Rohre
+  // ── Rohre ─────────────────────────────────────────────────────────
   fbPipes.forEach(p=>fbPipe_draw(ctx,p.x*sc,p.top*sc,skyH,sc));
 
-  // Boden (Original: sandfarben mit Grasstreifen)
+  // ── Boden ─────────────────────────────────────────────────────────
   const grdG=ctx.createLinearGradient(0,H-GH,0,H);
-  grdG.addColorStop(0,'#ded895');grdG.addColorStop(0.15,'#c8b866');grdG.addColorStop(1,'#a8903c');
-  ctx.fillStyle=grdG;ctx.fillRect(0,H-GH,W,GH);
-  ctx.fillStyle='#78c032';ctx.fillRect(0,H-GH,W,12*sc);
-  ctx.fillStyle='#5a9e22';ctx.fillRect(0,H-GH,W,5*sc);
+  if(dayPhase<0.4){
+    grdG.addColorStop(0,'#ded895');grdG.addColorStop(0.12,'#c8b866');grdG.addColorStop(1,'#a8903c');
+  } else {
+    grdG.addColorStop(0,'#6b5c2a');grdG.addColorStop(0.12,'#4a3e1e');grdG.addColorStop(1,'#2a2210');
+  }
+  ctx.fillStyle=grdG; ctx.fillRect(0,H-GH,W,GH);
+  // Grass strip
+  ctx.fillStyle=dayPhase<0.4?'#78c032':'#2d5a1a';
+  ctx.fillRect(0,H-GH,W,11*sc);
+  ctx.fillStyle=dayPhase<0.4?'#5a9e22':'#1a3a0a';
+  ctx.fillRect(0,H-GH,W,4*sc);
   // Boden-Streifen (scrollend)
-  ctx.fillStyle='rgba(0,0,0,0.07)';
-  const gOff=((fbFrame*FB.PSPEED*sc)%52+52)%52;
-  for(let gx=0;gx<W+52;gx+=52) ctx.fillRect(gx-gOff,H-GH+13*sc,26*sc,4*sc);
+  ctx.fillStyle='rgba(0,0,0,0.06)';
+  const gOff=((fbFrame*(FB.PSPEED+(fbScore*0.025))*sc)%52+52)%52;
+  for(let gx=0;gx<W+52;gx+=52) ctx.fillRect(gx-gOff,H-GH+12*sc,26*sc,3.5*sc);
 
-  // Vogel
+  // ── Vogel ─────────────────────────────────────────────────────────
   fbBird_draw(ctx,fbBird.x*sc,fbBird.y*sc,fbBird.vy,fbFrame,fbDead,sc);
 
-  // Score (weißer Text mit schwarzem Schatten)
+  // ── Score ─────────────────────────────────────────────────────────
   if(fbStarted){
     ctx.font=`bold ${28*sc}px 'Press Start 2P',sans-serif`;
     ctx.textAlign='center';
-    ctx.strokeStyle='rgba(0,0,0,0.6)';ctx.lineWidth=4*sc;
+    ctx.strokeStyle='rgba(0,0,0,0.55)'; ctx.lineWidth=4*sc;
     ctx.strokeText(fbScore,W/2,44*sc);
-    ctx.fillStyle='#fff';ctx.fillText(fbScore,W/2,44*sc);
+    ctx.fillStyle='#fff'; ctx.fillText(fbScore,W/2,44*sc);
   }
 
-  // Startscreen
+  // ── Startscreen ───────────────────────────────────────────────────
   if(!fbStarted&&!fbRunning){
-    ctx.fillStyle='rgba(0,0,0,0.28)';ctx.fillRect(0,0,W,H);
-    const pw=210*sc,ph=108*sc,bx=(W-pw)/2,by=(H-ph)/2;
+    ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.fillRect(0,0,W,H);
+    const pw=210*sc,ph=116*sc,bx=(W-pw)/2,by=(H-ph)/2;
     ctx.fillStyle='rgba(255,255,255,0.96)';
-    fbRR(ctx,bx,by,pw,ph,12*sc);ctx.fill();
-    ctx.strokeStyle='#e8a800';ctx.lineWidth=2.5*sc;
-    fbRR(ctx,bx,by,pw,ph,12*sc);ctx.stroke();
-    ctx.fillStyle='#f4cc14';ctx.font=`bold ${16*sc}px 'Press Start 2P',sans-serif`;ctx.textAlign='center';
-    ctx.fillText('FLAPPY BIRD',W/2,by+30*sc);
-    ctx.fillStyle='#444';ctx.font=`${8.5*sc}px 'Press Start 2P',sans-serif`;
-    ctx.fillText('TAP / KLICK ZUM START',W/2,by+58*sc);
-    ctx.fillText('BEST: '+fbBest,W/2,by+80*sc);
+    fbRR(ctx,bx,by,pw,ph,12*sc); ctx.fill();
+    ctx.strokeStyle='#e8a800'; ctx.lineWidth=2.5*sc;
+    fbRR(ctx,bx,by,pw,ph,12*sc); ctx.stroke();
+    ctx.fillStyle='#f4cc14';
+    ctx.font=`bold ${15*sc}px 'Press Start 2P',sans-serif`; ctx.textAlign='center';
+    ctx.fillText('🐦 FLAPPY BIRD',W/2,by+30*sc);
+    ctx.fillStyle='#555';
+    ctx.font=`${7.5*sc}px 'Press Start 2P',sans-serif`;
+    ctx.fillText('TAP / KLICK ZUM START',W/2,by+56*sc);
+    ctx.fillText('BEST: '+fbBest,W/2,by+78*sc);
+    ctx.fillStyle='#888';
+    ctx.font=`${6*sc}px 'Press Start 2P',sans-serif`;
+    ctx.fillText('WELT WIRD DUNKLER MIT SCORE',W/2,by+100*sc);
   }
 }
 
@@ -5501,7 +5556,7 @@ function flappyUpdate(){
     fbPipes.push({x:FB.IW+FB.PW,top:minT+Math.random()*(maxT-minT),scored:false});
   }
   // Rohre bewegen (leicht schneller mit Score)
-  const spd=FB.PSPEED+(fbScore*0.012); // sanftere Steigerung (war 0.025)
+  const spd=FB.PSPEED+(fbScore*0.025); // original scaling
   fbPipes.forEach(p=>p.x-=spd);
   fbPipes=fbPipes.filter(p=>p.x>-FB.PW-8);
 
@@ -5605,10 +5660,10 @@ window.resetFlappy=resetFlappy;
 const DINO={
   CW:600,CH:150,   // Canvas-Auflösung (unscaled)
   GND:18,          // Grundlinie von unten (unscaled)
-  GRAV:0.45,       // Sanftere Gravitation (war 0.6)
-  JUMP:-10.0,      // Höherer Sprung (war -11.5)
-  SPEED0:4.0,      // Langsamerer Start (war 5.5)
-  SPEED_MAX:9,     // Langsameres Max (war 12)
+  GRAV:0.6,        // Original Chrome Dino Gravitation
+  JUMP:-11.5,      // Original Sprungkraft
+  SPEED0:5.5,      // Original Startgeschwindigkeit
+  SPEED_MAX:12,    // Original Maximalgeschwindigkeit
   // Dino-Sprite Dimensionen (unscaled)
   DW:22, DH:26,    // stehend
   DDW:30,DDH:18    // duckend
@@ -5885,7 +5940,7 @@ function dinoLoop(){
   s.frame++;
   // Score + Speed (original Formel)
   s.score+=s.speed/10;
-  s.speed=Math.min(DINO.SPEED0+s.score/280,DINO.SPEED_MAX); // sanftere Steigerung (war /180)
+  s.speed=Math.min(DINO.SPEED0+s.score/180,DINO.SPEED_MAX); // original scaling
 
   // Physik
   if(!d.onGround){
