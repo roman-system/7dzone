@@ -6683,8 +6683,77 @@ function loadPinnwand(){
   renderPinnwand();
 }
 function loadBoard(){
-  if(typeof renderBoard==='function') renderBoard();
+  renderBoard();
 }
+
+function renderBoard(){
+  const feed=document.getElementById('boardFeed');
+  if(!feed) return;
+  feed.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">⏳ laden...</div>';
+
+  // Show admin post form if admin
+  const adminCard=document.getElementById('boardAdminCard');
+  if(adminCard) adminCard.style.display=isAdmin()?'block':'none';
+
+  fbDb.ref('board').orderByChild('ts').once('value').then(snap=>{
+    const data=snap.val()||{};
+    const entries=Object.entries(data).sort((a,b)=>b[1].ts-a[1].ts);
+    if(!entries.length){
+      feed.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">📭 noch keine ankündigungen!!</div>';
+      return;
+    }
+    feed.innerHTML=entries.map(([key,p])=>{
+      const d=new Date(p.ts);
+      const dateStr=d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit'});
+      const timeStr=d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+      const col=p.color||'var(--accent)';
+      const em=p.emoji||'📌';
+      const delBtn=isAdmin()?`<button ontouchstart="" onclick="boardDelete('${key}')" style="background:none;border:none;color:#ff4444;cursor:pointer;font-size:1rem;padding:0;margin-left:0.5rem;" title="Löschen">🗑️</button>`:'';
+      return `<div style="border:1px solid var(--border);border-left:4px solid ${col};border-radius:8px;padding:0.9rem 1rem;margin-bottom:0.7rem;background:var(--bg);position:relative;">
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem;flex-wrap:wrap;">
+          <span style="font-size:1.2rem;">${em}</span>
+          <span style="font-weight:800;color:${col};font-size:0.95rem;flex:1;">${escapeHtml(p.title||'Ankündigung')}</span>
+          ${delBtn}
+        </div>
+        <div style="color:var(--text);font-size:0.88rem;line-height:1.5;white-space:pre-wrap;">${escapeHtml(p.body||p.text||'')}</div>
+        <div style="margin-top:0.5rem;font-size:0.72rem;color:var(--text2);">📅 ${dateStr} ${timeStr} · von <b>${escapeHtml(p.by||p.author||'Admin')}</b></div>
+      </div>`;
+    }).join('');
+  }).catch(e=>{
+    feed.innerHTML=`<div style="text-align:center;padding:2rem;color:#ff4444;">❌ Fehler: ${e.message}<br><span style="font-size:0.8rem;color:var(--text2);">Bitte einloggen oder Firebase Rules prüfen</span></div>`;
+  });
+}
+
+async function boardPost(){
+  if(!isAdmin()){showEgg('❌ kein Admin-Zugriff');return;}
+  const title=document.getElementById('boardTitle').value.trim();
+  const body=document.getElementById('boardBody').value.trim();
+  const color=document.getElementById('boardColor').value;
+  const emoji=document.getElementById('boardEmoji').value;
+  if(!title||!body){showEgg('⚠️ Titel und Text eingeben!!');return;}
+  try{
+    const key=fbDb.ref('board').push().key;
+    await fbDb.ref('board/'+key).set({
+      title,body,color,emoji,
+      by:currentUser.username,
+      ts:Date.now()
+    });
+    document.getElementById('boardTitle').value='';
+    document.getElementById('boardBody').value='';
+    showEgg('✅ Ankündigung gepostet!!');
+    renderBoard();
+  }catch(e){showEgg('❌ '+e.message);}
+}
+
+async function boardDelete(key){
+  if(!isAdmin()){showEgg('❌ kein Admin-Zugriff');return;}
+  if(!confirm('Ankündigung löschen?'))return;
+  await fbDb.ref('board/'+key).remove();
+  showEgg('🗑️ gelöscht!!');
+  renderBoard();
+}
+window.boardPost=boardPost;
+window.boardDelete=boardDelete;
 function loadAchievements(){
   if(typeof renderAchievements==='function') renderAchievements();
 }
