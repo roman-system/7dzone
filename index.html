@@ -2108,6 +2108,7 @@ footer span{color:var(--accent);}
 </div>
 
 <script>
+let hofVoted=null,hofSelected=[],liveVotes={};
 let fbAuth=null,fbDb=null,currentUser=null,authMode='login';
 const ADMIN_USERNAME='roman-owner';
 
@@ -2375,6 +2376,8 @@ function goPage(name,btn,bnavBtn){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function goPageByName(name){goPage(name,null,null);}
+window.goPage=goPage;
+window.goPageByName=goPageByName;
 
 // MOBILE TOUCH FIX - override all admin buttons to use touchend
 function fixAdminTouches(){
@@ -3524,6 +3527,7 @@ let selectedQuizCat='alle',quizLength=10;
 
 function buildQuizCatBar(){
   const bar=document.getElementById('quizCatBar');
+  if(!bar) return;
   bar.innerHTML='<button class="qcat on" onclick="setQuizCat(\'alle\',this)">🎲 Alle</button>';
   quizCats.forEach(c=>{const btn=document.createElement('button');btn.className='qcat';btn.textContent=c;btn.onclick=()=>setQuizCat(c,btn);bar.appendChild(btn);});
 }
@@ -3666,7 +3670,6 @@ function startCountdown(){
   },1000);
 }
 
-let hofVoted=null,hofSelected=[],liveVotes={};
 
 async function fbGet(){try{const snap=await fbDb.ref('votes7d').once('value');return snap.val()||{};}catch{return {};}}
 function voteKey(name){return name.replace(/[^a-zA-Z]/g,'').toLowerCase();}
