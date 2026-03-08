@@ -21,6 +21,7 @@ body.galaxy,[data-theme="galaxy"]{--bg:#02010a;--card:#0c0820;--border:#3a1a6a;-
 body.matrix,[data-theme="matrix"]{--bg:#000800;--card:#001500;--border:#003300;--accent:#00ff41;--accent2:#00cc33;--text:#ccffcc;--text2:#44aa44;--glow:rgba(0,255,65,0.3);}
 body.christmas,[data-theme="christmas"]{--bg:#0a1a0a;--card:#0f2a0f;--border:#1a5c1a;--accent:#ff2222;--accent2:#ffd700;--text:#fff5f5;--text2:#99cc99;--glow:rgba(255,34,34,0.3);}
 body.summer,[data-theme="summer"]{--bg:#fff8e1;--card:#fff3c4;--border:#ffd54f;--accent:#ff6f00;--accent2:#00bcd4;--text:#2d1b00;--text2:#8d6e00;--glow:rgba(255,111,0,0.25);}
+body.playtime,[data-theme="playtime"]{--bg:#0e1520;--card:#141c2e;--border:#1e2d4a;--accent:#FFD600;--accent2:#ff3b3b;--text:#e8f0ff;--text2:#7a9acc;--glow:rgba(255,214,0,0.35);}
 
 #bgCanvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.6;}
 
@@ -111,6 +112,308 @@ body.summer,[data-theme="summer"]{--bg:#fff8e1;--card:#fff3c4;--border:#ffd54f;-
 [data-theme="summer"] .bnav-btn{color:#8d6e00;}
 [data-theme="summer"] .theme-bar label{color:#8d6e00;}
 
+/* ══════════════════════════════════════════════════════════════════
+   PLAYTIME CO. THEME — Ultra-Realistic Poppy Playtime Factory
+   Based on actual in-game visuals: Chapter 1 & 2
+   • Deep navy concrete walls, rusted pipes, emergency lighting
+   • Playtime Co. yellow signage + red alarm accents
+   • Grime, scratches, industrial wear & tear
+══════════════════════════════════════════════════════════════════ */
+
+body.playtime,[data-theme="playtime"]{
+  --bg:#0c0f18;
+  --card:#111520;
+  --border:#1e2d48;
+  --accent:#FFD600;
+  --accent2:#e63946;
+  --text:#c8d8e8;
+  --text2:#4a6a8a;
+  --glow:rgba(255,214,0,0.3);
+}
+
+/* ── BODY: exact Poppy Playtime factory concrete wall ── */
+[data-theme="playtime"] body{
+  background:
+    /* scratch lines */
+    repeating-linear-gradient(87deg, transparent 0px, transparent 120px, rgba(255,255,255,0.008) 121px, transparent 122px),
+    repeating-linear-gradient(93deg, transparent 0px, transparent 80px, rgba(0,0,0,0.06) 81px, transparent 82px),
+    /* concrete tile grid */
+    repeating-linear-gradient(0deg, transparent 0px, transparent 59px, rgba(0,0,0,0.18) 60px),
+    repeating-linear-gradient(90deg, transparent 0px, transparent 59px, rgba(0,0,0,0.12) 60px),
+    /* base wall color - dark blue-grey like Chapter 1 walls */
+    linear-gradient(160deg, #0e1422 0%, #0a0e18 40%, #0c1015 100%) !important;
+}
+
+/* Vignette + red alarm glow on edges */
+[data-theme="playtime"] body::before{
+  content:'';
+  position:fixed; inset:0; z-index:9998; pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 50%, transparent 50%, rgba(0,0,0,0.55) 100%),
+    radial-gradient(ellipse at 0% 50%, rgba(230,57,70,0.07) 0%, transparent 35%),
+    radial-gradient(ellipse at 100% 50%, rgba(230,57,70,0.06) 0%, transparent 35%);
+  animation:ptAlarm 6s ease-in-out infinite;
+}
+@keyframes ptAlarm{
+  0%,75%,100%{opacity:0.7;}
+  80%{opacity:0.15;}
+  82%{opacity:0.9;}
+  84%{opacity:0.4;}
+  86%{opacity:0.8;}
+}
+
+/* ── LOGO: huge Playtime Co. factory sign with flicker ── */
+[data-theme="playtime"] .logo{
+  font-family:'Bangers',cursive;
+  font-size:clamp(2.4rem,8vw,4.2rem);
+  letter-spacing:0.12em;
+  background:linear-gradient(180deg,#FFE033 0%,#FFD600 45%,#cc9900 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:
+    drop-shadow(3px 3px 0px #6b4400)
+    drop-shadow(6px 6px 0px rgba(0,0,0,0.6))
+    drop-shadow(0 0 20px rgba(255,214,0,0.4));
+  animation:ptFlicker 5s ease-in-out infinite;
+}
+@keyframes ptFlicker{
+  0%,87%,89%,91%,100%{filter:drop-shadow(3px 3px 0 #6b4400) drop-shadow(6px 6px 0 rgba(0,0,0,0.6)) drop-shadow(0 0 20px rgba(255,214,0,0.4));}
+  88%,90%{filter:drop-shadow(3px 3px 0 #6b4400) drop-shadow(6px 6px 0 rgba(0,0,0,0.6)) drop-shadow(0 0 6px rgba(255,214,0,0.2)) brightness(0.7);}
+}
+
+/* ── THEME BAR: metal ceiling strip with hazard tape edge ── */
+[data-theme="playtime"] .theme-bar{
+  background:linear-gradient(180deg, #070a10 0%, #0a0d16 60%, #0c1018 100%);
+  border-bottom:0;
+  box-shadow:
+    0 3px 0 #1a1400,
+    0 6px 0 rgba(255,214,0,0.7),
+    0 9px 0 #1a1400,
+    0 12px 28px rgba(0,0,0,0.8);
+  position:relative;
+  z-index:100;
+}
+
+/* ── CARDS: rusted metal wall panels ── */
+[data-theme="playtime"] .card{
+  border-radius:3px;
+  border:1px solid #1a2840;
+  border-left:5px solid #FFD600;
+  background:
+    /* subtle paint scratch texture */
+    repeating-linear-gradient(102deg,transparent 0px,transparent 30px,rgba(255,255,255,0.006) 31px,transparent 32px),
+    linear-gradient(155deg, #141824 0%, #0f1320 60%, #0c1018 100%);
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.7),
+    0 1px 0 rgba(255,255,255,0.03),
+    inset 4px 0 12px rgba(255,214,0,0.04),
+    inset -1px 0 0 rgba(0,0,0,0.5),
+    inset 0 -1px 0 rgba(0,0,0,0.3);
+  position:relative;
+  overflow:hidden;
+  transition:all 0.18s ease;
+}
+/* Rivet bolts — top corners like real metal panels */
+[data-theme="playtime"] .card::before{
+  content:'';
+  position:absolute; top:7px; left:0; right:0;
+  height:6px;
+  background:
+    radial-gradient(circle at 8px 3px, #8a8060 0%, #3a3020 60%, transparent 70%),
+    radial-gradient(circle at calc(100% - 8px) 3px, #8a8060 0%, #3a3020 60%, transparent 70%);
+  pointer-events:none;
+  z-index:1;
+}
+/* Green rust/pipe water stain bottom */
+[data-theme="playtime"] .card::after{
+  content:'';
+  position:absolute; bottom:0; right:0; left:0; height:3px;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(40,100,60,0.25) 30%,
+    rgba(40,120,70,0.3) 50%,
+    rgba(20,80,40,0.2) 70%,
+    transparent 100%
+  );
+  pointer-events:none;
+}
+[data-theme="playtime"] .card:hover{
+  border-left:5px solid #e63946;
+  background:linear-gradient(155deg, #1a1f30 0%, #141824 60%, #111520 100%);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.8),
+    0 0 0 1px rgba(230,57,70,0.2),
+    inset 4px 0 12px rgba(230,57,70,0.06);
+  transform:translateX(4px);
+}
+[data-theme="playtime"] .card-title{
+  font-family:'Bangers',cursive;
+  font-size:1.18rem;
+  letter-spacing:0.15em;
+  color:#FFD600;
+  text-shadow:2px 2px 0 rgba(0,0,0,0.9), 0 0 20px rgba(255,214,0,0.35);
+}
+[data-theme="playtime"] .card p{color:#4a6a8a; font-size:0.82rem;}
+
+/* ── BUTTONS: factory console — 3D press effect ── */
+[data-theme="playtime"] .btn{
+  font-family:'Bangers',cursive;
+  font-size:1.05rem;
+  letter-spacing:0.12em;
+  color:#FFD600;
+  background:linear-gradient(180deg,#1e2030 0%,#141620 55%,#0c0e18 100%);
+  border:2px solid #FFD600;
+  border-bottom:5px solid #6b4400;
+  border-radius:5px;
+  padding:0.5rem 1.25rem;
+  box-shadow:
+    0 7px 0 #2a1a00,
+    0 10px 20px rgba(0,0,0,0.7),
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 -1px 0 rgba(0,0,0,0.5);
+  text-shadow:0 0 14px rgba(255,214,0,0.4), 0 1px 4px rgba(0,0,0,0.9);
+  transition:all 0.08s;
+  position:relative; top:0;
+}
+[data-theme="playtime"] .btn:hover{
+  background:linear-gradient(180deg,#FFE566,#FFD600,#cc9900) !important;
+  color:#0a0a00 !important;
+  border-color:#ffe066 !important;
+  border-bottom-color:#6b4400 !important;
+  box-shadow:0 7px 0 #2a1a00, 0 10px 28px rgba(255,214,0,0.5), inset 0 1px 0 rgba(255,255,255,0.5) !important;
+  text-shadow:none !important;
+  top:-2px;
+}
+[data-theme="playtime"] .btn:active{
+  top:6px !important;
+  border-bottom-width:2px !important;
+  box-shadow:0 1px 0 #2a1a00, 0 3px 8px rgba(0,0,0,0.5) !important;
+}
+[data-theme="playtime"] .btn.red{
+  color:#ff6b6b;
+  border-color:#e63946;
+  border-bottom-color:#6b0000;
+  background:linear-gradient(180deg,#200a0a,#160606,#0e0404);
+  box-shadow:0 7px 0 #2a0000,0 10px 20px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,100,100,0.06);
+  text-shadow:0 0 14px rgba(230,57,70,0.4);
+}
+[data-theme="playtime"] .btn.red:hover{
+  background:linear-gradient(180deg,#ff6666,#e63946,#aa0000) !important;
+  color:#fff !important; border-color:#ffaaaa !important;
+  box-shadow:0 7px 0 #2a0000,0 10px 28px rgba(230,57,70,0.5) !important;
+  text-shadow:none !important;
+}
+
+/* ── THEME SELECTOR BUTTONS ── */
+[data-theme="playtime"] .tbtn{
+  font-family:'Bangers',cursive;
+  font-size:0.85rem;
+  letter-spacing:0.08em;
+  color:#3a5a7a;
+  border:1px solid #1a2840;
+  border-radius:3px;
+  padding:0.28rem 0.65rem;
+  background:rgba(10,12,20,0.6);
+  transition:all 0.12s;
+}
+[data-theme="playtime"] .tbtn:hover{
+  border-color:#FFD600;
+  color:#FFD600;
+  background:rgba(255,214,0,0.06);
+  box-shadow:0 0 14px rgba(255,214,0,0.18),inset 0 0 10px rgba(255,214,0,0.04);
+}
+[data-theme="playtime"] .tbtn.on{
+  background:linear-gradient(180deg,#FFE033 0%,#FFD600 100%) !important;
+  color:#111 !important;
+  border-color:#ffe066 !important;
+  box-shadow:0 3px 0 #6b4400,0 5px 16px rgba(255,214,0,0.4) !important;
+}
+.tbtn-playtime{border:none !important;background:transparent !important;padding:1px 3px !important;cursor:pointer;transition:transform 0.15s cubic-bezier(0.34,1.5,0.64,1),filter 0.15s;}
+.tbtn-playtime:hover{transform:scale(1.12) translateY(-2px);filter:brightness(1.1) drop-shadow(0 5px 14px rgba(255,214,0,0.9));}
+.tbtn-playtime.on{transform:scale(1.07) translateY(-1px);filter:drop-shadow(0 4px 16px rgba(255,214,0,1)) drop-shadow(0 0 28px rgba(255,214,0,0.7));}
+.tbtn-playtime:active{transform:scale(0.95) translateY(2px);filter:brightness(0.88);}
+
+/* ── NAV TABS ── */
+[data-theme="playtime"] .ptab{
+  font-family:'Bangers',cursive;
+  font-size:0.92rem;
+  letter-spacing:0.1em;
+  color:#3a5a7a;
+  border-radius:3px 3px 0 0;
+  border-bottom:3px solid transparent;
+  padding:0.44rem 0.95rem;
+  transition:all 0.12s;
+}
+[data-theme="playtime"] .ptab:hover{color:#FFD600;background:rgba(255,214,0,0.04);border-bottom-color:rgba(255,214,0,0.3);}
+[data-theme="playtime"] .ptab.on{color:#FFD600;border-bottom:3px solid #FFD600;background:linear-gradient(180deg,rgba(255,214,0,0.08),transparent);text-shadow:0 0 16px rgba(255,214,0,0.6);}
+
+/* ── BOTTOM NAV ── */
+[data-theme="playtime"] .bottom-nav{
+  background:linear-gradient(180deg,#08090f,#060810);
+  border-top:none;
+  box-shadow:0 -2px 0 #FFD600,0 -4px 0 #2a1a00,0 -8px 24px rgba(0,0,0,0.8);
+}
+[data-theme="playtime"] .bnav-btn{color:#2a4a6a;font-family:'Bangers',cursive;font-size:0.5rem;letter-spacing:0.06em;transition:all 0.12s;}
+[data-theme="playtime"] .bnav-btn.on,[data-theme="playtime"] .bnav-btn:hover{color:#FFD600;text-shadow:0 0 14px rgba(255,214,0,0.8);}
+
+/* ── HUD BOXES ── */
+[data-theme="playtime"] .hud-box{
+  border-radius:3px;
+  border:1px solid #1a2840;
+  border-bottom:4px solid #FFD600;
+  background:linear-gradient(160deg,#0f1420,#0a0e18);
+  font-family:'Bangers',cursive;
+  font-size:0.72rem;
+  letter-spacing:0.1em;
+  color:#FFD600;
+  text-shadow:0 0 12px rgba(255,214,0,0.5);
+  box-shadow:0 4px 0 #2a1a00,0 6px 14px rgba(0,0,0,0.5),inset 0 0 20px rgba(0,0,0,0.4);
+}
+
+/* ── HOME TILES ── */
+[data-theme="playtime"] .home-tile{
+  border-radius:3px;
+  border:1px solid #1a2840;
+  border-bottom:4px solid #FFD600;
+  background:linear-gradient(155deg,#141824,#0f1320);
+  box-shadow:0 5px 0 #2a1a00,0 8px 18px rgba(0,0,0,0.6);
+  transition:all 0.15s;
+  position:relative; overflow:hidden;
+}
+[data-theme="playtime"] .home-tile::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,214,0,0.2),transparent);}
+[data-theme="playtime"] .home-tile:hover{border-bottom-color:#e63946;box-shadow:0 5px 0 #6b0000,0 8px 26px rgba(230,57,70,0.2);transform:translateY(-4px);}
+
+/* ── GAME SELECT CARDS ── */
+[data-theme="playtime"] .game-select-card{
+  border-radius:4px;
+  border:1px solid #1a2840;
+  border-bottom:5px solid #FFD600;
+  background:linear-gradient(155deg,#141824,#0f1320);
+  box-shadow:0 6px 0 #2a1a00,0 10px 22px rgba(0,0,0,0.6);
+  transition:all 0.12s;
+  position:relative; overflow:hidden;
+}
+[data-theme="playtime"] .game-select-card:hover{border-bottom-color:#e63946;box-shadow:0 6px 0 #6b0000,0 10px 28px rgba(230,57,70,0.25);transform:translateY(-5px) scale(1.025);}
+
+/* ── CHAT ── */
+[data-theme="playtime"] #chatMessages{background:rgba(6,8,14,0.85);border:1px solid #1a2840;border-radius:3px;}
+
+/* ── FOOTER ── */
+[data-theme="playtime"] footer{color:#2a4a6a;border-top:1px solid #1a2840;}
+
+/* ── CUSTOM SCROLLBAR ── */
+[data-theme="playtime"] ::-webkit-scrollbar{width:6px;}
+[data-theme="playtime"] ::-webkit-scrollbar-track{background:#060810;}
+[data-theme="playtime"] ::-webkit-scrollbar-thumb{background:linear-gradient(#FFD600,#cc9900);border-radius:0;}
+[data-theme="playtime"] ::-webkit-scrollbar-thumb:hover{background:#e63946;}
+
+/* ── WARNING SIGN on cards ── */
+[data-theme="playtime"] .card-title::before{
+  content:'⚠ ';
+  font-size:0.7em;
+  opacity:0.5;
+  filter:sepia(1) saturate(3) hue-rotate(0deg);
+}
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;transition:background 0.4s,color 0.3s;}
@@ -980,6 +1283,110 @@ footer span{color:var(--accent);}
   <button class="tbtn" onclick="setTheme('midnight',this)">🌙 Midnight</button>
   <button class="tbtn" onclick="setTheme('christmas',this)">🎄 Christmas</button>
   <button class="tbtn" onclick="setTheme('summer',this)">☀️ Summer</button>
+  <button class="tbtn tbtn-playtime" onclick="setTheme('playtime',this)" title="Playtime Co. Theme" style="padding:0;border:none;background:transparent;line-height:0;vertical-align:middle;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 62" width="104" height="29" style="display:block;">
+      <defs>
+        <!-- Yellow badge gradient: bright highlight top, pure yellow mid, amber bottom -->
+        <linearGradient id="ptYellow" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"   stop-color="#FFF176"/>
+          <stop offset="18%"  stop-color="#FFE000"/>
+          <stop offset="60%"  stop-color="#FFD600"/>
+          <stop offset="100%" stop-color="#D4A800"/>
+        </linearGradient>
+        <!-- Red p gradient -->
+        <linearGradient id="ptRed" x1="20%" y1="0%" x2="80%" y2="100%">
+          <stop offset="0%"   stop-color="#F04030"/>
+          <stop offset="100%" stop-color="#B71C1C"/>
+        </linearGradient>
+        <!-- Cyan co. badge gradient -->
+        <linearGradient id="ptCyan" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%"   stop-color="#40D8F0"/>
+          <stop offset="100%" stop-color="#0097B2"/>
+        </linearGradient>
+        <!-- Shadow for whole badge -->
+        <filter id="ptShadow" x="-4%" y="-8%" width="112%" height="130%">
+          <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#7a5c00" flood-opacity="0.55"/>
+        </filter>
+        <!-- Shadow for co. badge -->
+        <filter id="ptCoShadow" x="-8%" y="-8%" width="125%" height="140%">
+          <feDropShadow dx="0" dy="1.5" stdDeviation="1" flood-color="#005060" flood-opacity="0.5"/>
+        </filter>
+        <!-- Soft inner glow/highlight on yellow -->
+        <filter id="ptGlow">
+          <feGaussianBlur stdDeviation="1" result="blur"/>
+          <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+        </filter>
+        <!-- Text shadow for "laytime" -->
+        <filter id="ptTextShadow" x="-2%" y="-5%" width="110%" height="140%">
+          <feDropShadow dx="0.5" dy="1" stdDeviation="0.5" flood-color="#000" flood-opacity="0.15"/>
+        </filter>
+        <clipPath id="ptClip">
+          <polygon points="10,1 210,1 206,61 4,61"/>
+        </clipPath>
+      </defs>
+
+      <!-- ── YELLOW BADGE SHAPE (parallelogram, skewed like real logo) ── -->
+      <!-- Outer shadow shape -->
+      <polygon points="12,3 212,3 208,59 6,59" fill="#c8a000" opacity="0.35" transform="translate(1,3)"/>
+      <!-- Main yellow shape -->
+      <polygon points="10,1 210,1 206,61 4,61" fill="url(#ptYellow)" filter="url(#ptShadow)"/>
+      <!-- Top-edge white shine (curved highlight like plastic/glossy label) -->
+      <polygon points="10,1 210,1 208,10 12,10" fill="rgba(255,255,255,0.32)" clip-path="url(#ptClip)"/>
+      <!-- Bottom edge darker strip -->
+      <polygon points="6,55 206,55 206,61 4,61" fill="rgba(0,0,0,0.07)" clip-path="url(#ptClip)"/>
+
+      <!-- ── RED 'p' CHARACTER ── -->
+      <!-- Stem of p (vertical bar, slightly rounded) -->
+      <rect x="12" y="14" width="7.5" height="34" rx="3.8" fill="url(#ptRed)"/>
+      <!-- Stem highlight -->
+      <rect x="13.5" y="15" width="2.5" height="14" rx="1.2" fill="rgba(255,255,255,0.22)"/>
+
+      <!-- Red circle bowl of p -->
+      <circle cx="29" cy="28" r="16.5" fill="url(#ptRed)"/>
+      <!-- Circle highlight (top-left gloss) -->
+      <ellipse cx="23" cy="20" rx="6" ry="4.5" fill="rgba(255,255,255,0.28)" transform="rotate(-20,23,20)"/>
+
+      <!-- Yellow oval hole inside (matching yellow badge color) -->
+      <ellipse cx="29" cy="29" rx="10.5" ry="11" fill="#FFD600"/>
+      <!-- Hole inner shadow ring -->
+      <ellipse cx="29" cy="29" rx="10.5" ry="11" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="2"/>
+      <!-- Tiny yellow shine -->
+      <ellipse cx="24" cy="24" rx="2.2" ry="1.5" fill="rgba(255,255,255,0.28)" transform="rotate(-20,24,24)"/>
+
+      <!-- ── "laytime" TEXT ── -->
+      <!-- Text uses a rounded black style matching the logo exactly -->
+      <text
+        x="50" y="42"
+        font-family="'Arial Rounded MT Bold','Nunito','Varela Round',Arial,sans-serif"
+        font-weight="900"
+        font-size="28"
+        fill="#141414"
+        letter-spacing="-0.8"
+        filter="url(#ptTextShadow)">laytime</text>
+
+      <!-- ── "co." CYAN BADGE (top right, rotated ~-6deg like real logo) ── -->
+      <g transform="translate(168,4) rotate(-6)">
+        <!-- Badge outer shadow -->
+        <rect x="1" y="2" width="42" height="22" rx="4" fill="#005060" opacity="0.3"/>
+        <!-- Badge background -->
+        <rect x="0" y="0" width="42" height="22" rx="4" fill="url(#ptCyan)" filter="url(#ptCoShadow)"/>
+        <!-- Badge top shine -->
+        <rect x="0" y="0" width="42" height="9" rx="4" fill="rgba(255,255,255,0.3)"/>
+        <!-- Badge bottom darker strip -->
+        <rect x="0" y="16" width="42" height="6" rx="2" fill="rgba(0,0,0,0.1)"/>
+        <!-- "co." text bold white -->
+        <text
+          x="21" y="16.5"
+          font-family="'Arial Rounded MT Bold','Arial Black',Arial,sans-serif"
+          font-weight="900"
+          font-size="13"
+          fill="#ffffff"
+          text-anchor="middle"
+          letter-spacing="1"
+          style="text-shadow:0 1px 2px rgba(0,0,0,0.3)">co.</text>
+      </g>
+    </svg>
+  </button>
   <div id="userBarInline">
     <span class="xp-badge" id="xpBadgeInline" onclick="goPage('profile',null,null)" title="Profil">⚡ <span id="xpBadgeLvlInline">Lv1</span> · <span id="xpBadgeXpInline">0</span>XP</span>
     <button id="notifBell" onclick="toggleNotifDropdown()" title="Notifications">🔔<span id="notifDot"></span></button>
@@ -2323,6 +2730,7 @@ function getThemeConfig(t){
     'lava': {count:45,color:'255,68,0',  shape:'ember', speed:1.0,size:3,connect:false},
     'galaxy':{count:100,color:'199,125,255',shape:'galaxy',speed:0.2,size:2,connect:true,connectDist:80},
     'matrix':{count:60,color:'0,255,65', shape:'matrix',speed:1.5,size:2,connect:false},
+    'playtime':{count:18,color:'255,214,0',shape:'toy',speed:0.35,size:3,connect:false},
   };
   return configs[t]||configs[''];
 }
@@ -2342,6 +2750,16 @@ function drawParticle(p,cfg){
   else if(cfg.shape==='ember'){const g=bgCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*3);g.addColorStop(0,`rgba(${cfg.color},${p.alpha})`);g.addColorStop(1,'rgba(0,0,0,0)');bgCtx.fillStyle=g;bgCtx.beginPath();bgCtx.arc(p.x,p.y,p.size*3,0,Math.PI*2);bgCtx.fill();}
   else if(cfg.shape==='galaxy'){const g=bgCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size*2);g.addColorStop(0,`rgba(${cfg.color},${p.alpha})`);g.addColorStop(1,'rgba(0,0,0,0)');bgCtx.fillStyle=g;bgCtx.beginPath();bgCtx.arc(p.x,p.y,p.size*2,0,Math.PI*2);bgCtx.fill();}
   else if(cfg.shape==='matrix'){bgCtx.font=`${p.size*6}px 'Press Start 2P',monospace`;bgCtx.fillStyle=`rgba(${cfg.color},${p.alpha})`;bgCtx.fillText(p.char,p.x,p.y);}
+  else if(cfg.shape==='toy'){
+    // Floating toys and Huggy eyes from Poppy Playtime
+    const toys=['🧸','🪆','🎀','🎲','👁️','🔵','⚠️','🪅'];
+    bgCtx.save();
+    bgCtx.globalAlpha=p.alpha*0.55;
+    bgCtx.font=`${14+p.size*3}px serif`;
+    bgCtx.textAlign='center';bgCtx.textBaseline='middle';
+    bgCtx.fillText(toys[Math.floor(p.phase*3)%toys.length],p.x,p.y);
+    bgCtx.restore();
+  }
   bgCtx.restore();
 }
 function drawGrid(cfg){bgCtx.strokeStyle=`rgba(${cfg.color},0.06)`;bgCtx.lineWidth=1;for(let x=0;x<W;x+=60){bgCtx.beginPath();bgCtx.moveTo(x,0);bgCtx.lineTo(x,H);bgCtx.stroke();}for(let y=0;y<H;y+=60){bgCtx.beginPath();bgCtx.moveTo(0,y);bgCtx.lineTo(W,y);bgCtx.stroke();}}
@@ -2352,6 +2770,7 @@ function animate(){
   particles.forEach(p=>{
     p.x+=p.vx;p.y+=p.vy;p.phase+=0.02;
     if(cfg.shape==='ember') p.y-=0.5;
+    if(cfg.shape==='toy'){p.y-=cfg.speed*0.6;p.phase+=0.005;p.x+=Math.sin(p.phase*2)*0.4;if(p.y<-60){p.y=H+40;p.x=Math.random()*W;p.alpha=Math.random()*0.4+0.15;}}
     if(cfg.shape==='matrix'){p.y+=cfg.speed*2;if(p.y>H+20){p.y=-20;p.x=Math.random()*W;p.char=String.fromCharCode(0x30A0+Math.floor(Math.random()*96));}}
     if(p.x<-20) p.x=W+20;if(p.x>W+20) p.x=-20;
     if(p.y<-20&&cfg.shape!=='matrix') p.y=H+20;if(p.y>H+20&&cfg.shape!=='matrix') p.y=-20;
@@ -2972,6 +3391,50 @@ function buildMusicForTheme(theme){
       if(Math.random()>0.6){ note('sine',1760+Math.random()*400,0.012,0.4,audioCtx.currentTime); }
     },800);
     musicNodes.push({stop:()=>{ clearInterval(m1);clearInterval(c1);clearInterval(b1);clearInterval(k1);clearInterval(h1);clearInterval(bird); }});
+
+  } else if(theme==='playtime'){ // PLAYTIME CO. — industrial factory, eerie & mechanical
+    // Low industrial drone (factory hum)
+    const drone=audioCtx.createOscillator(); drone.type='sawtooth'; drone.frequency.value=55;
+    const droneGain=audioCtx.createGain(); droneGain.gain.value=0.06;
+    const droneFilter=audioCtx.createBiquadFilter(); droneFilter.type='lowpass'; droneFilter.frequency.value=180;
+    drone.connect(droneFilter); droneFilter.connect(droneGain); droneGain.connect(audioCtx.destination);
+    drone.start(); musicNodes.push(drone);
+
+    // Creepy Huggy Wuggy-esque melody (minor, lurking)
+    const mel=[220,0,165,0,196,175,165,0,147,0,165,0,196,0,175,165]; let mi=0;
+    const m1=setInterval(()=>{
+      if(mel[mi%mel.length]>0){
+        note('triangle',mel[mi%mel.length],0.055,0.55,audioCtx.currentTime);
+        // eerie 2nd voice slightly detuned
+        note('sine',mel[mi%mel.length]*1.005,0.025,0.55,audioCtx.currentTime);
+      } mi++;
+    },420);
+
+    // Heavy factory kick/clank
+    const k1=setInterval(()=>{
+      const now=audioCtx.currentTime;
+      note('sine',60,0.35,0.08,now); // thud
+      noise(0.18,0.04,now,800);      // metal clank
+    },800);
+    // Off-beat industrial clank
+    const k2=setInterval(()=>{
+      noise(0.09,0.06,audioCtx.currentTime,1200);
+    },1600);
+
+    // Low dark bass pulse (like machinery)
+    const bass=[55,55,55,73,55,55,55,65]; let bi=0;
+    const b1=setInterval(()=>{ note('sawtooth',bass[bi%bass.length],0.08,0.35,audioCtx.currentTime); bi++; },400);
+
+    // Warning siren flash (rare, creepy)
+    const siren=setInterval(()=>{
+      if(Math.random()>0.82){
+        const now=audioCtx.currentTime;
+        note('square',440,0.03,0.5,now);
+        note('square',480,0.02,0.5,now+0.25);
+      }
+    },3200);
+
+    musicNodes.push({stop:()=>{ clearInterval(m1);clearInterval(k1);clearInterval(k2);clearInterval(b1);clearInterval(siren);drone.stop(); }});
   }
   updateMusicUI();
 }
@@ -3399,11 +3862,10 @@ let COLS=Math.floor(sc.width/CELL),ROWS=Math.floor(sc.height/CELL);
 let snake,snakeDir,snakeDirQueue=[],snakeFoods=[],snakeRunning=false,snakeScore=0,snakeBest=parseInt(localStorage.getItem('snakeBest7d')||'0'),snakeLevel=1,snakeInterval=null;
 if(document.getElementById('snakeBest')){document.getElementById('snakeBest').textContent=snakeBest;}
 
-let snakeLastInput=0; // 100ms input throttle
 function startSnake(){
   resizeSnakeCanvas();COLS=Math.floor(sc.width/CELL);ROWS=Math.floor(sc.height/CELL);
   snake=[{x:Math.floor(COLS/2),y:Math.floor(ROWS/2)},{x:Math.floor(COLS/2)-1,y:Math.floor(ROWS/2)},{x:Math.floor(COLS/2)-2,y:Math.floor(ROWS/2)}];
-  snakeDir={x:1,y:0};snakeDirQueue=[];snakeFoods=[];snakeLastInput=0;
+  snakeDir={x:1,y:0};snakeDirQueue=[];snakeFoods=[];
   for(let i=0;i<3;i++) snakeFoods.push(randomFood());
   snakeRunning=true;snakeScore=0;snakeLevel=1;
   document.getElementById('snakeScore').textContent=0;document.getElementById('snakeLevel').textContent=1;document.getElementById('snakeMsg').textContent='';
@@ -3436,12 +3898,10 @@ function drawSnake(){
   const style=getComputedStyle(document.body);
   const acc=style.getPropertyValue('--accent').trim()||'#00ff88';
   const bg=style.getPropertyValue('--bg').trim()||'#0d0d0d';
-  const card=style.getPropertyValue('--card').trim()||'#1a1a1a';
 
-  // Background
   sctx.fillStyle=bg; sctx.fillRect(0,0,sc.width,sc.height);
 
-  // Subtle grid
+  // Grid
   sctx.strokeStyle='rgba(255,255,255,0.035)'; sctx.lineWidth=0.5;
   for(let x=0;x<=sc.width;x+=CELL){sctx.beginPath();sctx.moveTo(x,0);sctx.lineTo(x,sc.height);sctx.stroke();}
   for(let y=0;y<=sc.height;y+=CELL){sctx.beginPath();sctx.moveTo(0,y);sctx.lineTo(sc.width,y);sctx.stroke();}
@@ -3451,13 +3911,10 @@ function drawSnake(){
     const cx=f.x*CELL+CELL/2, cy=f.y*CELL+CELL/2, r=CELL/2-2;
     sctx.beginPath(); sctx.arc(cx,cy,r,0,Math.PI*2);
     sctx.fillStyle='#e8382a'; sctx.fill();
-    // Shine
     sctx.beginPath(); sctx.arc(cx-r*0.25,cy-r*0.3,r*0.3,0,Math.PI*2);
     sctx.fillStyle='rgba(255,255,255,0.35)'; sctx.fill();
-    // Stem
     sctx.strokeStyle='#5a3a1a'; sctx.lineWidth=1.5;
     sctx.beginPath(); sctx.moveTo(cx,cy-r); sctx.lineTo(cx+2,cy-r-4); sctx.stroke();
-    // Leaf
     sctx.fillStyle='#3cb043';
     sctx.beginPath(); sctx.ellipse(cx+4,cy-r-3,4,2,0.5,0,Math.PI*2); sctx.fill();
   });
@@ -3466,14 +3923,11 @@ function drawSnake(){
   snake.forEach((s,i)=>{
     const x=s.x*CELL+1, y=s.y*CELL+1, w=CELL-2, h=CELL-2;
     const ratio=1-(i/snake.length*0.55);
-
     if(i===0){
-      // Head: bright accent color with gradient
       const g=sctx.createRadialGradient(x+w/2,y+h/2,1,x+w/2,y+h/2,w/2);
       g.addColorStop(0,acc); g.addColorStop(1,acc+'99');
       sctx.fillStyle=g;
       sctx.beginPath(); sctx.roundRect(x,y,w,h,5); sctx.fill();
-      // Eyes
       const ex1=x+w*0.25, ex2=x+w*0.65, ey=y+h*0.28;
       sctx.fillStyle='#fff';
       sctx.beginPath(); sctx.arc(ex1,ey,2.2,0,Math.PI*2); sctx.fill();
@@ -3482,11 +3936,9 @@ function drawSnake(){
       sctx.beginPath(); sctx.arc(ex1+0.6,ey+0.4,1.1,0,Math.PI*2); sctx.fill();
       sctx.beginPath(); sctx.arc(ex2+0.6,ey+0.4,1.1,0,Math.PI*2); sctx.fill();
     } else {
-      // Body segments: gradient from accent to darker
       const alpha=0.3+ratio*0.7;
       sctx.fillStyle=acc+(Math.round(alpha*255).toString(16).padStart(2,'0'));
       sctx.beginPath(); sctx.roundRect(x,y,w,h,3); sctx.fill();
-      // Scale pattern
       if(i%2===0){
         sctx.fillStyle='rgba(255,255,255,0.08)';
         sctx.beginPath(); sctx.ellipse(x+w/2,y+h/2,w*0.3,h*0.2,0,0,Math.PI*2); sctx.fill();
@@ -3509,9 +3961,6 @@ document.addEventListener('keydown',e=>{
   if(!snakeRunning)return;
   const map={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0},w:{x:0,y:-1},s:{x:0,y:1},a:{x:-1,y:0},d:{x:1,y:0},W:{x:0,y:-1},S:{x:0,y:1},A:{x:-1,y:0},D:{x:1,y:0}};
   const nd=map[e.key];if(!nd)return;
-  const now=Date.now();
-  if(now-snakeLastInput<100)return; // 100ms between inputs
-  snakeLastInput=now;
   const last=snakeDirQueue.length>0?snakeDirQueue[snakeDirQueue.length-1]:snakeDir;
   if(nd.x===-last.x&&nd.y===-last.y)return;
   if(snakeDirQueue.length<2)snakeDirQueue.push(nd);e.preventDefault();
