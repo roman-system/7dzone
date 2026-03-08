@@ -5229,14 +5229,14 @@ window.initChat=initChat;
 // ============================================================
 
 const FB={
-  IW:288, IH:512,         // Interne Spielauflösung (Original)
-  GH:112,                 // Ground height in pixels (Original)
-  GRAV:0.25,              // Schwerkraft pro Frame (Original)
-  JUMP:-5.0,              // Sprungkraft (Original: -9 / 60fps ≈ -5)
-  PW:52,                  // Pipe Breite (Original)
-  PGAP:100,               // Pipe Lücke (Original)
-  PSPAWN:90,              // Frames zwischen Pipes (Original)
-  PSPEED:3.0,             // Pipe-Geschwindigkeit px/frame
+  IW:288, IH:512,         // Interne Spielauflösung
+  GH:112,                 // Ground height in pixels
+  GRAV:0.18,              // Sanftere Schwerkraft (war 0.25)
+  JUMP:-4.4,              // Stärkerer Sprung (war -5.0)
+  PW:52,                  // Pipe Breite
+  PGAP:145,               // Größere Lücke (war 100)
+  PSPAWN:110,             // Mehr Abstand zwischen Pipes (war 90)
+  PSPEED:2.2,             // Langsamere Pipes (war 3.0)
   BW:34, BH:26            // Bird Breite & Höhe
 };
 
@@ -5420,7 +5420,7 @@ function flappyUpdate(){
     fbPipes.push({x:FB.IW+FB.PW,top:minT+Math.random()*(maxT-minT),scored:false});
   }
   // Rohre bewegen (leicht schneller mit Score)
-  const spd=FB.PSPEED+(fbScore*0.025);
+  const spd=FB.PSPEED+(fbScore*0.012); // sanftere Steigerung (war 0.025)
   fbPipes.forEach(p=>p.x-=spd);
   fbPipes=fbPipes.filter(p=>p.x>-FB.PW-8);
 
@@ -5524,10 +5524,10 @@ window.resetFlappy=resetFlappy;
 const DINO={
   CW:600,CH:150,   // Canvas-Auflösung (unscaled)
   GND:18,          // Grundlinie von unten (unscaled)
-  GRAV:0.6,        // Gravitation
-  JUMP:-11.5,      // Sprunggeschwindigkeit
-  SPEED0:5.5,      // Startgeschwindigkeit
-  SPEED_MAX:12,    // Maximalgeschwindigkeit
+  GRAV:0.45,       // Sanftere Gravitation (war 0.6)
+  JUMP:-10.0,      // Höherer Sprung (war -11.5)
+  SPEED0:4.0,      // Langsamerer Start (war 5.5)
+  SPEED_MAX:9,     // Langsameres Max (war 12)
   // Dino-Sprite Dimensionen (unscaled)
   DW:22, DH:26,    // stehend
   DDW:30,DDH:18    // duckend
@@ -5785,7 +5785,7 @@ function dinoLoop(){
   s.frame++;
   // Score + Speed (original Formel)
   s.score+=s.speed/10;
-  s.speed=Math.min(DINO.SPEED0+s.score/180,DINO.SPEED_MAX);
+  s.speed=Math.min(DINO.SPEED0+s.score/280,DINO.SPEED_MAX); // sanftere Steigerung (war /180)
 
   // Physik
   if(!d.onGround){
@@ -6044,7 +6044,19 @@ async function renderPinnwand(){
         +'<div class="pinnwand-time">'+timeAgo+'</div>'
         +'</div></div>';
     }).join('');
-  }catch(e){feed.innerHTML='<div style="text-align:center;padding:1rem;color:#ff4444;">❌ '+e.message+'</div>';}
+  }catch(e){
+    const isPermission=e.message&&e.message.includes('permission');
+    feed.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--text2);font-size:0.85rem;">'
+      +(isPermission
+        ? '🔒 <b style="color:#ff4444">Pinnwand gesperrt</b><br><br>'
+          +'Die Firebase-Regel für <code>/pinnwand7d</code> erlaubt keinen Zugriff.<br><br>'
+          +'<b>Fix:</b> Gehe in die Firebase Console → Realtime Database → Rules und füge hinzu:<br>'
+          +'<code style="display:block;background:var(--bg);padding:0.5rem;border-radius:6px;margin:0.5rem 0;font-size:0.75rem;text-align:left">'
+          +'"pinnwand7d": { ".read": "auth != null", ".write": "auth != null" }'
+          +'</code>'
+        : '❌ '+e.message)
+      +'</div>';
+  }
 }
 
 async function pinnwandDelete(key){
