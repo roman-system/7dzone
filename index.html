@@ -871,7 +871,7 @@ footer span{color:var(--accent);}
 .auth-tabs{display:flex;gap:0.4rem;justify-content:center;margin-bottom:1.4rem;}
 .auth-tab{padding:0.3rem 1rem;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--text2);font-family:'Nunito';font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
 .auth-tab.on{border-color:var(--accent);color:var(--accent);box-shadow:0 0 8px var(--glow);}
-.auth-input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:0.7rem 1rem;color:var(--text);font-family:'Nunito';font-size:0.95rem;margin-bottom:0.75rem;outline:none;transition:border 0.2s;box-sizing:border-box;}
+.auth-input{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:0.7rem 1rem;color:var(--text);font-family:'Nunito';font-size:0.95rem;margin-bottom:0.75rem;outline:none;transition:border 0.2s;box-sizing:border-box;overflow:visible;}
 .auth-input:focus{border-color:var(--accent);}
 .auth-btn{width:100%;padding:0.7rem;border-radius:10px;border:2px solid var(--accent);background:transparent;color:var(--accent);font-family:'Press Start 2P';font-size:0.55rem;cursor:pointer;transition:all 0.2s;margin-top:0.2rem;}
 .auth-btn:hover{background:var(--accent);color:var(--bg);}
@@ -1040,6 +1040,16 @@ footer span{color:var(--accent);}
 #flappyCanvas{cursor:pointer;}
 #tetrisCanvas{background:#111;}
 </style>
+<script>
+function togglePassVis(inputId,btn){
+  var inp=document.getElementById(inputId);
+  if(!inp)return;
+  var eyeOpen="<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/><circle cx='12' cy='12' r='3'/></svg>";
+  var eyeClosed="<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24'/><line x1='1' y1='1' x2='23' y2='23'/></svg>";
+  if(inp.type==='password'){inp.type='text';btn.innerHTML=eyeClosed;btn.style.opacity='1';}
+  else{inp.type='password';btn.innerHTML=eyeOpen;btn.style.opacity='0.7';}
+}
+</script>
 </head>
 <body>
 <div id="xpBar"><div id="xpFill" style="width:0%"></div></div>
@@ -1076,8 +1086,14 @@ footer span{color:var(--accent);}
     </div>
     <input class="auth-input" id="authUser" type="text" placeholder="username" maxlength="50" autocomplete="username"/>
     <input class="auth-input" id="authUser2" type="text" placeholder="username bestätigen" maxlength="50" autocomplete="off" style="display:none;"/>
-    <input class="auth-input" id="authPass" type="password" placeholder="passwort" autocomplete="current-password" onkeydown="if(event.key==='Enter')authSubmit()"/>
-    <input class="auth-input" id="authPass2" type="password" placeholder="passwort bestätigen" autocomplete="off" style="display:none;" onkeydown="if(event.key==='Enter')authSubmit()"/>
+    <div style="position:relative;margin-bottom:0.75rem;width:100%;">
+      <input class="auth-input" id="authPass" type="password" placeholder="passwort" autocomplete="current-password" onkeydown="if(event.key==='Enter')authSubmit()" style="margin-bottom:0;padding-right:3rem;"/>
+      <button type="button" onclick="togglePassVis('authPass',this)" style="position:absolute;right:0.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text2);padding:0;line-height:0;outline:none;opacity:0.7;transition:opacity 0.15s;" title="Passwort anzeigen"><svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/><circle cx='12' cy='12' r='3'/></svg></button>
+    </div>
+    <div style="position:relative;margin-bottom:0.75rem;width:100%;display:none;" id="authPass2Wrap">
+      <input class="auth-input" id="authPass2" type="password" placeholder="passwort bestätigen" autocomplete="off" onkeydown="if(event.key==='Enter')authSubmit()" style="margin-bottom:0;padding-right:3rem;"/>
+      <button type="button" onclick="togglePassVis('authPass2',this)" style="position:absolute;right:0.8rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text2);padding:0;line-height:0;outline:none;opacity:0.7;transition:opacity 0.15s;" title="Passwort anzeigen"><svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/><circle cx='12' cy='12' r='3'/></svg></button>
+    </div>
     <div id="authMsg"></div>
     <button class="auth-btn" onclick="authSubmit()" id="authSubmitBtn">▶ LOGIN</button>
   </div>
@@ -2585,6 +2601,8 @@ function authSwitch(mode,btn){
   const reg=mode==='register';
   document.getElementById('authUser2').style.display=reg?'block':'none';
   document.getElementById('authPass2').style.display=reg?'block':'none';
+  const p2wrap=document.getElementById('authPass2Wrap');
+  if(p2wrap) p2wrap.style.display=reg?'block':'none';
   document.getElementById('authUser2').value='';
   document.getElementById('authPass2').value='';
   if(reg){document.getElementById('authUser').value='';document.getElementById('authPass').value='';}
@@ -2837,7 +2855,7 @@ function goPage(name,btn,bnavBtn){
   if(name==='leaderboard') loadXpLeaderboard();
   if(name==='admin') setTimeout(fixAdminTouches, 100);
   if(name==='pinnwand') loadPinnwand();
-  if(name==='board') loadBoard();
+  if(name==='board') setTimeout(loadBoard, 100);
   if(name==='achievements') loadAchievements();
   if(name==='events'&&currentUser) initEvents();
   if(name==='friends'&&currentUser) loadFriends();
@@ -6683,14 +6701,16 @@ function loadPinnwand(){
   renderPinnwand();
 }
 function loadBoard(){
-  // Wait for Firebase auth before loading
-  if(!currentUser){
-    const feed=document.getElementById('boardFeed');
-    if(feed) feed.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">🔒 bitte einloggen um das schwarze brett zu sehen!!</div>';
+  const feed=document.getElementById('boardFeed');
+  if(!feed) return;
+  // Retry bis Firebase bereit
+  if(typeof fbDb==='undefined'||!fbDb||!firebase.apps.length){
+    feed.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--text2);">⏳ verbinde...</div>';
+    setTimeout(loadBoard,600);
     return;
   }
-  if(typeof fbDb==='undefined'||!fbDb){
-    setTimeout(loadBoard,500);
+  if(!currentUser){
+    feed.innerHTML='<div style="text-align:center;padding:1.5rem;color:var(--text2);">🔒 bitte einloggen!!</div>';
     return;
   }
   renderBoard();
@@ -6713,10 +6733,12 @@ function renderBoard(){
     feed.innerHTML='<div style="text-align:center;padding:2rem;color:#ff4444;">❌ Firebase nicht verbunden!!</div>';
     return;
   }
-  console.log('Loading board for user:', currentUser.uid);
   fbDb.ref('board').once('value').then(snap=>{
-    console.log('Board snap:', snap.val());
-    const data=snap.val()||{};
+    const data=snap.val();
+    if(!data){
+      feed.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">📭 noch keine ankündigungen!! 📋<br><span style="font-size:0.75rem;opacity:0.6;">admins können oben posten</span></div>';
+      return;
+    }
     const entries=Object.entries(data).sort((a,b)=>b[1].ts-a[1].ts);
     if(!entries.length){
       feed.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">📭 noch keine ankündigungen!!</div>';
@@ -6773,6 +6795,23 @@ async function boardDelete(key){
   renderBoard();
 }
 window.boardPost=boardPost;
+
+function togglePassVis(inputId, btn){
+  const inp = document.getElementById(inputId);
+  if(!inp) return;
+  const eyeOpen = `<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/><circle cx='12' cy='12' r='3'/></svg>`;
+  const eyeClosed = `<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24'/><line x1='1' y1='1' x2='23' y2='23'/></svg>`;
+  if(inp.type === 'password'){
+    inp.type = 'text';
+    btn.innerHTML = eyeClosed;
+    btn.style.opacity='1';
+  } else {
+    inp.type = 'password';
+    btn.innerHTML = eyeOpen;
+    btn.style.opacity='0.7';
+  }
+}
+window.togglePassVis = togglePassVis;
 window.boardDelete=boardDelete;
 function loadAchievements(){
   if(typeof renderAchievements==='function') renderAchievements();
