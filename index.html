@@ -6683,19 +6683,39 @@ function loadPinnwand(){
   renderPinnwand();
 }
 function loadBoard(){
+  // Wait for Firebase auth before loading
+  if(!currentUser){
+    const feed=document.getElementById('boardFeed');
+    if(feed) feed.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">🔒 bitte einloggen um das schwarze brett zu sehen!!</div>';
+    return;
+  }
+  if(typeof fbDb==='undefined'||!fbDb){
+    setTimeout(loadBoard,500);
+    return;
+  }
   renderBoard();
 }
 
 function renderBoard(){
   const feed=document.getElementById('boardFeed');
-  if(!feed) return;
+  if(!feed){ console.error('boardFeed element not found!'); return; }
   feed.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">⏳ laden...</div>';
 
   // Show admin post form if admin
   const adminCard=document.getElementById('boardAdminCard');
   if(adminCard) adminCard.style.display=isAdmin()?'block':'none';
 
-  fbDb.ref('board').orderByChild('ts').once('value').then(snap=>{
+  if(!currentUser){
+    feed.innerHTML='<div style="text-align:center;padding:2rem;color:#ffaa00;">🔒 nicht eingeloggt — bitte einloggen!!</div>';
+    return;
+  }
+  if(!fbDb){
+    feed.innerHTML='<div style="text-align:center;padding:2rem;color:#ff4444;">❌ Firebase nicht verbunden!!</div>';
+    return;
+  }
+  console.log('Loading board for user:', currentUser.uid);
+  fbDb.ref('board').once('value').then(snap=>{
+    console.log('Board snap:', snap.val());
     const data=snap.val()||{};
     const entries=Object.entries(data).sort((a,b)=>b[1].ts-a[1].ts);
     if(!entries.length){
