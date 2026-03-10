@@ -1574,13 +1574,71 @@ footer span{color:var(--accent);}
         <span id="settingsAvatarEmoji">🐱</span>
         <img id="settingsAvatarImg" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%;" />
       </div>
-      <button onclick="document.getElementById('avatarFileInput').click()" style="position:absolute;bottom:0;right:0;width:26px;height:26px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);">✏️</button>
+      <button onclick="openAvatarChoice()" style="position:absolute;bottom:0;right:0;width:26px;height:26px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);">✏️</button>
     </div>
     <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)" />
-    <p style="font-size:0.75rem;color:var(--text2);margin-bottom:0.8rem;">tippe auf ✏️ um ein foto aus deiner galerie zu wählen!!</p>
+    <p style="font-size:0.75rem;color:var(--text2);margin-bottom:0.8rem;">tippe auf ✏️ um Foto oder GIF zu wählen!!</p>
     <div id="avatarUploadMsg" style="font-size:0.78rem;color:var(--accent);min-height:1rem;"></div>
     <button class="btn red" id="avatarRemoveBtn" style="display:none;margin-top:0.5rem;font-size:0.46rem;" onclick="removeAvatar()">🗑️ bild entfernen</button>
   </div>
+
+<!-- AVATAR CHOICE OVERLAY -->
+<div id="avatarChoiceOverlay" onclick="if(event.target===this)closeAvatarChoice()" style="display:none;position:fixed;inset:0;z-index:10015;background:rgba(0,0,0,0.75);align-items:flex-end;justify-content:center;">
+  <div style="background:var(--card);border:2px solid var(--accent);border-radius:24px 24px 0 0;width:100%;max-width:480px;padding:1.4rem 1.2rem 2.5rem;animation:slideUp 0.28s cubic-bezier(0.34,1.2,0.64,1);">
+    <div style="width:36px;height:4px;background:var(--border);border-radius:100px;margin:0 auto 1.2rem;"></div>
+    <div style="font-family:'Press Start 2P';font-size:0.56rem;color:var(--accent);text-align:center;margin-bottom:1.2rem;">🖼️ PROFILBILD ÄNDERN</div>
+    <div style="display:flex;flex-direction:column;gap:0.7rem;">
+      <button onclick="closeAvatarChoice();document.getElementById('avatarFileInput').click();"
+        style="display:flex;align-items:center;gap:0.9rem;padding:0.9rem 1.1rem;border-radius:14px;border:1.5px solid var(--border);background:var(--bg);cursor:pointer;transition:border-color 0.2s,box-shadow 0.2s;width:100%;text-align:left;"
+        onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span style="font-size:2rem;">📷</span>
+        <div>
+          <div style="font-weight:900;font-size:1rem;color:var(--text);">Foto hochladen</div>
+          <div style="font-size:0.75rem;color:var(--text2);">Bild aus deiner Galerie — wird zugeschnitten</div>
+        </div>
+        <span style="margin-left:auto;color:var(--accent);font-size:1.2rem;">›</span>
+      </button>
+      <button onclick="closeAvatarChoice();openGifAvatarPicker();"
+        style="display:flex;align-items:center;gap:0.9rem;padding:0.9rem 1.1rem;border-radius:14px;border:1.5px solid var(--border);background:var(--bg);cursor:pointer;transition:border-color 0.2s,box-shadow 0.2s;width:100%;text-align:left;"
+        onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span style="font-size:2rem;">🎬</span>
+        <div>
+          <div style="font-weight:900;font-size:1rem;color:var(--text);">GIF als Profilbild</div>
+          <div style="font-size:0.75rem;color:var(--text2);">Animiertes GIF via Link — wird zugeschnitten</div>
+        </div>
+        <span style="margin-left:auto;color:var(--accent);font-size:1.2rem;">›</span>
+      </button>
+    </div>
+    <button onclick="closeAvatarChoice()" class="btn red" style="width:100%;margin-top:1rem;">✕ ABBRECHEN</button>
+  </div>
+</div>
+
+<!-- GIF AVATAR PICKER OVERLAY (Step 1: URL eingeben) -->
+<div id="gifAvatarPickerOverlay" onclick="if(event.target===this)closeGifAvatarPicker()" style="display:none;position:fixed;inset:0;z-index:10016;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--card);border:2px solid var(--accent);border-radius:20px;padding:1.4rem 1.2rem;width:100%;max-width:420px;box-shadow:0 0 40px var(--glow);">
+    <div style="font-family:'Press Start 2P';font-size:0.56rem;color:var(--accent);margin-bottom:0.3rem;text-align:center;">🎬 GIF PROFILBILD</div>
+    <div style="text-align:center;font-size:0.75rem;color:var(--text2);margin-bottom:1.2rem;">Schritt 1 von 2 — Link eingeben</div>
+
+    <div style="font-family:'Press Start 2P';font-size:0.42rem;color:var(--text2);margin-bottom:0.4rem;">🔗 GIF URL (Tenor / Giphy / direkt)</div>
+    <input id="gifAvatarUrlInput" type="url" placeholder="https://media.tenor.com/..." maxlength="500"
+      style="width:100%;padding:0.6rem 0.9rem;border-radius:12px;background:var(--bg);border:1.5px solid var(--border);color:var(--text);font-family:'Nunito';font-size:0.9rem;outline:none;box-sizing:border-box;margin-bottom:0.4rem;"
+      onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
+      oninput="gifAvatarUrlPreview(this.value)" />
+    <div style="font-size:0.7rem;color:var(--text2);margin-bottom:1rem;">💡 GIF von Tenor oder Giphy kopieren · muss mit https:// beginnen</div>
+
+    <!-- Live Preview -->
+    <div id="gifAvatarUrlPreviewWrap" style="display:none;text-align:center;margin-bottom:1rem;">
+      <div style="font-family:'Press Start 2P';font-size:0.38rem;color:var(--text2);margin-bottom:0.4rem;">VORSCHAU</div>
+      <img id="gifAvatarUrlPreviewImg" src="" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--accent);box-shadow:0 0 12px var(--glow);" onerror="this.parentElement.style.display='none'" />
+    </div>
+
+    <div style="display:flex;gap:0.6rem;margin-top:0.5rem;">
+      <button class="btn red" onclick="closeGifAvatarPicker()" style="flex:1;">✕ ZURÜCK</button>
+      <button class="btn" onclick="gifAvatarNext()" style="flex:2;" id="gifAvatarNextBtn">WEITER ›</button>
+    </div>
+    <div id="gifAvatarMsg" style="font-size:0.78rem;color:#ff4444;min-height:1rem;margin-top:0.5rem;text-align:center;"></div>
+  </div>
+</div>
 
 <!-- CROP OVERLAY -->
 <div id="cropOverlay" style="display:none;position:fixed;inset:0;z-index:10010;background:rgba(0,0,0,0.92);display:none;flex-direction:column;align-items:center;justify-content:center;padding:1rem;">
@@ -1631,6 +1689,61 @@ footer span{color:var(--accent);}
   </div>
 </div>
 
+<!-- GIF CROP OVERLAY (Step 2: Zuschneiden) -->
+<div id="gifCropOverlay" style="display:none;position:fixed;inset:0;z-index:10017;background:rgba(0,0,0,0.92);flex-direction:column;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;">
+  <div style="background:var(--card);border:2px solid var(--accent);border-radius:20px;padding:1.4rem 1.2rem;width:100%;max-width:420px;max-height:95vh;overflow-y:auto;box-shadow:0 0 40px var(--glow);">
+    <div style="font-family:'Press Start 2P';font-size:0.56rem;color:var(--accent);margin-bottom:0.3rem;text-align:center;">✂️ GIF ZUSCHNEIDEN</div>
+    <div style="text-align:center;font-size:0.75rem;color:var(--text2);margin-bottom:1rem;">Schritt 2 von 2 — Ausschnitt wählen</div>
+
+    <!-- GIF preview with crop box -->
+    <div id="gifCropWrap" style="position:relative;width:100%;aspect-ratio:1;overflow:hidden;border-radius:12px;background:#000;margin-bottom:1rem;touch-action:none;cursor:move;user-select:none;">
+      <img id="gifCropImg" src="" alt="" style="position:absolute;transform-origin:top left;" draggable="false" />
+      <!-- circle overlay -->
+      <div style="position:absolute;inset:0;pointer-events:none;">
+        <svg width="100%" height="100%" style="position:absolute;inset:0;">
+          <defs>
+            <mask id="gifHoleMask">
+              <rect width="100%" height="100%" fill="white"/>
+              <circle cx="50%" cy="50%" r="40%" fill="black"/>
+            </mask>
+          </defs>
+          <rect width="100%" height="100%" fill="rgba(0,0,0,0.55)" mask="url(#gifHoleMask)"/>
+          <circle cx="50%" cy="50%" r="40%" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 3"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Zoom -->
+    <div style="margin-bottom:0.8rem;">
+      <div style="font-family:'Press Start 2P';font-size:0.42rem;color:var(--text2);margin-bottom:0.3rem;">🔍 ZOOM</div>
+      <input type="range" id="gifCropZoom" min="1" max="4" step="0.02" value="1" style="width:100%;accent-color:var(--accent);" oninput="gifCropUpdateZoom(this.value)">
+    </div>
+    <div style="font-size:0.75rem;color:var(--text2);margin-bottom:1rem;text-align:center;">📌 ziehen zum verschieben · zoom zum vergrößern</div>
+
+    <!-- Preview -->
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;justify-content:center;">
+      <div style="text-align:center;">
+        <div style="font-family:'Press Start 2P';font-size:0.38rem;color:var(--text2);margin-bottom:0.4rem;">VORSCHAU</div>
+        <div id="gifCropPreview" style="width:80px;height:80px;border-radius:50%;border:3px solid var(--accent);box-shadow:0 0 12px var(--glow);overflow:hidden;display:inline-block;">
+          <img id="gifCropPreviewImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;" />
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-family:'Press Start 2P';font-size:0.38rem;color:var(--text2);margin-bottom:0.4rem;">KLEIN</div>
+        <div style="width:40px;height:40px;border-radius:50%;border:2px solid var(--accent);overflow:hidden;display:inline-block;">
+          <img id="gifCropPreviewSm" src="" alt="" style="width:100%;height:100%;object-fit:cover;" />
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:0.6rem;">
+      <button class="btn red" onclick="closeGifCropOverlay();openGifAvatarPicker();" style="flex:1;">‹ ZURÜCK</button>
+      <button class="btn" onclick="applyGifCrop()" style="flex:2;" id="gifCropApplyBtn">✅ SPEICHERN</button>
+    </div>
+    <div id="gifCropMsg" style="font-size:0.78rem;color:var(--accent);min-height:1rem;margin-top:0.5rem;text-align:center;"></div>
+  </div>
+</div>
+
   <!-- ACCOUNT -->
   <div class="card">
     <div class="card-title">⚙️ ACCOUNT</div>
@@ -1642,23 +1755,89 @@ footer span{color:var(--accent);}
 
   <!-- SIGNATUR GIF -->
   <div class="card">
-    <div class="card-title">🖼️ CHAT-SIGNATUR (GIF/BILD)</div>
-    <p style="margin-bottom:0.8rem;">zeig ein GIF oder Bild unter jeder deiner Chat-Nachrichten!! 🎨</p>
-    <div id="sigPreviewWrap" style="margin-bottom:0.8rem;display:none;text-align:center;">
-      <img id="sigPreviewImg" src="" alt="Vorschau" style="max-height:80px;max-width:100%;border-radius:10px;border:1px solid var(--border);" />
+    <div class="card-title">🎨 CHAT-SIGNATUR (GIF/BILD)</div>
+    <p style="margin-bottom:0.8rem;">zeig ein GIF oder Bild unter deinen Chat-Nachrichten!! animierte GIFs werden unterstützt 🎬</p>
+
+    <!-- Aktuelles GIF Vorschau -->
+    <div id="sigCurrentWrap" style="display:none;text-align:center;margin-bottom:1rem;">
+      <div style="font-family:'Press Start 2P';font-size:0.42rem;color:var(--text2);margin-bottom:0.5rem;">AKTUELL AKTIV</div>
+      <div id="sigCurrentPreview" style="display:inline-block;border:2px solid var(--accent);border-radius:12px;overflow:hidden;box-shadow:0 0 12px var(--glow);"></div>
     </div>
-    <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
-      <input id="sigUrlInput" type="url" placeholder="https://... (GIF oder Bild-URL)" maxlength="500"
-        style="flex:1;padding:0.5rem 0.8rem;border-radius:10px;background:var(--bg);border:1.5px solid var(--border);color:var(--text);font-family:'Nunito';font-size:0.88rem;outline:none;"
-        onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
-        oninput="sigPreview(this.value)" />
+
+    <!-- Buttons -->
+    <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.8rem;">
+      <button class="btn" onclick="openSigPicker()">🎨 GIF / BILD WÄHLEN</button>
+      <button class="btn red" id="sigRemoveBtn" style="display:none;" onclick="removeSig()">🗑️ ENTFERNEN</button>
     </div>
-    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-      <button class="btn" onclick="saveSig()">💾 SPEICHERN</button>
-      <button class="btn red" onclick="removeSig()">🗑️ ENTFERNEN</button>
-    </div>
-    <div id="sigMsg" style="font-size:0.78rem;color:var(--accent);min-height:1rem;margin-top:0.5rem;"></div>
+    <div id="sigMsg" style="font-size:0.78rem;color:var(--accent);min-height:1rem;"></div>
   </div>
+
+<!-- SIG PICKER OVERLAY -->
+<div id="sigPickerOverlay" style="display:none;position:fixed;inset:0;z-index:10020;background:rgba(0,0,0,0.88);flex-direction:column;align-items:center;justify-content:flex-start;overflow-y:auto;padding:1rem;">
+  <div style="background:var(--card);border:2px solid var(--accent);border-radius:20px;padding:1.4rem 1.2rem;width:100%;max-width:440px;box-shadow:0 0 40px var(--glow);margin:auto;">
+    <div style="font-family:'Press Start 2P';font-size:0.58rem;color:var(--accent);margin-bottom:1rem;text-align:center;">🎨 SIGNATUR EINRICHTEN</div>
+
+    <!-- URL INPUT -->
+    <div style="font-family:'Press Start 2P';font-size:0.42rem;color:var(--text2);margin-bottom:0.4rem;">🔗 GIF / BILD URL</div>
+    <input id="sigPickerUrl" type="url" placeholder="https://media.tenor.com/... oder giphy.com/..." maxlength="500"
+      style="width:100%;padding:0.55rem 0.8rem;border-radius:10px;background:var(--bg);border:1.5px solid var(--border);color:var(--text);font-family:'Nunito';font-size:0.88rem;outline:none;box-sizing:border-box;margin-bottom:0.3rem;"
+      onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
+      oninput="sigPickerPreviewUpdate()" />
+    <div style="font-size:0.7rem;color:var(--text2);margin-bottom:1rem;">💡 Tenor oder Giphy GIF-Link einfügen · muss mit https:// anfangen</div>
+
+    <!-- LIVE PREVIEW -->
+    <div style="font-family:'Press Start 2P';font-size:0.42rem;color:var(--text2);margin-bottom:0.5rem;">👁️ VORSCHAU</div>
+    <div id="sigPickerPreviewBox" style="background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:0.8rem;margin-bottom:1rem;min-height:60px;display:flex;align-items:center;justify-content:center;">
+      <span style="color:var(--text2);font-size:0.8rem;">URL eingeben für Vorschau...</span>
+    </div>
+
+    <!-- GRÖSSE -->
+    <div style="font-family:'Press Start 2P';font-size:0.42rem;color:var(--text2);margin-bottom:0.5rem;">📐 GRÖSSE</div>
+    <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:1rem;">
+      <button class="sig-size-btn tbtn on" onclick="setSigSize('small',this)">S — Klein</button>
+      <button class="sig-size-btn tbtn" onclick="setSigSize('medium',this)">M — Mittel</button>
+      <button class="sig-size-btn tbtn" onclick="setSigSize('large',this)">L — Groß</button>
+      <button class="sig-size-btn tbtn" onclick="setSigSize('full',this)">XL — Voll</button>
+    </div>
+
+    <!-- FORM / RAHMEN -->
+    <div style="font-family:'Press Start 2P';font-size:0.42rem;color:var(--text2);margin-bottom:0.5rem;">🔲 FORM</div>
+    <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:1rem;">
+      <button class="sig-shape-btn tbtn on" onclick="setSigShape('rounded',this)">⬜ Abgerundet</button>
+      <button class="sig-shape-btn tbtn" onclick="setSigShape('circle',this)">⭕ Kreis</button>
+      <button class="sig-shape-btn tbtn" onclick="setSigShape('square',this)">▪️ Eckig</button>
+    </div>
+
+    <!-- AUSRICHTUNG -->
+    <div style="font-family:'Press Start 2P';font-size:0.42rem;color:var(--text2);margin-bottom:0.5rem;">↔️ AUSRICHTUNG</div>
+    <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:1.2rem;">
+      <button class="sig-align-btn tbtn on" onclick="setSigAlign('left',this)">⬅️ Links</button>
+      <button class="sig-align-btn tbtn" onclick="setSigAlign('center',this)">↔️ Mitte</button>
+      <button class="sig-align-btn tbtn" onclick="setSigAlign('right',this)">➡️ Rechts</button>
+    </div>
+
+    <!-- CHAT PREVIEW -->
+    <div style="font-family:'Press Start 2P';font-size:0.42rem;color:var(--text2);margin-bottom:0.5rem;">💬 SO SIEHT ES IM CHAT AUS</div>
+    <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:0.8rem;margin-bottom:1.2rem;">
+      <div style="display:flex;align-items:flex-start;gap:0.5rem;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">😎</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px 12px 12px 4px;padding:0.5rem 0.7rem;flex:1;">
+          <div style="font-size:0.68rem;font-weight:900;color:var(--accent);margin-bottom:0.2rem;">Du</div>
+          <div style="font-size:0.85rem;margin-bottom:0.4rem;">hey krass!!</div>
+          <div id="sigChatPreview" style="margin-bottom:0.3rem;"></div>
+          <div style="font-size:0.65rem;color:var(--text2);">12:34</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUTTONS -->
+    <div style="display:flex;gap:0.6rem;">
+      <button class="btn red" onclick="closeSigPicker()" style="flex:1;">✕ ABBRECHEN</button>
+      <button class="btn" onclick="saveSig()" style="flex:2;" id="sigSaveBtn">💾 SPEICHERN</button>
+    </div>
+    <div id="sigPickerMsg" style="font-size:0.78rem;color:var(--accent);min-height:1rem;margin-top:0.5rem;text-align:center;"></div>
+  </div>
+</div>
 
 </div>
 </div>
@@ -2413,13 +2592,23 @@ fbAuth.onAuthStateChanged(async user=>{
     const avSnap=await fbDb.ref('users/'+user.uid+'/avatarUrl').once('value');
     const avUrl=avSnap.val()||null;
     currentUser.avatarUrl=avUrl;
-    applyAvatar(avUrl);
+    // Check if it's a GIF avatar
+    const gifCropSnap=await fbDb.ref('users/'+user.uid+'/avatarGifCrop').once('value');
+    const gifCrop=gifCropSnap.val()||null;
+    if(avUrl && gifCrop){
+      applyGifAvatar(avUrl, gifCrop);
+    } else {
+      applyAvatar(avUrl);
+    }
     // load sig
     const sigSnap=await fbDb.ref('users/'+user.uid+'/sig').once('value');
     const sigVal=sigSnap.val()||null;
     currentUser.sig=sigVal;
-    const sigInput=document.getElementById('sigUrlInput');
-    if(sigInput&&sigVal){ sigInput.value=sigVal; sigPreview(sigVal); }
+    const sigDataSnap=await fbDb.ref('users/'+user.uid+'/sigData').once('value');
+    currentUser.sigData=sigDataSnap.val()||null;
+    const sigInput=document.getElementById('sigPickerUrl');
+    if(sigInput&&sigVal){ sigInput.value=sigVal; }
+    if(sigVal){ const d=currentUser.sigData||{}; sigUpdateSettingsCard(sigVal,d.size||'small',d.shape||'rounded',d.align||'left'); }
     setTimeout(()=>{if(typeof updateHomeStats==='function')updateHomeStats();},400);
   } else {
     currentUser=null;hofVoted=null;
@@ -2524,8 +2713,29 @@ window.toggleMoreMenu=toggleMoreMenu;
 window.closeMoreMenu=closeMoreMenu;
 window.goPageFromMore=goPageFromMore;
 
+function stopAllGames(){
+  // Snake
+  if(typeof snakeInterval!=='undefined'&&snakeInterval){ clearInterval(snakeInterval); snakeInterval=null; }
+  if(typeof snakeRunning!=='undefined') snakeRunning=false;
+  // Catch
+  if(typeof gInterval!=='undefined'&&gInterval){ clearInterval(gInterval); gInterval=null; }
+  if(typeof gSpawn!=='undefined'&&gSpawn){ clearInterval(gSpawn); gSpawn=null; }
+  if(typeof gRunning!=='undefined') gRunning=false;
+  // Flappy
+  if(typeof flappyRunning!=='undefined'&&flappyRunning) { try{resetFlappy();}catch(e){} }
+  // Tetris
+  if(typeof tetrisInterval!=='undefined'&&tetrisInterval){ clearInterval(tetrisInterval); tetrisInterval=null; }
+  // Dino
+  if(typeof dinoRunning!=='undefined'&&dinoRunning){ try{resetDino();}catch(e){} }
+  // Clicker interval keeps running (intentional — passive income)
+}
+
 function goPage(name,btn,bnavBtn){
   closeMoreMenu();
+  // Stop games when leaving gaming page
+  if(!document.getElementById('page-gaming')?.classList.contains('active')===false || name!=='gaming'){
+    stopAllGames();
+  }
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('on'));
   document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('on'));
@@ -2550,7 +2760,7 @@ function goPage(name,btn,bnavBtn){
   if(name==='gaming'){
     document.getElementById('gameSelectGrid').style.display='block';
     document.getElementById('gameBackBar').style.display='none';
-    ['catch','snake','memory','flappy','tetris','dino','ttt','wordle','quizgame'].forEach(g=>{const el=document.getElementById('game-'+g);if(el)el.style.display='none';});
+    ['catch','snake','memory','flappy','tetris','dino','ttt','wordle','quizgame','clicker'].forEach(g=>{const el=document.getElementById('game-'+g);if(el)el.style.display='none';});
   }
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -3195,7 +3405,7 @@ window.stopSoundcloud=stopSoundcloud;
 window.toggleScMini=toggleScMini;
 
 function showGame(name){
-  ['catch','snake','memory','flappy','tetris','dino','ttt','wordle','quizgame'].forEach(g=>{
+  ['catch','snake','memory','flappy','tetris','dino','ttt','wordle','quizgame','clicker'].forEach(g=>{
     const el=document.getElementById('game-'+g);
     if(el) el.style.display=g===name?'block':'none';
   });
@@ -3211,11 +3421,11 @@ function showGame(name){
 }
 
 function backToGameSelect(){
-  ['catch','snake','memory','flappy','tetris','dino','ttt','wordle','quizgame'].forEach(g=>{
+  stopAllGames();
+  ['catch','snake','memory','flappy','tetris','dino','ttt','wordle','quizgame','clicker'].forEach(g=>{
     const el=document.getElementById('game-'+g);
     if(el) el.style.display='none';
   });
-  if(typeof dinoRunning!=='undefined'&&dinoRunning) resetDino();
   document.getElementById('gameSelectGrid').style.display='block';
   document.getElementById('gameBackBar').style.display='none';
   window.scrollTo({top:0,behavior:'smooth'});
@@ -4568,6 +4778,242 @@ async function applyCrop(){
 
 window.closeCropOverlay=closeCropOverlay;
 window.applyCrop=applyCrop;
+
+// ── AVATAR CHOICE + GIF AVATAR FLOW ──────────────────────────
+function openAvatarChoice(){
+  const ov = document.getElementById('avatarChoiceOverlay');
+  if(ov){ ov.style.display='flex'; }
+}
+function closeAvatarChoice(){
+  const ov = document.getElementById('avatarChoiceOverlay');
+  if(ov){ ov.style.display='none'; }
+}
+
+// GIF Avatar Step 1: URL eingeben
+function openGifAvatarPicker(){
+  const ov = document.getElementById('gifAvatarPickerOverlay');
+  if(ov){ ov.style.display='flex'; }
+  document.getElementById('gifAvatarMsg').textContent='';
+}
+function closeGifAvatarPicker(){
+  const ov = document.getElementById('gifAvatarPickerOverlay');
+  if(ov){ ov.style.display='none'; }
+}
+function gifAvatarUrlPreview(url){
+  const wrap = document.getElementById('gifAvatarUrlPreviewWrap');
+  const img  = document.getElementById('gifAvatarUrlPreviewImg');
+  if(!wrap||!img) return;
+  if(url && url.startsWith('https://')){
+    img.src = url;
+    wrap.style.display = 'block';
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+function gifAvatarNext(){
+  const url = (document.getElementById('gifAvatarUrlInput').value||'').trim();
+  const msg = document.getElementById('gifAvatarMsg');
+  if(!url){ msg.textContent='⚠️ Bitte eine URL eingeben!!'; return; }
+  if(!url.startsWith('https://')){ msg.textContent='⚠️ URL muss mit https:// beginnen!!'; return; }
+  msg.textContent='';
+  closeGifAvatarPicker();
+  openGifCropOverlay(url);
+}
+
+// GIF Avatar Step 2: Zuschneiden (live GIF im crop)
+let gifCropState = { x:0, y:0, zoom:1, size:300, url:'' };
+let gifCropDrag  = { active:false, startX:0, startY:0, startImgX:0, startImgY:0 };
+
+function openGifCropOverlay(url){
+  gifCropState.url  = url;
+  gifCropState.zoom = 1;
+  gifCropState.x    = 0;
+  gifCropState.y    = 0;
+  const ov = document.getElementById('gifCropOverlay');
+  if(ov) ov.style.display='flex';
+  document.getElementById('gifCropZoom').value = 1;
+  document.getElementById('gifCropMsg').textContent = '';
+
+  // Set GIF image
+  const img = document.getElementById('gifCropImg');
+  img.src = url;
+  img.onload = ()=>{
+    const wrap = document.getElementById('gifCropWrap');
+    const size = Math.min(wrap.offsetWidth||300, 340);
+    gifCropState.size = size;
+    wrap.style.width  = size+'px';
+    wrap.style.height = size+'px';
+    // Center image
+    const scale = size / Math.min(img.naturalWidth, img.naturalHeight);
+    gifCropState.zoom = Math.max(1, scale);
+    document.getElementById('gifCropZoom').value = gifCropState.zoom;
+    gifCropState.x = (size - img.naturalWidth * gifCropState.zoom) / 2;
+    gifCropState.y = (size - img.naturalHeight * gifCropState.zoom) / 2;
+    gifCropApplyTransform();
+    gifCropUpdatePreview();
+  };
+  img.onerror = ()=>{
+    document.getElementById('gifCropMsg').textContent='❌ Bild konnte nicht geladen werden!! Andere URL versuchen.';
+  };
+
+  // Setup drag
+  const wrap = document.getElementById('gifCropWrap');
+  wrap.onmousedown  = gifCropDragStart;
+  wrap.ontouchstart = gifCropDragStart;
+  window.onmousemove  = gifCropDragMove;
+  window.ontouchmove  = gifCropDragMove;
+  window.onmouseup    = gifCropDragEnd;
+  window.ontouchend   = gifCropDragEnd;
+}
+
+function closeGifCropOverlay(){
+  const ov = document.getElementById('gifCropOverlay');
+  if(ov) ov.style.display='none';
+  window.onmousemove = null;
+  window.ontouchmove = null;
+  window.onmouseup   = null;
+  window.ontouchend  = null;
+}
+
+function gifCropUpdateZoom(val){
+  gifCropState.zoom = parseFloat(val);
+  gifCropClamp();
+  gifCropApplyTransform();
+  gifCropUpdatePreview();
+}
+
+function gifCropApplyTransform(){
+  const img = document.getElementById('gifCropImg');
+  const s   = gifCropState;
+  img.style.width  = (s.zoom * (img.naturalWidth||300))  + 'px';
+  img.style.height = (s.zoom * (img.naturalHeight||300)) + 'px';
+  img.style.left   = s.x + 'px';
+  img.style.top    = s.y + 'px';
+}
+
+function gifCropClamp(){
+  const s = gifCropState;
+  const img = document.getElementById('gifCropImg');
+  const size = s.size||300, r = size*0.4;
+  const cx = size/2, cy = size/2;
+  const iw = (img.naturalWidth||300)*s.zoom;
+  const ih = (img.naturalHeight||300)*s.zoom;
+  s.x = Math.min(cx-r, Math.max(cx+r-iw, s.x));
+  s.y = Math.min(cy-r, Math.max(cy+r-ih, s.y));
+}
+
+function gifCropDragStart(e){
+  e.preventDefault();
+  const pt = e.touches ? e.touches[0] : e;
+  gifCropDrag = { active:true, startX:pt.clientX, startY:pt.clientY, startImgX:gifCropState.x, startImgY:gifCropState.y };
+}
+function gifCropDragMove(e){
+  if(!gifCropDrag.active) return;
+  e.preventDefault();
+  const pt = e.touches ? e.touches[0] : e;
+  gifCropState.x = gifCropDrag.startImgX + (pt.clientX - gifCropDrag.startX);
+  gifCropState.y = gifCropDrag.startImgY + (pt.clientY - gifCropDrag.startY);
+  gifCropClamp();
+  gifCropApplyTransform();
+  gifCropUpdatePreview();
+}
+function gifCropDragEnd(){ gifCropDrag.active = false; }
+
+function gifCropUpdatePreview(){
+  // Calculate the crop region in "image url space" and show it in preview divs
+  const s   = gifCropState;
+  const img = document.getElementById('gifCropImg');
+  const size = s.size||300, r = size*0.4;
+  const cx = size/2-r, cy = size/2-r, diam = r*2;
+  // For GIFs we can't canvas-crop the animation, so we show the GIF with object-position
+  const pct_x = ((cx - s.x) / ((img.naturalWidth||300)*s.zoom)) * 100;
+  const pct_y = ((cy - s.y) / ((img.naturalHeight||300)*s.zoom)) * 100;
+  const scale80  = 80 / diam;
+  const scale40  = 40 / diam;
+  [['gifCropPreviewImg',80,scale80],['gifCropPreviewSm',40,scale40]].forEach(([id,pSize,sc])=>{
+    const pi = document.getElementById(id);
+    if(!pi) return;
+    pi.src = s.url;
+    pi.style.width  = ((img.naturalWidth||300)*s.zoom*sc)+'px';
+    pi.style.height = ((img.naturalHeight||300)*s.zoom*sc)+'px';
+    pi.style.objectFit    = 'none';
+    pi.style.objectPosition = `-${(cx-s.x)*sc}px -${(cy-s.y)*sc}px`;
+    pi.style.maxWidth  = 'none';
+    pi.style.maxHeight = 'none';
+  });
+}
+
+async function applyGifCrop(){
+  const s   = gifCropState;
+  const msg = document.getElementById('gifCropMsg');
+  if(!s.url){ msg.textContent='❌ Kein GIF geladen!!'; return; }
+  const btn = document.getElementById('gifCropApplyBtn');
+  if(btn){ btn.textContent='⏳...'; btn.disabled=true; }
+
+  // For GIF: store the URL directly as avatarUrl (with crop meta)
+  // We store url + cropData so the avatar shows cropped
+  const img = document.getElementById('gifCropImg');
+  const size = s.size||300, r = size*0.4;
+  const cx = size/2-r, cy = size/2-r;
+  const cropMeta = {
+    x: (cx - s.x) / ((img.naturalWidth||300)*s.zoom),
+    y: (cy - s.y) / ((img.naturalHeight||300)*s.zoom),
+    scale: (r*2) / ((img.naturalWidth||300)*s.zoom),
+  };
+  try{
+    // Save as special gif avatar URL
+    const gifAvatarData = JSON.stringify({ url: s.url, crop: cropMeta });
+    await fbDb.ref('users/'+currentUser.uid+'/avatarUrl').set(s.url);
+    await fbDb.ref('users/'+currentUser.uid+'/avatarGifUrl').set(s.url);
+    await fbDb.ref('users/'+currentUser.uid+'/avatarGifCrop').set(cropMeta);
+    currentUser.avatarUrl = s.url;
+    // Apply to UI
+    applyGifAvatar(s.url, cropMeta);
+    closeGifCropOverlay();
+    const uploadMsg = document.getElementById('avatarUploadMsg');
+    if(uploadMsg){ uploadMsg.textContent='✅ GIF gespeichert!!'; setTimeout(()=>uploadMsg.textContent='',3000); }
+    const removeBtn = document.getElementById('avatarRemoveBtn');
+    if(removeBtn) removeBtn.style.display='';
+    if(typeof showEgg==='function') showEgg('🎬 GIF Profilbild gespeichert!!');
+  }catch(e){
+    msg.textContent='❌ Fehler: '+e.message;
+  }
+  if(btn){ btn.textContent='✅ SPEICHERN'; btn.disabled=false; }
+}
+
+function applyGifAvatar(url, crop){
+  // Show GIF as circular avatar in settings
+  const wrap = document.getElementById('settingsAvatarWrap');
+  const emoji = document.getElementById('settingsAvatarEmoji');
+  const imgEl = document.getElementById('settingsAvatarImg');
+  if(!wrap) return;
+  // Use a background-image approach for cropping GIFs
+  wrap.style.backgroundImage = `url('${url}')`;
+  const iw = 90, diam = iw;
+  if(crop){
+    const bw = diam / crop.scale;
+    const bx = -crop.x * bw;
+    const by = -crop.y * bw;
+    wrap.style.backgroundSize   = bw+'px';
+    wrap.style.backgroundPosition = bx+'px '+by+'px';
+  } else {
+    wrap.style.backgroundSize = 'cover';
+    wrap.style.backgroundPosition = 'center';
+  }
+  wrap.style.backgroundRepeat = 'no-repeat';
+  if(emoji) emoji.style.display='none';
+  if(imgEl) imgEl.style.display='none';
+}
+
+window.openAvatarChoice=openAvatarChoice;
+window.closeAvatarChoice=closeAvatarChoice;
+window.openGifAvatarPicker=openGifAvatarPicker;
+window.closeGifAvatarPicker=closeGifAvatarPicker;
+window.gifAvatarUrlPreview=gifAvatarUrlPreview;
+window.gifAvatarNext=gifAvatarNext;
+window.closeGifCropOverlay=closeGifCropOverlay;
+window.gifCropUpdateZoom=gifCropUpdateZoom;
+window.applyGifCrop=applyGifCrop;
 window.cropUpdateZoom=cropUpdateZoom;
 
 async function removeAvatar(){
@@ -4935,7 +5381,8 @@ function renderChat(msgs){
     const reactBtns=REACTS.map(e=>`<button class="chat-react-btn" onclick="toggleReaction('${key}','${e}')" title="${e}">${e}</button>`).join('');
     const delBtn=isOwn?`<button class="chat-del-btn" onclick="deleteMyMsg('${key}')" title="löschen">🗑️</button>`:'';
     const sigUrl=(m.sig&&typeof m.sig==='string'&&m.sig.startsWith('https://'))?m.sig:null;
-    const sigHtml=sigUrl?`<img src="${sigUrl}" alt="sig" style="max-height:80px;max-width:100%;border-radius:8px;margin-top:0.4rem;display:block;" onerror="this.style.display='none'" loading="lazy" />`:'';
+    const sigD = m.sigData||{};
+    const sigHtml=sigUrl ? sigBuildImgHtml(sigUrl, sigD.size||'small', sigD.shape||'rounded', sigD.align||'left') : '';
     div.innerHTML=`${avatarHtml}
       <div class="chat-bubble">
         <div class="chat-name" onclick="openUserProfile('${m.uid}')">${escapeHtml(m.name)}</div>
@@ -5016,50 +5463,167 @@ window.closeUserProfile=closeUserProfile;
 function escapeHtml(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
 
 // ── CHAT-SIGNATUR ─────────────────────────────────────────────
-function sigPreview(url){
-  const wrap=document.getElementById('sigPreviewWrap');
-  const img=document.getElementById('sigPreviewImg');
-  if(!wrap||!img) return;
-  if(url && url.startsWith('https://')){
-    img.src=url; wrap.style.display='block';
-    img.onerror=()=>{ wrap.style.display='none'; };
-  } else {
-    wrap.style.display='none';
-  }
+let sigPickerState = { size: 'small', shape: 'rounded', align: 'left' };
+
+const SIG_SIZES = {
+  small:  { maxHeight: '60px',  maxWidth: '120px' },
+  medium: { maxHeight: '100px', maxWidth: '200px' },
+  large:  { maxHeight: '150px', maxWidth: '280px' },
+  full:   { maxHeight: '200px', maxWidth: '100%'  },
+};
+const SIG_SHAPES = {
+  rounded: 'border-radius:10px',
+  circle:  'border-radius:50%',
+  square:  'border-radius:0',
+};
+const SIG_ALIGNS = {
+  left:   'margin-right:auto;margin-left:0',
+  center: 'margin:0 auto',
+  right:  'margin-left:auto;margin-right:0',
+};
+
+function sigBuildStyle(size, shape, align){
+  const s = SIG_SIZES[size]  || SIG_SIZES.small;
+  const sh= SIG_SHAPES[shape]|| SIG_SHAPES.rounded;
+  const al= SIG_ALIGNS[align]|| SIG_ALIGNS.left;
+  return `max-height:${s.maxHeight};max-width:${s.maxWidth};${sh};display:block;${al};margin-top:0.4rem;`;
 }
+
+function sigBuildImgHtml(url, size, shape, align){
+  if(!url || !url.startsWith('https://')) return '';
+  const style = sigBuildStyle(size, shape, align);
+  return `<img src="${url}" alt="sig" style="${style}" onerror="this.style.display='none'" loading="lazy" />`;
+}
+
+function openSigPicker(){
+  const overlay = document.getElementById('sigPickerOverlay');
+  if(!overlay) return;
+  overlay.style.display = 'flex';
+  // Prefill from existing sig
+  if(currentUser && currentUser.sig){
+    const d = currentUser.sigData || {};
+    document.getElementById('sigPickerUrl').value = currentUser.sig;
+    sigPickerState.size  = d.size  || 'small';
+    sigPickerState.shape = d.shape || 'rounded';
+    sigPickerState.align = d.align || 'left';
+    // Activate correct buttons
+    document.querySelectorAll('.sig-size-btn').forEach(b=>b.classList.remove('on'));
+    document.querySelector(`.sig-size-btn[onclick*="'${sigPickerState.size}'"]`)?.classList.add('on');
+    document.querySelectorAll('.sig-shape-btn').forEach(b=>b.classList.remove('on'));
+    document.querySelector(`.sig-shape-btn[onclick*="'${sigPickerState.shape}'"]`)?.classList.add('on');
+    document.querySelectorAll('.sig-align-btn').forEach(b=>b.classList.remove('on'));
+    document.querySelector(`.sig-align-btn[onclick*="'${sigPickerState.align}'"]`)?.classList.add('on');
+  } else {
+    sigPickerState = { size:'small', shape:'rounded', align:'left' };
+  }
+  sigPickerPreviewUpdate();
+}
+
+function closeSigPicker(){
+  const overlay = document.getElementById('sigPickerOverlay');
+  if(overlay) overlay.style.display = 'none';
+}
+
+function setSigSize(val, btn){
+  sigPickerState.size = val;
+  document.querySelectorAll('.sig-size-btn').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  sigPickerPreviewUpdate();
+}
+function setSigShape(val, btn){
+  sigPickerState.shape = val;
+  document.querySelectorAll('.sig-shape-btn').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  sigPickerPreviewUpdate();
+}
+function setSigAlign(val, btn){
+  sigPickerState.align = val;
+  document.querySelectorAll('.sig-align-btn').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  sigPickerPreviewUpdate();
+}
+
+function sigPickerPreviewUpdate(){
+  const url = (document.getElementById('sigPickerUrl')?.value||'').trim();
+  const { size, shape, align } = sigPickerState;
+  const previewBox = document.getElementById('sigPickerPreviewBox');
+  const chatPreview = document.getElementById('sigChatPreview');
+  if(!url || !url.startsWith('https://')){
+    if(previewBox) previewBox.innerHTML = '<span style="color:var(--text2);font-size:0.8rem;">URL eingeben für Vorschau...</span>';
+    if(chatPreview) chatPreview.innerHTML = '';
+    return;
+  }
+  const imgHtml = sigBuildImgHtml(url, size, shape, align);
+  if(previewBox) previewBox.innerHTML = imgHtml;
+  if(chatPreview) chatPreview.innerHTML = imgHtml;
+}
+
+// Legacy compat
+function sigPreview(url){ sigPickerPreviewUpdate(); }
 
 async function saveSig(){
   if(!currentUser||!fbDb) return;
-  const url=(document.getElementById('sigUrlInput').value||'').trim();
-  const msg=document.getElementById('sigMsg');
-  if(!url){ msg.textContent='⚠️ Bitte eine URL eingeben!!'; return; }
-  if(!url.startsWith('https://')){ msg.textContent='⚠️ URL muss mit https:// anfangen!!'; return; }
-  if(url.length>500){ msg.textContent='⚠️ URL zu lang!!'; return; }
-  msg.textContent='⏳ speichern...';
+  const url=(document.getElementById('sigPickerUrl')?.value||'').trim();
+  const msgEl = document.getElementById('sigPickerMsg') || document.getElementById('sigMsg');
+  if(!url){ if(msgEl) msgEl.textContent='⚠️ Bitte eine URL eingeben!!'; return; }
+  if(!url.startsWith('https://')){ if(msgEl) msgEl.textContent='⚠️ URL muss mit https:// anfangen!!'; return; }
+  if(url.length>500){ if(msgEl) msgEl.textContent='⚠️ URL zu lang!!'; return; }
+  if(msgEl) msgEl.textContent='⏳ speichern...';
+  const { size, shape, align } = sigPickerState;
   try{
     await fbDb.ref('users/'+currentUser.uid+'/sig').set(url);
-    currentUser.sig=url;
-    msg.textContent='✅ Signatur gespeichert!!';
-    sigPreview(url);
-  }catch(e){ msg.textContent='❌ Fehler: '+e.message; }
+    await fbDb.ref('users/'+currentUser.uid+'/sigData').set({ size, shape, align });
+    currentUser.sig = url;
+    currentUser.sigData = { size, shape, align };
+    if(msgEl) msgEl.textContent='✅ Signatur gespeichert!!';
+    // Update settings card preview
+    sigUpdateSettingsCard(url, size, shape, align);
+    setTimeout(()=>closeSigPicker(), 800);
+  }catch(e){ if(msgEl) msgEl.textContent='❌ Fehler: '+e.message; }
 }
 
 async function removeSig(){
   if(!currentUser||!fbDb) return;
   const msg=document.getElementById('sigMsg');
-  msg.textContent='⏳...';
+  if(msg) msg.textContent='⏳...';
   try{
     await fbDb.ref('users/'+currentUser.uid+'/sig').remove();
+    await fbDb.ref('users/'+currentUser.uid+'/sigData').remove();
     currentUser.sig=null;
-    document.getElementById('sigUrlInput').value='';
-    document.getElementById('sigPreviewWrap').style.display='none';
-    msg.textContent='🗑️ Signatur entfernt!!';
-  }catch(e){ msg.textContent='❌ Fehler: '+e.message; }
+    currentUser.sigData=null;
+    const wrap = document.getElementById('sigCurrentWrap');
+    if(wrap) wrap.style.display='none';
+    const removeBtn = document.getElementById('sigRemoveBtn');
+    if(removeBtn) removeBtn.style.display='none';
+    if(msg) msg.textContent='🗑️ Signatur entfernt!!';
+  }catch(e){ if(msg) msg.textContent='❌ Fehler: '+e.message; }
+}
+
+function sigUpdateSettingsCard(url, size, shape, align){
+  const wrap = document.getElementById('sigCurrentWrap');
+  const preview = document.getElementById('sigCurrentPreview');
+  const removeBtn = document.getElementById('sigRemoveBtn');
+  if(!wrap||!preview) return;
+  if(url){
+    const style = sigBuildStyle(size, shape, align);
+    preview.innerHTML = `<img src="${url}" alt="sig" style="${style.replace('margin-top:0.4rem;','').replace('display:block;','').replace(SIG_ALIGNS[align]+';','')};max-height:100px;max-width:220px;" onerror="this.style.display='none'" />`;
+    wrap.style.display = 'block';
+    if(removeBtn) removeBtn.style.display = '';
+  } else {
+    wrap.style.display = 'none';
+    if(removeBtn) removeBtn.style.display = 'none';
+  }
 }
 
 window.sigPreview=sigPreview;
 window.saveSig=saveSig;
 window.removeSig=removeSig;
+window.openSigPicker=openSigPicker;
+window.closeSigPicker=closeSigPicker;
+window.setSigSize=setSigSize;
+window.setSigShape=setSigShape;
+window.setSigAlign=setSigAlign;
+window.sigPickerPreviewUpdate=sigPickerPreviewUpdate;
 
 async function sendChat(){
   if(!currentUser)return;
@@ -5072,7 +5636,10 @@ async function sendChat(){
   const key=fbDb.ref('chat7d').push().key;
   const msgData={uid:currentUser.uid,name:currentUser.username,text,ts:Date.now()};
   if(currentUser.avatarUrl) msgData.avatarUrl=currentUser.avatarUrl;
-  if(currentUser.sig && typeof currentUser.sig==='string' && currentUser.sig.startsWith('https://')) msgData.sig=currentUser.sig;
+  if(currentUser.sig && typeof currentUser.sig==='string' && currentUser.sig.startsWith('https://')) {
+    msgData.sig = currentUser.sig;
+    if(currentUser.sigData) msgData.sigData = currentUser.sigData;
+  }
   await fbDb.ref('chat7d/'+key).set(msgData);
   updateChallengeProgress('chatMsg',1);
   // keep only last 100
