@@ -1223,7 +1223,7 @@ footer span{color:var(--accent);}
   </div>
   </div>
 
-  <div id="game-snake">
+  <div id="game-snake" style="display:none;">
   <div class="card">
     <div class="card-title">🐍 SNAKE!!</div>
     <p>pfeiltasten oder WASD zum steuern!! 🍎 fressen = punkte!!</p>
@@ -2714,28 +2714,31 @@ window.closeMoreMenu=closeMoreMenu;
 window.goPageFromMore=goPageFromMore;
 
 function stopAllGames(){
-  // Snake
+  // Snake — stop AND clear canvas
   if(typeof snakeInterval!=='undefined'&&snakeInterval){ clearInterval(snakeInterval); snakeInterval=null; }
   if(typeof snakeRunning!=='undefined') snakeRunning=false;
+  try{ const sc=document.getElementById('snakeCanvas'); if(sc){ const ctx=sc.getContext('2d'); ctx.clearRect(0,0,sc.width,sc.height); } }catch(e){}
   // Catch
   if(typeof gInterval!=='undefined'&&gInterval){ clearInterval(gInterval); gInterval=null; }
   if(typeof gSpawn!=='undefined'&&gSpawn){ clearInterval(gSpawn); gSpawn=null; }
   if(typeof gRunning!=='undefined') gRunning=false;
+  try{ const ga=document.getElementById('gameArea'); if(ga) ga.innerHTML=''; }catch(e){}
   // Flappy
   if(typeof flappyRunning!=='undefined'&&flappyRunning) { try{resetFlappy();}catch(e){} }
+  try{ const fc=document.getElementById('flappyCanvas'); if(fc){ const ctx=fc.getContext('2d'); ctx.clearRect(0,0,fc.width,fc.height); } }catch(e){}
   // Tetris
   if(typeof tetrisInterval!=='undefined'&&tetrisInterval){ clearInterval(tetrisInterval); tetrisInterval=null; }
+  try{ const tc=document.getElementById('tetrisCanvas'); if(tc){ const ctx=tc.getContext('2d'); ctx.clearRect(0,0,tc.width,tc.height); } }catch(e){}
   // Dino
   if(typeof dinoRunning!=='undefined'&&dinoRunning){ try{resetDino();}catch(e){} }
-  // Clicker interval keeps running (intentional — passive income)
+  try{ const dc=document.getElementById('dinoCanvas'); if(dc){ const ctx=dc.getContext('2d'); ctx.clearRect(0,0,dc.width,dc.height); } }catch(e){}
+  // Clicker interval keeps running (passive income)
 }
 
 function goPage(name,btn,bnavBtn){
   closeMoreMenu();
-  // Stop games when leaving gaming page
-  if(!document.getElementById('page-gaming')?.classList.contains('active')===false || name!=='gaming'){
-    stopAllGames();
-  }
+  // Always stop all games on any page switch
+  stopAllGames();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('on'));
   document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('on'));
