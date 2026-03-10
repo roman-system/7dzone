@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>7D ZONE 🎮 v5</title>
+<title>7D ZONE 🎮 v6</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@400;700;900&family=Orbitron:wght@700;900&family=Bangers&family=Satisfy&family=Permanent+Marker&family=Righteous&family=Bungee+Shade&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -1000,7 +1000,7 @@ footer span{color:var(--accent);}
   <button class="ptab" onclick="goPage('events',this)">📅 Events</button>
   <button class="ptab" onclick="goPage('challenges',this)">🏆 Challenges</button>
   <button class="ptab" onclick="goPage('vote',this)">⭐ Voting</button>
-  <button class="ptab" onclick="goPage('leaderboard',this)">📊 Rangliste</button>
+  <button class="ptab" id="ptab-leaderboard" onclick="goPage('leaderboard',this)" style="display:none;">📊 Rangliste</button>
   <button class="ptab" onclick="goPage('pinnwand',this)">📸 Pinnwand</button>
   <button class="ptab" onclick="goPage('board',this)">📋 Schwarzes Brett</button>
   <button class="ptab" onclick="goPage('achievements',this)">🏅 Badges</button>
@@ -1017,7 +1017,7 @@ footer span{color:var(--accent);}
   <div class="home-hero">
     <div class="home-hero-bg"></div>
     <div class="home-hero-content">
-      <div class="home-version-badge">✨ v7</div>
+      <div class="home-version-badge">✨ v6</div>
       <div class="home-title">7D ZONE</div>
       <div class="home-subtitle">die offizielle klasse 7d community 🔥</div>
       <div id="homeUserGreet" style="font-size:0.85rem;color:var(--text2);margin-top:0.5rem;min-height:1.2rem;"></div>
@@ -1112,16 +1112,28 @@ footer span{color:var(--accent);}
   </div>
 
   <!-- WHATS NEW -->
-  <div class="home-section-label" style="margin-top:1.2rem;">🆕 NEU IN V7</div>
+  <div class="home-section-label" style="margin-top:1.2rem;">🆕 NEU IN V6</div>
   <div class="card">
     <div style="display:flex;flex-direction:column;gap:0.6rem;">
-      <div class="v7-feature"><span class="v7-icon">👍</span><div><b>Chat-Reaktionen</b> — reagiere mit 👍❤️😂 auf nachrichten!!</div></div>
-      <div class="v7-feature"><span class="v7-icon">🗑️</span><div><b>Nachrichten löschen</b> — eigene msgs im chat entfernen</div></div>
-      <div class="v7-feature"><span class="v7-icon">👤</span><div><b>Profilseiten</b> — klick auf namen → stats & badges sehen</div></div>
-      <div class="v7-feature"><span class="v7-icon">👫</span><div><b>Freundesliste</b> — füge klassenkameraden als freunde hinzu!!</div></div>
-      <div class="v7-feature"><span class="v7-icon">📅</span><div><b>Klassen-Events & Umfragen</b> — erstelle events für die klasse!!</div></div>
-      <div class="v7-feature"><span class="v7-icon">🦕</span><div><b>Dino Run + Tic Tac Toe vs KI</b> — 2 neue spiele!!</div></div>
-      <div class="v7-feature"><span class="v7-icon">✨</span><div><b>Bessere Animationen</b> — alles smoother & schöner!!</div></div>
+      <div class="v7-feature"><span class="v7-icon">🍪</span><div><b>Klicker-Spiel</b> — neues idle game mit upgrades, gebäuden, prestige & random events!!</div></div>
+      <div class="v7-feature"><span class="v7-icon">💤</span><div><b>Offline-Fortschritt</b> — klicker sammelt kekse auch wenn du weg bist (bis 8h)!!</div></div>
+      <div class="v7-feature"><span class="v7-icon">🎬</span><div><b>GIF Profilbild</b> — animiertes GIF als avatar wählen, per link + zuschneiden!!</div></div>
+      <div class="v7-feature"><span class="v7-icon">🎨</span><div><b>Chat-Signatur</b> — GIF oder bild unter jeder nachricht · größe, form & ausrichtung anpassbar!!</div></div>
+      <div class="v7-feature"><span class="v7-icon">📷</span><div><b>Neuer Foto-Picker</b> — ✏️ drücken → wählen zwischen foto hochladen oder GIF-link!!</div></div>
+      <div class="v7-feature"><span class="v7-icon">🔒</span><div><b>Rangliste geschützt</b> — nur eingeloggte user können die rangliste sehen!!</div></div>
+      <div class="v7-feature"><span class="v7-icon">🐍</span><div><b>Snake-Bug gefixt</b> — snake erscheint nicht mehr über anderen seiten!!</div></div>
+      <div class="v7-feature"><span class="v7-icon">🎮</span><div><b>Spiele-Reihenfolge</b> — tic tac toe · klicker · wordle jetzt nebeneinander!!</div></div>
+    </div>
+    <div style="margin-top:0.8rem;padding-top:0.8rem;border-top:1px solid var(--border);">
+      <div style="font-family:'Press Start 2P';font-size:0.38rem;color:var(--text2);margin-bottom:0.5rem;">ALLE VERSIONEN</div>
+      <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+        <span style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:0.2rem 0.6rem;font-size:0.72rem;color:var(--text2);">v1 — Launch 🚀</span>
+        <span style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:0.2rem 0.6rem;font-size:0.72rem;color:var(--text2);">v2 — Chat & XP</span>
+        <span style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:0.2rem 0.6rem;font-size:0.72rem;color:var(--text2);">v3 — Spiele</span>
+        <span style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:0.2rem 0.6rem;font-size:0.72rem;color:var(--text2);">v4 — Voting & Events</span>
+        <span style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:0.2rem 0.6rem;font-size:0.72rem;color:var(--text2);">v5 — Freunde & Profile</span>
+        <span style="background:var(--accent);color:var(--bg);border-radius:8px;padding:0.2rem 0.6rem;font-size:0.72rem;font-weight:900;">v6 — GIF & Klicker ✨</span>
+      </div>
     </div>
   </div>
 
@@ -1166,26 +1178,25 @@ footer span{color:var(--accent);}
         <div class="gsc-title">Dino Run</div>
         <div class="gsc-desc">Springe über Hindernisse!!</div>
       </div>
+      <div class="game-select-card" onclick="showGame('quizgame')">
+        <div class="gsc-icon">❓</div>
+        <div class="gsc-title">Quiz</div>
+        <div class="gsc-desc">300 Fragen – wer weiß mehr?!</div>
+      </div>
       <div class="game-select-card" onclick="showGame('ttt')">
         <div class="gsc-icon">❌</div>
-      <div class="game-select-card" onclick="showGame('wordle')">
-        <div class="gsc-icon">🟩</div>
-        <div class="gsc-title">Wordle</div>
-        <div class="gsc-desc">Errate das Wort!!</div>
-      </div>
         <div class="gsc-title">Tic Tac Toe</div>
         <div class="gsc-desc">Schlage die KI!!</div>
-      </div>
-      <div class="gsc-title">Wordle</div>
-        <div class="gsc-desc">Rate das 5-Buchstaben Wort!!</div>
-      </div>
-      <div class="gsc-title">Quiz</div>
-        <div class="gsc-desc">300 Fragen – wer weiß mehr?!</div>
       </div>
       <div class="game-select-card" onclick="showGame('clicker')">
         <div class="gsc-icon">🍪</div>
         <div class="gsc-title">Klicker!</div>
         <div class="gsc-desc">Klick, Upgrades, Imperium!!</div>
+      </div>
+      <div class="game-select-card" onclick="showGame('wordle')">
+        <div class="gsc-icon">🟩</div>
+        <div class="gsc-title">Wordle</div>
+        <div class="gsc-desc">Rate das 5-Buchstaben Wort!!</div>
       </div>
     </div>
   </div>
@@ -1614,41 +1625,58 @@ footer span{color:var(--accent);}
 </div>
 
 <!-- GIF AVATAR PICKER OVERLAY (Step 1: URL eingeben) -->
-<div id="gifAvatarPickerOverlay" onclick="if(event.target===this)closeGifAvatarPicker()" style="display:none;position:fixed;inset:0;z-index:10016;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;padding:1rem;">
+<div id="gifAvatarPickerOverlay" style="display:none;position:fixed;inset:0;z-index:10016;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;padding:1rem;">
   <div style="background:var(--card);border:2px solid var(--accent);border-radius:20px;padding:1.4rem 1.2rem;width:100%;max-width:420px;box-shadow:0 0 40px var(--glow);">
     <div style="font-family:'Press Start 2P';font-size:0.56rem;color:var(--accent);margin-bottom:0.3rem;text-align:center;">🎬 GIF PROFILBILD</div>
-    <div style="text-align:center;font-size:0.75rem;color:var(--text2);margin-bottom:1.2rem;">Schritt 1 von 2 — Link eingeben</div>
+    <div style="text-align:center;font-size:0.75rem;color:var(--text2);margin-bottom:1.2rem;">Schritt 1 von 2 — GIF-Link eingeben</div>
 
-    <div style="font-family:'Press Start 2P';font-size:0.42rem;color:var(--text2);margin-bottom:0.4rem;">🔗 GIF URL (Tenor / Giphy / direkt)</div>
-    <input id="gifAvatarUrlInput" type="url" placeholder="https://media.tenor.com/..." maxlength="500"
-      style="width:100%;padding:0.6rem 0.9rem;border-radius:12px;background:var(--bg);border:1.5px solid var(--border);color:var(--text);font-family:'Nunito';font-size:0.9rem;outline:none;box-sizing:border-box;margin-bottom:0.4rem;"
-      onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
-      oninput="gifAvatarUrlPreview(this.value)" />
-    <div style="font-size:0.7rem;color:var(--text2);margin-bottom:1rem;">💡 GIF von Tenor oder Giphy kopieren · muss mit https:// beginnen</div>
+    <div style="font-family:'Press Start 2P';font-size:0.42rem;color:var(--text2);margin-bottom:0.4rem;">🔗 DIREKTE GIF-URL</div>
+    <div style="display:flex;gap:0.4rem;margin-bottom:0.4rem;">
+      <input id="gifAvatarUrlInput" type="url" placeholder="https://media.tenor.com/....gif" maxlength="500"
+        style="flex:1;padding:0.6rem 0.9rem;border-radius:12px;background:var(--bg);border:1.5px solid var(--border);color:var(--text);font-family:'Nunito';font-size:0.88rem;outline:none;min-width:0;"
+        onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
+        oninput="gifAvatarUrlPreview(this.value)"
+        onkeydown="if(event.key==='Enter')gifAvatarTestUrl()" />
+      <button class="btn" onclick="gifAvatarTestUrl()" style="padding:0.6rem 0.8rem;flex-shrink:0;font-size:0.75rem;" title="GIF testen">🔍</button>
+    </div>
+
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:0.7rem;margin-bottom:1rem;font-size:0.72rem;color:var(--text2);line-height:1.8;">
+      <b style="color:var(--text);">So geht's:</b><br>
+      1. Geh zu <a href="https://tenor.com" target="_blank" style="color:var(--accent);text-decoration:none;"><b>tenor.com</b> ↗</a> oder <a href="https://giphy.com" target="_blank" style="color:var(--accent);text-decoration:none;"><b>giphy.com</b> ↗</a><br>
+      2. Such ein GIF → darauf klicken<br>
+      3. <b style="color:var(--text);">Rechtsklick → "Bild-Link kopieren"</b> (PC)<br>
+      &nbsp;&nbsp; oder <b style="color:var(--text);">Link teilen → Link kopieren</b> (Handy)<br>
+      4. URL hier einfügen · dann 🔍 drücken
+    </div>
 
     <!-- Live Preview -->
     <div id="gifAvatarUrlPreviewWrap" style="display:none;text-align:center;margin-bottom:1rem;">
-      <div style="font-family:'Press Start 2P';font-size:0.38rem;color:var(--text2);margin-bottom:0.4rem;">VORSCHAU</div>
-      <img id="gifAvatarUrlPreviewImg" src="" alt="" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--accent);box-shadow:0 0 12px var(--glow);" onerror="this.parentElement.style.display='none'" />
+      <div style="font-family:'Press Start 2P';font-size:0.38rem;color:var(--text2);margin-bottom:0.5rem;">✅ GIF GEFUNDEN</div>
+      <img id="gifAvatarUrlPreviewImg" src="" alt="" style="max-height:120px;max-width:100%;border-radius:12px;border:2px solid var(--accent);box-shadow:0 0 12px var(--glow);" />
+    </div>
+    <div id="gifAvatarLoadingWrap" style="display:none;text-align:center;margin-bottom:1rem;color:var(--text2);font-size:0.8rem;">⏳ GIF wird geladen...</div>
+    <div id="gifAvatarErrorWrap" style="display:none;text-align:center;margin-bottom:1rem;">
+      <div style="color:#ff4444;font-size:0.78rem;" id="gifAvatarErrorMsg">❌ GIF konnte nicht geladen werden</div>
+      <div style="font-size:0.7rem;color:var(--text2);margin-top:0.3rem;">Versuche einen direkten .gif Link (Rechtsklick → Bild-Link kopieren)</div>
     </div>
 
     <div style="display:flex;gap:0.6rem;margin-top:0.5rem;">
       <button class="btn red" onclick="closeGifAvatarPicker()" style="flex:1;">✕ ZURÜCK</button>
-      <button class="btn" onclick="gifAvatarNext()" style="flex:2;" id="gifAvatarNextBtn">WEITER ›</button>
+      <button class="btn" onclick="gifAvatarNext()" style="flex:2;" id="gifAvatarNextBtn" disabled>WEITER ›</button>
     </div>
     <div id="gifAvatarMsg" style="font-size:0.78rem;color:#ff4444;min-height:1rem;margin-top:0.5rem;text-align:center;"></div>
   </div>
 </div>
 
 <!-- CROP OVERLAY -->
-<div id="cropOverlay" style="display:none;position:fixed;inset:0;z-index:10010;background:rgba(0,0,0,0.92);display:none;flex-direction:column;align-items:center;justify-content:center;padding:1rem;">
+<div id="cropOverlay" style="display:none;position:fixed;inset:0;z-index:10010;background:rgba(0,0,0,0.92);flex-direction:column;align-items:center;justify-content:center;padding:1rem;">
   <div id="cropBox" style="background:var(--card);border:2px solid var(--accent);border-radius:20px;padding:1.4rem 1.2rem;width:100%;max-width:420px;max-height:95vh;overflow-y:auto;box-shadow:0 0 40px var(--glow);">
-    <div style="font-family:'Press Start 2P';font-size:0.62rem;color:var(--accent);margin-bottom:1rem;text-align:center;">✂️ FOTO ZUSCHNEIDEN</div>
+    <div style="font-family:'Press Start 2P';font-size:0.62rem;color:var(--accent);margin-bottom:0.3rem;text-align:center;">✂️ FOTO ZUSCHNEIDEN</div>
+    <div style="text-align:center;font-size:0.72rem;color:var(--text2);margin-bottom:0.8rem;">ziehen oder Pfeile benutzen</div>
 
     <!-- Canvas for cropping -->
-    <div style="position:relative;width:100%;aspect-ratio:1;overflow:hidden;border-radius:12px;background:#111;margin-bottom:1rem;touch-action:none;cursor:move;" id="cropCanvasWrap">
+    <div style="position:relative;width:100%;aspect-ratio:1;overflow:hidden;border-radius:12px;background:#111;margin-bottom:0.6rem;touch-action:none;cursor:move;" id="cropCanvasWrap">
       <canvas id="cropCanvas" style="position:absolute;top:0;left:0;touch-action:none;"></canvas>
-      <!-- Circle overlay -->
       <div id="cropCircleOverlay" style="position:absolute;inset:0;pointer-events:none;">
         <svg width="100%" height="100%" style="position:absolute;inset:0;">
           <defs>
@@ -1663,21 +1691,33 @@ footer span{color:var(--accent);}
       </div>
     </div>
 
-    <!-- Controls -->
+    <!-- Arrow buttons -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.3rem;width:110px;margin:0 auto 0.8rem;">
+      <div></div>
+      <button onmousedown="cropStartPan(0,-1)" onmouseup="cropStopPan()" ontouchstart="cropStartPan(0,-1)" ontouchend="cropStopPan()" style="padding:0.4rem;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">▲</button>
+      <div></div>
+      <button onmousedown="cropStartPan(-1,0)" onmouseup="cropStopPan()" ontouchstart="cropStartPan(-1,0)" ontouchend="cropStopPan()" style="padding:0.4rem;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">◀</button>
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--accent);opacity:0.3;"></div>
+      <button onmousedown="cropStartPan(1,0)" onmouseup="cropStopPan()" ontouchstart="cropStartPan(1,0)" ontouchend="cropStopPan()" style="padding:0.4rem;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">▶</button>
+      <div></div>
+      <button onmousedown="cropStartPan(0,1)" onmouseup="cropStopPan()" ontouchstart="cropStartPan(0,1)" ontouchend="cropStopPan()" style="padding:0.4rem;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">▼</button>
+      <div></div>
+    </div>
+
+    <!-- Zoom -->
     <div style="margin-bottom:0.8rem;">
-      <div style="font-size:0.72rem;color:var(--text2);margin-bottom:0.3rem;font-family:'Press Start 2P';font-size:0.42rem;">🔍 ZOOM</div>
+      <div style="font-family:'Press Start 2P';font-size:0.42rem;color:var(--text2);margin-bottom:0.3rem;">🔍 ZOOM</div>
       <input type="range" id="cropZoom" min="1" max="4" step="0.01" value="1" style="width:100%;accent-color:var(--accent);" oninput="cropUpdateZoom(this.value)">
     </div>
-    <div style="font-size:0.72rem;color:var(--text2);margin-bottom:1rem;text-align:center;font-size:0.75rem;">📌 ziehen zum verschieben · zoom zum vergrößern</div>
 
     <!-- Preview -->
     <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;justify-content:center;">
       <div style="text-align:center;">
-        <div style="font-size:0.62rem;color:var(--text2);margin-bottom:0.4rem;font-family:'Press Start 2P';font-size:0.38rem;">VORSCHAU</div>
+        <div style="font-family:'Press Start 2P';font-size:0.38rem;color:var(--text2);margin-bottom:0.4rem;">VORSCHAU</div>
         <canvas id="cropPreview" width="80" height="80" style="border-radius:50%;border:3px solid var(--accent);box-shadow:0 0 12px var(--glow);display:block;"></canvas>
       </div>
       <div style="text-align:center;">
-        <div style="font-size:0.62rem;color:var(--text2);margin-bottom:0.4rem;font-family:'Press Start 2P';font-size:0.38rem;">KLEIN</div>
+        <div style="font-family:'Press Start 2P';font-size:0.38rem;color:var(--text2);margin-bottom:0.4rem;">KLEIN</div>
         <canvas id="cropPreviewSm" width="40" height="40" style="border-radius:50%;border:2px solid var(--accent);display:block;"></canvas>
       </div>
     </div>
@@ -1693,45 +1733,44 @@ footer span{color:var(--accent);}
 <div id="gifCropOverlay" style="display:none;position:fixed;inset:0;z-index:10017;background:rgba(0,0,0,0.92);flex-direction:column;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;">
   <div style="background:var(--card);border:2px solid var(--accent);border-radius:20px;padding:1.4rem 1.2rem;width:100%;max-width:420px;max-height:95vh;overflow-y:auto;box-shadow:0 0 40px var(--glow);">
     <div style="font-family:'Press Start 2P';font-size:0.56rem;color:var(--accent);margin-bottom:0.3rem;text-align:center;">✂️ GIF ZUSCHNEIDEN</div>
-    <div style="text-align:center;font-size:0.75rem;color:var(--text2);margin-bottom:1rem;">Schritt 2 von 2 — Ausschnitt wählen</div>
+    <div style="text-align:center;font-size:0.72rem;color:var(--text2);margin-bottom:0.8rem;">Schritt 2 von 2 — ziehen oder Pfeile</div>
 
-    <!-- GIF preview with crop box -->
-    <div id="gifCropWrap" style="position:relative;width:100%;aspect-ratio:1;overflow:hidden;border-radius:12px;background:#000;margin-bottom:1rem;touch-action:none;cursor:move;user-select:none;">
-      <img id="gifCropImg" src="" alt="" style="position:absolute;transform-origin:top left;" draggable="false" />
-      <!-- circle overlay -->
-      <div style="position:absolute;inset:0;pointer-events:none;">
-        <svg width="100%" height="100%" style="position:absolute;inset:0;">
-          <defs>
-            <mask id="gifHoleMask">
-              <rect width="100%" height="100%" fill="white"/>
-              <circle cx="50%" cy="50%" r="40%" fill="black"/>
-            </mask>
-          </defs>
-          <rect width="100%" height="100%" fill="rgba(0,0,0,0.55)" mask="url(#gifHoleMask)"/>
-          <circle cx="50%" cy="50%" r="40%" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="6 3"/>
-        </svg>
-      </div>
+    <!-- GIF drag area -->
+    <div id="gifCropWrap" style="position:relative;width:280px;height:280px;overflow:hidden;border-radius:50%;border:3px solid var(--accent);box-shadow:0 0 20px var(--glow);margin:0 auto 0.6rem;touch-action:none;cursor:move;user-select:none;background:#111;">
+      <img id="gifCropImg" src="" alt="" style="position:absolute;transform-origin:0 0;pointer-events:none;" draggable="false" />
+    </div>
+
+    <!-- Arrow buttons -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.3rem;width:110px;margin:0 auto 0.8rem;">
+      <div></div>
+      <button onmousedown="gifCropStartPan(0,-1)" onmouseup="gifCropStopPan()" ontouchstart="gifCropStartPan(0,-1)" ontouchend="gifCropStopPan()" style="padding:0.4rem;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">▲</button>
+      <div></div>
+      <button onmousedown="gifCropStartPan(-1,0)" onmouseup="gifCropStopPan()" ontouchstart="gifCropStartPan(-1,0)" ontouchend="gifCropStopPan()" style="padding:0.4rem;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">◀</button>
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--accent);opacity:0.3;"></div>
+      <button onmousedown="gifCropStartPan(1,0)" onmouseup="gifCropStopPan()" ontouchstart="gifCropStartPan(1,0)" ontouchend="gifCropStopPan()" style="padding:0.4rem;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">▶</button>
+      <div></div>
+      <button onmousedown="gifCropStartPan(0,1)" onmouseup="gifCropStopPan()" ontouchstart="gifCropStartPan(0,1)" ontouchend="gifCropStopPan()" style="padding:0.4rem;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">▼</button>
+      <div></div>
     </div>
 
     <!-- Zoom -->
     <div style="margin-bottom:0.8rem;">
       <div style="font-family:'Press Start 2P';font-size:0.42rem;color:var(--text2);margin-bottom:0.3rem;">🔍 ZOOM</div>
-      <input type="range" id="gifCropZoom" min="1" max="4" step="0.02" value="1" style="width:100%;accent-color:var(--accent);" oninput="gifCropUpdateZoom(this.value)">
+      <input type="range" id="gifCropZoom" min="0.5" max="4" step="0.02" value="1" style="width:100%;accent-color:var(--accent);" oninput="gifCropUpdateZoom(this.value)">
     </div>
-    <div style="font-size:0.75rem;color:var(--text2);margin-bottom:1rem;text-align:center;">📌 ziehen zum verschieben · zoom zum vergrößern</div>
 
-    <!-- Preview -->
-    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;justify-content:center;">
+    <!-- Live circle preview -->
+    <div style="display:flex;align-items:center;gap:1.2rem;margin-bottom:1.2rem;justify-content:center;">
       <div style="text-align:center;">
         <div style="font-family:'Press Start 2P';font-size:0.38rem;color:var(--text2);margin-bottom:0.4rem;">VORSCHAU</div>
-        <div id="gifCropPreview" style="width:80px;height:80px;border-radius:50%;border:3px solid var(--accent);box-shadow:0 0 12px var(--glow);overflow:hidden;display:inline-block;">
-          <img id="gifCropPreviewImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;" />
+        <div id="gifCropPreview" style="width:80px;height:80px;border-radius:50%;border:3px solid var(--accent);box-shadow:0 0 12px var(--glow);overflow:hidden;position:relative;background:#111;">
+          <img id="gifCropPreviewImg" src="" alt="" style="position:absolute;transform-origin:0 0;" />
         </div>
       </div>
       <div style="text-align:center;">
         <div style="font-family:'Press Start 2P';font-size:0.38rem;color:var(--text2);margin-bottom:0.4rem;">KLEIN</div>
-        <div style="width:40px;height:40px;border-radius:50%;border:2px solid var(--accent);overflow:hidden;display:inline-block;">
-          <img id="gifCropPreviewSm" src="" alt="" style="width:100%;height:100%;object-fit:cover;" />
+        <div style="width:40px;height:40px;border-radius:50%;border:2px solid var(--accent);overflow:hidden;position:relative;background:#111;">
+          <img id="gifCropPreviewSm" src="" alt="" style="position:absolute;transform-origin:0 0;" />
         </div>
       </div>
     </div>
@@ -2395,7 +2434,7 @@ footer span{color:var(--accent);}
     <button onclick="goPageFromMore('gaming')" class="more-btn"><span style="font-size:1.5rem;">🎮</span><span>Spiele</span></button>
     <button onclick="goPageFromMore('jokes')" class="more-btn"><span style="font-size:1.5rem;">😂</span><span>Witze</span></button>
     <button onclick="goPageFromMore('challenges')" class="more-btn"><span style="font-size:1.5rem;">🏆</span><span>Challenges</span></button>
-    <button onclick="goPageFromMore('leaderboard')" class="more-btn"><span style="font-size:1.5rem;">📊</span><span>Rangliste</span></button>
+    <button onclick="goPageFromMore('leaderboard')" class="more-btn" id="more-btn-leaderboard" style="display:none;"><span style="font-size:1.5rem;">📊</span><span>Rangliste</span></button>
     <button onclick="goPageFromMore('pinnwand')" class="more-btn"><span style="font-size:1.5rem;">📸</span><span>Pinnwand</span></button>
     <button onclick="goPageFromMore('board')" class="more-btn"><span style="font-size:1.5rem;">📋</span><span>Brett</span></button>
     <button onclick="goPageFromMore('achievements')" class="more-btn"><span style="font-size:1.5rem;">🏅</span><span>Badges</span></button>
@@ -2535,6 +2574,96 @@ function loadScript(src){
 })();
 
 function initApp(){
+/*
+  ════════════════════════════════════════════════════════════════
+  FIREBASE REALTIME DATABASE RULES — in Firebase Console einfügen
+  Projekt: dzone-9946c  |  Zuletzt geprüft: funktioniert ✅
+  ════════════════════════════════════════════════════════════════
+
+  {
+    "rules": {
+      "chat7d": {
+        ".read":  "auth != null",
+        ".write": "auth != null"
+      },
+      "usernames": {
+        ".read":  true,
+        ".write": "auth != null"
+      },
+      "users": {
+        "$uid": {
+          ".read":  "auth != null",
+          ".write": "auth.uid === $uid",
+          "sig": {
+            ".validate": "newData.isString() && newData.val().beginsWith('https://') && newData.val().length <= 500"
+          },
+          "sigData": {
+            ".validate": "newData.isString() || newData.hasChildren(['size','shape','align'])"
+          },
+          "avatarUrl": {
+            ".validate": "newData.isString() && newData.val().length <= 200000"
+          },
+          "avatarGifUrl": {
+            ".validate": "newData.isString() && newData.val().beginsWith('https://') && newData.val().length <= 500"
+          },
+          "avatarGifCrop": {
+            ".validate": "newData.hasChildren(['ox','oy','fw','fh'])"
+          }
+        }
+      },
+      "friends": {
+        "$uid": {
+          ".read":  "auth != null",
+          ".write": "auth.uid === $uid"
+        }
+      },
+      "notifications": {
+        "$uid": {
+          ".read":  "auth.uid === $uid",
+          ".write": "auth != null"
+        }
+      },
+      "events": {
+        ".read":  "auth != null",
+        ".write": "auth != null"
+      },
+      "board": {
+        ".read":  "auth != null",
+        ".write": "auth != null"
+      },
+      "pinnwand": {
+        ".read":  "auth != null",
+        ".write": "auth != null"
+      },
+      "xp": {
+        "$uid": {
+          ".read":  "auth != null",
+          ".write": "auth.uid === $uid"
+        }
+      },
+      "scores7d": {
+        ".read":  "auth != null",
+        ".write": "auth != null"
+      },
+      "challenges": {
+        ".read":  "auth != null",
+        ".write": "auth != null"
+      },
+      "votes": {
+        ".read":  "auth != null",
+        ".write": "auth != null"
+      },
+      "loginBonuses": {
+        "$uid": {
+          ".read":  "auth.uid === $uid",
+          ".write": "auth.uid === $uid"
+        }
+      }
+    }
+  }
+
+  ════════════════════════════════════════════════════════════════
+*/
 const fbApp=firebase.initializeApp({
   apiKey:"AIzaSyAm-_eGrLsHnzsdiDAi1XTFU0fP_1AN8Lk",
   authDomain:"dzone-9946c.firebaseapp.com",
@@ -2582,6 +2711,11 @@ fbAuth.onAuthStateChanged(async user=>{
       if(isAdmin){document.getElementById('adminVoteGivenSection').style.display='';adminFillVoteSelect();}
       else{document.getElementById('adminVoteGivenSection').style.display='none';}
     });
+    // Show leaderboard nav buttons now that user is logged in
+    const ptabLb=document.getElementById('ptab-leaderboard');
+    if(ptabLb) ptabLb.style.display='';
+    const moreLb=document.getElementById('more-btn-leaderboard');
+    if(moreLb) moreLb.style.display='';
     // v5: init new systems
     await loadUserXP();
     await checkLoginBonus();
@@ -2616,6 +2750,11 @@ fbAuth.onAuthStateChanged(async user=>{
     document.getElementById('userBar').style.display='none';
     const inlineBar=document.getElementById('userBarInline');
     if(inlineBar) inlineBar.style.display='none';
+    // Hide leaderboard nav buttons when logged out
+    const ptabLb=document.getElementById('ptab-leaderboard');
+    if(ptabLb) ptabLb.style.display='none';
+    const moreLb=document.getElementById('more-btn-leaderboard');
+    if(moreLb) moreLb.style.display='none';
   }
 });
 
@@ -2758,7 +2897,14 @@ function goPage(name,btn,bnavBtn){
   if(name==='events'&&currentUser) initEvents();
   if(name==='friends'&&currentUser) loadFriends();
   if(name==='home'){setTimeout(()=>{updateHomeStats();initHomeParticles();},50);}
-  if(name==='leaderboard'){loadXpLeaderboard();loadGameLeaderboard('snake',document.querySelector('#gameRankTabRow .tbtn'));}
+  if(name==='leaderboard'&&!currentUser){
+    // Show login prompt instead
+    const el=document.getElementById('xpLeaderboardList');
+    if(el) el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">🔒 Bitte einloggen um die Rangliste zu sehen!!</div>';
+    const el2=document.getElementById('gameLeaderboardList');
+    if(el2) el2.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">🔒 Bitte einloggen!!</div>';
+  }
+  if(name==='leaderboard'&&currentUser){loadXpLeaderboard();loadGameLeaderboard('snake',document.querySelector('#gameRankTabRow .tbtn'));}
   if(name==='wordle'){setTimeout(initWordle,50);}
   if(name==='gaming'){
     document.getElementById('gameSelectGrid').style.display='block';
@@ -4491,6 +4637,7 @@ async function loadGameLeaderboard(game,btn){
   if(btn) btn.classList.add('on');
   const el=document.getElementById('gameLeaderboardList');
   if(!el) return;
+  if(!currentUser){ el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">🔒 Bitte einloggen um die Rangliste zu sehen!!</div>'; return; }
   el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">⏳ laden...</div>';
   const snap=await fbDb.ref('scores7d/'+game).once('value');
   const data=snap.val()||{};
@@ -4511,6 +4658,7 @@ window.loadGameLeaderboard=loadGameLeaderboard;
 async function loadXpLeaderboard(){
   const el=document.getElementById('xpLeaderboardList');
   if(!el)return;
+  if(!currentUser){ el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);">🔒 Bitte einloggen um die Rangliste zu sehen!!</div>'; return; }
   el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2);font-size:0.85rem;">⏳ laden...</div>';
   try{
     const snap=await fbDb.ref('users').once('value');
@@ -4597,6 +4745,16 @@ function applyAvatar(url){
 // AVATAR CROP SYSTEM
 // ============================================================
 let cropImg=null, cropState={x:0,y:0,zoom:1}, cropDragging=false, cropLastPos={x:0,y:0};
+let _cropPanInterval=null;
+
+function cropStartPan(dx,dy){
+  cropStopPan();
+  const step=8;
+  const go=()=>{ cropPan(dx*step, dy*step); };
+  go();
+  _cropPanInterval=setInterval(go,80);
+}
+function cropStopPan(){ clearInterval(_cropPanInterval); _cropPanInterval=null; }
 
 function handleAvatarUpload(event){
   const file=event.target.files[0];
@@ -4630,6 +4788,7 @@ function openCropOverlay(){
 }
 
 function closeCropOverlay(){
+  cropStopPan();
   document.getElementById('cropOverlay').style.display='none';
 }
 
@@ -4642,23 +4801,23 @@ function initCropCanvas(){
   canvas.width=size;
   canvas.height=size;
 
-  // fit image initially
-  const scale=Math.max(size/cropImg.width, size/cropImg.height);
+  // fit image initially — fill the circle
+  const scale=Math.max(size*0.8/cropImg.width, size*0.8/cropImg.height);
   cropState.zoom=scale;
-  cropState.minZoom=scale;
+  cropState.minZoom=scale*0.5;
   cropState.x=(size - cropImg.width*scale)/2;
   cropState.y=(size - cropImg.height*scale)/2;
   cropState.size=size;
-  document.getElementById('cropZoom').min=scale;
+  document.getElementById('cropZoom').min=cropState.minZoom;
   document.getElementById('cropZoom').max=scale*4;
   document.getElementById('cropZoom').value=scale;
 
-  // Mouse events
+  // Mouse drag
   canvas.onmousedown=e=>{cropDragging=true;cropLastPos={x:e.clientX,y:e.clientY};e.preventDefault();};
   window.onmousemove=e=>{if(!cropDragging)return;cropPan(e.clientX-cropLastPos.x,e.clientY-cropLastPos.y);cropLastPos={x:e.clientX,y:e.clientY};};
   window.onmouseup=()=>cropDragging=false;
 
-  // Touch events
+  // Touch
   let lastTouchDist=0;
   canvas.ontouchstart=e=>{
     e.preventDefault();
@@ -4674,48 +4833,35 @@ function initCropCanvas(){
     if(e.touches.length===2){
       const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
       const delta=(dist-lastTouchDist)*0.01;
-      cropUpdateZoom(parseFloat(document.getElementById('cropZoom').value)+delta*cropState.zoom);
+      cropUpdateZoom(cropState.zoom*(1+delta));
       lastTouchDist=dist;
     }
   };
   canvas.ontouchend=()=>cropDragging=false;
-
-  // Wheel zoom
-  canvas.onwheel=e=>{e.preventDefault();const delta=e.deltaY>0?-0.08:0.08;cropUpdateZoom(cropState.zoom*(1+delta));};
+  canvas.onwheel=e=>{e.preventDefault();cropUpdateZoom(cropState.zoom*(e.deltaY>0?0.92:1.08));};
 }
 
 function cropPan(dx,dy){
-  const s=cropState;
-  const newX=s.x+dx, newY=s.y+dy;
-  const size=s.size, r=size*0.4; // circle radius 40% of canvas
-  const cx=size/2, cy=size/2;
-  // clamp so circle is always covered by image
-  const iw=cropImg.width*s.zoom, ih=cropImg.height*s.zoom;
-  s.x=Math.min(cx-r, Math.max(cx+r-iw, newX));
-  s.y=Math.min(cy-r, Math.max(cy+r-ih, newY));
+  cropState.x+=dx;
+  cropState.y+=dy;
   cropRender();
 }
 
 function cropUpdateZoom(val){
   const s=cropState;
   const size=s.size||300;
-  const newZoom=Math.max(s.minZoom||1, Math.min(s.minZoom*4||4, parseFloat(val)));
-  // zoom around center
+  const newZoom=Math.max(s.minZoom||0.3, Math.min((s.minZoom||1)*8, parseFloat(val)));
+  // zoom around canvas center
   const cx=size/2, cy=size/2;
   s.x=cx-(cx-s.x)*(newZoom/s.zoom);
   s.y=cy-(cy-s.y)*(newZoom/s.zoom);
   s.zoom=newZoom;
   document.getElementById('cropZoom').value=newZoom;
-  cropClamp();
   cropRender();
 }
 
 function cropClamp(){
-  const s=cropState, size=s.size||300, r=size*0.4;
-  const cx=size/2, cy=size/2;
-  const iw=cropImg.width*s.zoom, ih=cropImg.height*s.zoom;
-  s.x=Math.min(cx-r, Math.max(cx+r-iw, s.x));
-  s.y=Math.min(cy-r, Math.max(cy+r-ih, s.y));
+  // no clamping — user can freely position
 }
 
 function cropRender(){
@@ -4726,7 +4872,6 @@ function cropRender(){
   const s=cropState, size=s.size;
   ctx.clearRect(0,0,size,size);
   ctx.drawImage(cropImg, s.x, s.y, cropImg.width*s.zoom, cropImg.height*s.zoom);
-  // Update previews
   updateCropPreview();
 }
 
@@ -4734,7 +4879,6 @@ function updateCropPreview(){
   const s=cropState, size=s.size||300;
   const r=size*0.4;
   const cx=size/2-r, cy=size/2-r, diam=r*2;
-  // source coords in image space
   const srcX=(cx-s.x)/s.zoom, srcY=(cy-s.y)/s.zoom, srcW=diam/s.zoom, srcH=diam/s.zoom;
   [['cropPreview',80],['cropPreviewSm',40]].forEach(([id,pSize])=>{
     const pc=document.getElementById(id);
@@ -4749,6 +4893,9 @@ function updateCropPreview(){
     pCtx.restore();
   });
 }
+
+window.cropStartPan=cropStartPan;
+window.cropStopPan=cropStopPan;
 
 async function applyCrop(){
   const btn=document.getElementById('cropApplyBtn');
@@ -4797,21 +4944,86 @@ function openGifAvatarPicker(){
   const ov = document.getElementById('gifAvatarPickerOverlay');
   if(ov){ ov.style.display='flex'; }
   document.getElementById('gifAvatarMsg').textContent='';
+  // Reset state
+  document.getElementById('gifAvatarUrlPreviewWrap').style.display='none';
+  document.getElementById('gifAvatarLoadingWrap').style.display='none';
+  document.getElementById('gifAvatarErrorWrap').style.display='none';
+  document.getElementById('gifAvatarNextBtn').disabled=true;
+  document.getElementById('gifAvatarUrlInput').value='';
 }
 function closeGifAvatarPicker(){
   const ov = document.getElementById('gifAvatarPickerOverlay');
   if(ov){ ov.style.display='none'; }
 }
 function gifAvatarUrlPreview(url){
-  const wrap = document.getElementById('gifAvatarUrlPreviewWrap');
-  const img  = document.getElementById('gifAvatarUrlPreviewImg');
-  if(!wrap||!img) return;
-  if(url && url.startsWith('https://')){
-    img.src = url;
-    wrap.style.display = 'block';
-  } else {
-    wrap.style.display = 'none';
+  // Hide all states when user is still typing
+  document.getElementById('gifAvatarUrlPreviewWrap').style.display='none';
+  document.getElementById('gifAvatarLoadingWrap').style.display='none';
+  document.getElementById('gifAvatarErrorWrap').style.display='none';
+  document.getElementById('gifAvatarNextBtn').disabled=true;
+  document.getElementById('gifAvatarMsg').textContent='';
+  if(!url || !url.startsWith('https://')) return;
+  // Auto-test after short delay
+  clearTimeout(window._gifPreviewTimer);
+  window._gifPreviewTimer = setTimeout(()=>gifAvatarTestUrl(), 600);
+}
+function gifAvatarTestUrl(){
+  const url = (document.getElementById('gifAvatarUrlInput').value||'').trim();
+  const loadWrap  = document.getElementById('gifAvatarLoadingWrap');
+  const errWrap   = document.getElementById('gifAvatarErrorWrap');
+  const prevWrap  = document.getElementById('gifAvatarUrlPreviewWrap');
+  const prevImg   = document.getElementById('gifAvatarUrlPreviewImg');
+  const nextBtn   = document.getElementById('gifAvatarNextBtn');
+  if(!url || !url.startsWith('https://')){
+    document.getElementById('gifAvatarMsg').textContent='⚠️ URL muss mit https:// beginnen!!';
+    return;
   }
+  prevWrap.style.display='none';
+  errWrap.style.display='none';
+  loadWrap.style.display='block';
+  nextBtn.disabled=true;
+  const testImg = new Image();
+  testImg.onload = ()=>{
+    loadWrap.style.display='none';
+    prevImg.src = url;
+    prevWrap.style.display='block';
+    nextBtn.disabled=false;
+  };
+  testImg.onerror = ()=>{
+    loadWrap.style.display='none';
+    // Try loading directly in preview img anyway (some GIFs block Image() but work in <img>)
+    prevImg.onload = ()=>{
+      errWrap.style.display='none';
+      prevWrap.style.display='block';
+      nextBtn.disabled=false;
+    };
+    prevImg.onerror = ()=>{
+      prevWrap.style.display='none';
+      errWrap.style.display='block';
+      document.getElementById('gifAvatarErrorMsg').textContent='❌ GIF konnte nicht geladen werden';
+      nextBtn.disabled=false; // allow trying anyway
+    };
+    prevImg.src = url;
+    // Show after short timeout even if no load event
+    setTimeout(()=>{
+      if(prevWrap.style.display==='none' && errWrap.style.display==='none'){
+        prevImg.src=url;
+        prevWrap.style.display='block';
+        loadWrap.style.display='none';
+        nextBtn.disabled=false;
+      }
+    }, 2000);
+  };
+  testImg.src = url;
+  // Fallback: show after 3s regardless
+  setTimeout(()=>{
+    if(loadWrap.style.display==='block'){
+      loadWrap.style.display='none';
+      prevImg.src=url;
+      prevWrap.style.display='block';
+      nextBtn.disabled=false;
+    }
+  }, 3000);
 }
 function gifAvatarNext(){
   const url = (document.getElementById('gifAvatarUrlInput').value||'').trim();
@@ -4824,85 +5036,110 @@ function gifAvatarNext(){
 }
 
 // GIF Avatar Step 2: Zuschneiden (live GIF im crop)
-let gifCropState = { x:0, y:0, zoom:1, size:300, url:'' };
+let gifCropState = { x:0, y:0, zoom:1, size:280, url:'', iw:0, ih:0 };
 let gifCropDrag  = { active:false, startX:0, startY:0, startImgX:0, startImgY:0 };
+let _gifCropPanInterval = null;
+
+function gifCropStartPan(dx,dy){
+  gifCropStopPan();
+  const step=8;
+  const go=()=>{ gifCropState.x+=dx*step; gifCropState.y+=dy*step; gifCropApplyTransform(); gifCropUpdatePreview(); };
+  go();
+  _gifCropPanInterval=setInterval(go,80);
+}
+function gifCropStopPan(){ clearInterval(_gifCropPanInterval); _gifCropPanInterval=null; }
 
 function openGifCropOverlay(url){
   gifCropState.url  = url;
   gifCropState.zoom = 1;
   gifCropState.x    = 0;
   gifCropState.y    = 0;
+  gifCropState.iw   = 0;
+  gifCropState.ih   = 0;
+  const SIZE = 280;
+  gifCropState.size = SIZE;
   const ov = document.getElementById('gifCropOverlay');
   if(ov) ov.style.display='flex';
   document.getElementById('gifCropZoom').value = 1;
   document.getElementById('gifCropMsg').textContent = '';
 
-  // Set GIF image
+  // Show GIF immediately
   const img = document.getElementById('gifCropImg');
   img.src = url;
-  img.onload = ()=>{
-    const wrap = document.getElementById('gifCropWrap');
-    const size = Math.min(wrap.offsetWidth||300, 340);
-    gifCropState.size = size;
-    wrap.style.width  = size+'px';
-    wrap.style.height = size+'px';
-    // Center image
-    const scale = size / Math.min(img.naturalWidth, img.naturalHeight);
-    gifCropState.zoom = Math.max(1, scale);
+
+  // Load in temp img to get dimensions
+  const tmp = new Image();
+  tmp.onload = ()=>{
+    const iw = tmp.naturalWidth  || 300;
+    const ih = tmp.naturalHeight || 300;
+    gifCropState.iw = iw;
+    gifCropState.ih = ih;
+    // Initial zoom: fit inside circle
+    const initZoom = SIZE / Math.max(iw, ih);
+    gifCropState.zoom = Math.max(0.5, initZoom);
     document.getElementById('gifCropZoom').value = gifCropState.zoom;
-    gifCropState.x = (size - img.naturalWidth * gifCropState.zoom) / 2;
-    gifCropState.y = (size - img.naturalHeight * gifCropState.zoom) / 2;
+    // Center
+    gifCropState.x = (SIZE - iw * gifCropState.zoom) / 2;
+    gifCropState.y = (SIZE - ih * gifCropState.zoom) / 2;
     gifCropApplyTransform();
     gifCropUpdatePreview();
   };
-  img.onerror = ()=>{
-    document.getElementById('gifCropMsg').textContent='❌ Bild konnte nicht geladen werden!! Andere URL versuchen.';
+  tmp.onerror = ()=>{
+    // Can't get dims (CORS) — use defaults, still works visually
+    gifCropState.iw = 320;
+    gifCropState.ih = 320;
+    gifCropState.zoom = 280/320;
+    gifCropState.x = 0;
+    gifCropState.y = 0;
+    gifCropApplyTransform();
+    gifCropUpdatePreview();
   };
+  tmp.src = url;
 
-  // Setup drag
+  // Drag
   const wrap = document.getElementById('gifCropWrap');
   wrap.onmousedown  = gifCropDragStart;
   wrap.ontouchstart = gifCropDragStart;
-  window.onmousemove  = gifCropDragMove;
-  window.ontouchmove  = gifCropDragMove;
-  window.onmouseup    = gifCropDragEnd;
-  window.ontouchend   = gifCropDragEnd;
+  document.addEventListener('mousemove', gifCropDragMove);
+  document.addEventListener('touchmove', gifCropDragMove, {passive:false});
+  document.addEventListener('mouseup',   gifCropDragEnd);
+  document.addEventListener('touchend',  gifCropDragEnd);
 }
 
 function closeGifCropOverlay(){
+  gifCropStopPan();
   const ov = document.getElementById('gifCropOverlay');
   if(ov) ov.style.display='none';
-  window.onmousemove = null;
-  window.ontouchmove = null;
-  window.onmouseup   = null;
-  window.ontouchend  = null;
+  document.removeEventListener('mousemove', gifCropDragMove);
+  document.removeEventListener('touchmove', gifCropDragMove);
+  document.removeEventListener('mouseup',   gifCropDragEnd);
+  document.removeEventListener('touchend',  gifCropDragEnd);
 }
 
 function gifCropUpdateZoom(val){
-  gifCropState.zoom = parseFloat(val);
-  gifCropClamp();
+  const s = gifCropState;
+  const sz = s.size;
+  const newZoom = Math.max(0.2, Math.min(4, parseFloat(val)));
+  // zoom around center of the circle
+  const cx = sz/2, cy = sz/2;
+  s.x = cx - (cx - s.x) * (newZoom / s.zoom);
+  s.y = cy - (cy - s.y) * (newZoom / s.zoom);
+  s.zoom = newZoom;
+  document.getElementById('gifCropZoom').value = newZoom;
   gifCropApplyTransform();
   gifCropUpdatePreview();
 }
 
 function gifCropApplyTransform(){
-  const img = document.getElementById('gifCropImg');
   const s   = gifCropState;
-  img.style.width  = (s.zoom * (img.naturalWidth||300))  + 'px';
-  img.style.height = (s.zoom * (img.naturalHeight||300)) + 'px';
+  const img = document.getElementById('gifCropImg');
+  if(!img) return;
+  const w = (s.iw||300) * s.zoom;
+  const h = (s.ih||300) * s.zoom;
+  img.style.width  = w + 'px';
+  img.style.height = h + 'px';
   img.style.left   = s.x + 'px';
   img.style.top    = s.y + 'px';
-}
-
-function gifCropClamp(){
-  const s = gifCropState;
-  const img = document.getElementById('gifCropImg');
-  const size = s.size||300, r = size*0.4;
-  const cx = size/2, cy = size/2;
-  const iw = (img.naturalWidth||300)*s.zoom;
-  const ih = (img.naturalHeight||300)*s.zoom;
-  s.x = Math.min(cx-r, Math.max(cx+r-iw, s.x));
-  s.y = Math.min(cy-r, Math.max(cy+r-ih, s.y));
 }
 
 function gifCropDragStart(e){
@@ -4916,33 +5153,25 @@ function gifCropDragMove(e){
   const pt = e.touches ? e.touches[0] : e;
   gifCropState.x = gifCropDrag.startImgX + (pt.clientX - gifCropDrag.startX);
   gifCropState.y = gifCropDrag.startImgY + (pt.clientY - gifCropDrag.startY);
-  gifCropClamp();
   gifCropApplyTransform();
   gifCropUpdatePreview();
 }
 function gifCropDragEnd(){ gifCropDrag.active = false; }
 
 function gifCropUpdatePreview(){
-  // Calculate the crop region in "image url space" and show it in preview divs
-  const s   = gifCropState;
-  const img = document.getElementById('gifCropImg');
-  const size = s.size||300, r = size*0.4;
-  const cx = size/2-r, cy = size/2-r, diam = r*2;
-  // For GIFs we can't canvas-crop the animation, so we show the GIF with object-position
-  const pct_x = ((cx - s.x) / ((img.naturalWidth||300)*s.zoom)) * 100;
-  const pct_y = ((cy - s.y) / ((img.naturalHeight||300)*s.zoom)) * 100;
-  const scale80  = 80 / diam;
-  const scale40  = 40 / diam;
-  [['gifCropPreviewImg',80,scale80],['gifCropPreviewSm',40,scale40]].forEach(([id,pSize,sc])=>{
+  const s  = gifCropState;
+  const sz = s.size || 280;
+  const iw = (s.iw||300) * s.zoom;
+  const ih = (s.ih||300) * s.zoom;
+  [['gifCropPreviewImg',80],['gifCropPreviewSm',40]].forEach(([id,pSize])=>{
     const pi = document.getElementById(id);
     if(!pi) return;
-    pi.src = s.url;
-    pi.style.width  = ((img.naturalWidth||300)*s.zoom*sc)+'px';
-    pi.style.height = ((img.naturalHeight||300)*s.zoom*sc)+'px';
-    pi.style.objectFit    = 'none';
-    pi.style.objectPosition = `-${(cx-s.x)*sc}px -${(cy-s.y)*sc}px`;
-    pi.style.maxWidth  = 'none';
-    pi.style.maxHeight = 'none';
+    if(pi.src !== s.url) pi.src = s.url;
+    const sc = pSize / sz;
+    pi.style.width  = (iw * sc) + 'px';
+    pi.style.height = (ih * sc) + 'px';
+    pi.style.left   = (s.x * sc) + 'px';
+    pi.style.top    = (s.y * sc) + 'px';
   });
 }
 
@@ -4953,24 +5182,21 @@ async function applyGifCrop(){
   const btn = document.getElementById('gifCropApplyBtn');
   if(btn){ btn.textContent='⏳...'; btn.disabled=true; }
 
-  // For GIF: store the URL directly as avatarUrl (with crop meta)
-  // We store url + cropData so the avatar shows cropped
-  const img = document.getElementById('gifCropImg');
-  const size = s.size||300, r = size*0.4;
-  const cx = size/2-r, cy = size/2-r;
+  const sz = s.size || 280;
+  const iw = s.iw || 300;
+  const ih = s.ih || 300;
   const cropMeta = {
-    x: (cx - s.x) / ((img.naturalWidth||300)*s.zoom),
-    y: (cy - s.y) / ((img.naturalHeight||300)*s.zoom),
-    scale: (r*2) / ((img.naturalWidth||300)*s.zoom),
+    ox: -s.x / (iw * s.zoom),
+    oy: -s.y / (ih * s.zoom),
+    fw: sz / (iw * s.zoom),
+    fh: sz / (ih * s.zoom),
   };
   try{
-    // Save as special gif avatar URL
-    const gifAvatarData = JSON.stringify({ url: s.url, crop: cropMeta });
     await fbDb.ref('users/'+currentUser.uid+'/avatarUrl').set(s.url);
     await fbDb.ref('users/'+currentUser.uid+'/avatarGifUrl').set(s.url);
     await fbDb.ref('users/'+currentUser.uid+'/avatarGifCrop').set(cropMeta);
-    currentUser.avatarUrl = s.url;
-    // Apply to UI
+    currentUser.avatarUrl    = s.url;
+    currentUser.avatarGifCrop = cropMeta;
     applyGifAvatar(s.url, cropMeta);
     closeGifCropOverlay();
     const uploadMsg = document.getElementById('avatarUploadMsg');
@@ -4985,25 +5211,24 @@ async function applyGifCrop(){
 }
 
 function applyGifAvatar(url, crop){
-  // Show GIF as circular avatar in settings
-  const wrap = document.getElementById('settingsAvatarWrap');
+  const wrap  = document.getElementById('settingsAvatarWrap');
   const emoji = document.getElementById('settingsAvatarEmoji');
   const imgEl = document.getElementById('settingsAvatarImg');
   if(!wrap) return;
-  // Use a background-image approach for cropping GIFs
-  wrap.style.backgroundImage = `url('${url}')`;
-  const iw = 90, diam = iw;
-  if(crop){
-    const bw = diam / crop.scale;
-    const bx = -crop.x * bw;
-    const by = -crop.y * bw;
-    wrap.style.backgroundSize   = bw+'px';
+  wrap.style.backgroundImage    = `url('${url}')`;
+  wrap.style.backgroundRepeat   = 'no-repeat';
+  if(crop && typeof crop.ox !== 'undefined'){
+    const sz = 90;
+    const bw = sz / crop.fw;
+    const bh = sz / crop.fh;
+    const bx = -(crop.ox * bw);
+    const by = -(crop.oy * bh);
+    wrap.style.backgroundSize     = bw+'px '+bh+'px';
     wrap.style.backgroundPosition = bx+'px '+by+'px';
   } else {
-    wrap.style.backgroundSize = 'cover';
+    wrap.style.backgroundSize     = 'cover';
     wrap.style.backgroundPosition = 'center';
   }
-  wrap.style.backgroundRepeat = 'no-repeat';
   if(emoji) emoji.style.display='none';
   if(imgEl) imgEl.style.display='none';
 }
@@ -5017,6 +5242,8 @@ window.gifAvatarNext=gifAvatarNext;
 window.closeGifCropOverlay=closeGifCropOverlay;
 window.gifCropUpdateZoom=gifCropUpdateZoom;
 window.applyGifCrop=applyGifCrop;
+window.gifCropStartPan=gifCropStartPan;
+window.gifCropStopPan=gifCropStopPan;
 window.cropUpdateZoom=cropUpdateZoom;
 
 async function removeAvatar(){
