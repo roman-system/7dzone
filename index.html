@@ -1519,6 +1519,7 @@ footer span{color:var(--accent);}
         <div style="display:flex;gap:0.3rem;">
           <button id="chessModeAI" class="tbtn on" onclick="chessSetMode('ai',this)" style="font-size:0.65rem;padding:0.3rem 0.6rem;">🤖 KI</button>
           <button id="chessModeLocal" class="tbtn" onclick="chessSetMode('local',this)" style="font-size:0.65rem;padding:0.3rem 0.6rem;">👥 2P</button>
+          <button id="chessModeOnline" class="tbtn" onclick="chessSetMode('online',this)" style="font-size:0.65rem;padding:0.3rem 0.6rem;">🌐 Online</button>
         </div>
       </div>
       <div id="chessDiffWrap">
@@ -1549,6 +1550,25 @@ footer span{color:var(--accent);}
       </div>
     </div>
 
+    <!-- Online Lobby -->
+    <div id="chessOnlineLobby" style="display:none;background:var(--bg);border:1.5px solid var(--accent);border-radius:12px;padding:1rem;margin-bottom:0.8rem;text-align:center;">
+      <div style="font-family:'Press Start 2P';font-size:0.5rem;color:var(--accent);margin-bottom:0.8rem;">🌐 ONLINE SCHACH</div>
+      <div style="display:flex;gap:0.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:0.8rem;">
+        <button class="btn" onclick="chessCreateRoom()" style="font-size:0.65rem;">➕ SPIEL ERSTELLEN</button>
+        <button class="btn" onclick="chessShowJoin()" style="font-size:0.65rem;">🔗 CODE EINGEBEN</button>
+      </div>
+      <div id="chessJoinInput" style="display:none;margin-bottom:0.6rem;">
+        <input id="chessJoinCode" placeholder="6-stelliger Code..." style="background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:0.4rem 0.7rem;color:var(--text);font-family:'Press Start 2P';font-size:0.6rem;width:160px;text-align:center;text-transform:uppercase;" maxlength="6">
+        <button class="btn" onclick="chessJoinRoom()" style="font-size:0.65rem;margin-left:0.4rem;">▶ JOIN</button>
+      </div>
+      <div id="chessRoomInfo" style="font-family:'Press Start 2P';font-size:0.45rem;color:var(--text2);min-height:1.2rem;"></div>
+      <div id="chessRoomCodeWrap" style="display:none;margin-top:0.6rem;">
+        <div style="font-size:0.65rem;color:var(--text2);margin-bottom:0.3rem;">Dein Code — teile ihn mit dem Gegner:</div>
+        <div id="chessRoomCodeVal" style="font-family:'Press Start 2P';font-size:1.1rem;color:var(--accent);letter-spacing:0.2em;cursor:pointer;" onclick="chessCopyCode()" title="Kopieren"></div>
+        <div style="font-size:0.65rem;color:var(--text2);margin-top:0.2rem;">👆 klicken zum kopieren</div>
+      </div>
+    </div>
+
     <!-- Player strips with timer -->
     <div id="chessPlayerB" style="display:flex;align-items:center;justify-content:space-between;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:0.4rem 0.8rem;margin-bottom:0.4rem;transition:border-color 0.3s;">
       <div style="display:flex;align-items:center;gap:0.5rem;">
@@ -1571,8 +1591,7 @@ footer span{color:var(--accent);}
           <div id="chessPromoOverlay" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.85);border-radius:4px;z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:0.8rem;">
             <div style="font-family:'Press Start 2P';font-size:0.5rem;color:#fff;margin-bottom:0.4rem;">UMWANDLUNG WÄHLEN</div>
             <div style="display:flex;gap:0.6rem;" id="chessPromoButtons"></div>
-          </div>
-        </div>
+          </div>        </div>
       </div>
     </div>
 
@@ -5860,16 +5879,6 @@ let chessPromoCallback=null;
 
 function chessInit(){ chessNewGame(); }
 
-function chessSetMode(m,btn){
-  chessMode=m;
-  document.querySelectorAll('#chessModeAI,#chessModeLocal').forEach(b=>b.classList.remove('on'));
-  btn&&btn.classList.add('on');
-  const diffWrap=document.getElementById('chessDiffWrap');
-  const colorWrap=document.getElementById('chessColorWrap');
-  if(diffWrap) diffWrap.style.display=m==='ai'?'':'none';
-  if(colorWrap) colorWrap.style.display=m==='ai'?'':'none';
-  chessNewGame();
-}
 function chessSetDiff(d,btn){
   chessDiff=d;
   document.querySelectorAll('.chess-diff-btn').forEach(b=>b.classList.remove('on'));
@@ -6027,6 +6036,7 @@ function chessRenderBoard(){
 function chessHandleClick(r,c){
   if(chessGameOver||chessAIThinking)return;
   if(chessMode==='ai'&&chessTurn!==chessPlayerColor)return;
+  if(chessMode==='online'&&chessTurn!==chessMyColor)return;
   chessHintMove=null;
   const piece=chessBoard[r][c];
 
@@ -6168,6 +6178,8 @@ function chessDoMove(fr,fc,tr,tc,isAI,promoChoice){
 
   chessUpdateStrips();
   chessRenderBoard();
+
+  if(chessMode==='online'&&chessRoomId) chessPushMove(fr,fc,tr,tc);
 
   if(!chessGameOver&&chessMode==='ai'&&chessTurn!==chessPlayerColor){
     chessAIThinking=true;
@@ -6451,6 +6463,171 @@ window.chessSetColor=chessSetColor;window.chessSetTimer=chessSetTimer;
 window.chessFlipBoard=chessFlipBoard;window.chessUndo=chessUndo;
 window.chessHint=chessHint;window.chessResign=chessResign;
 window.chessFallKing=chessFallKing;
+
+let chessRoomId=null, chessMyColor='w', chessRoomListener=null, chessRoomOpponent=null;
+
+function chessSetMode(m,btn){
+  chessMode=m;
+  document.querySelectorAll('#chessModeAI,#chessModeLocal,#chessModeOnline').forEach(b=>b.classList.remove('on'));
+  btn&&btn.classList.add('on');
+  const diffWrap=document.getElementById('chessDiffWrap');
+  const colorWrap=document.getElementById('chessColorWrap');
+  const lobby=document.getElementById('chessOnlineLobby');
+  if(diffWrap) diffWrap.style.display=m==='ai'?'':'none';
+  if(colorWrap) colorWrap.style.display=m==='ai'?'':'none';
+  if(lobby) lobby.style.display=m==='online'?'block':'none';
+  if(m==='online'){
+    chessLeaveRoom();
+    document.getElementById('chessRoomInfo').textContent='erstelle ein Spiel oder gib einen Code ein!';
+    return;
+  }
+  chessLeaveRoom();
+  chessNewGame();
+}
+
+function chessCreateRoom(){
+  if(!currentUser){chessRoomInfo('❌ bitte erst einloggen!');return;}
+  const code=Math.random().toString(36).substring(2,8).toUpperCase();
+  chessRoomId=code;
+  chessMyColor='w';
+  chessBoardFlipped=false;
+  const roomRef=fbDb.ref('chessRooms/'+code);
+  roomRef.set({
+    host:currentUser.uid,
+    hostName:currentUser.username||'Spieler 1',
+    guest:null,
+    guestName:null,
+    board:JSON.stringify(chessBoard),
+    turn:'w',
+    castling:JSON.stringify(chessCastling),
+    ep:null,
+    lastMove:null,
+    status:'waiting',
+    ts:Date.now()
+  });
+  document.getElementById('chessRoomCodeWrap').style.display='block';
+  document.getElementById('chessRoomCodeVal').textContent=code;
+  chessRoomInfo('⏳ warte auf Gegner...');
+  chessListenRoom(code);
+  setTimeout(()=>{if(fbDb.ref('chessRooms/'+code))fbDb.ref('chessRooms/'+code+'/status').once('value').then(s=>{if(s.val()==='waiting')fbDb.ref('chessRooms/'+code).remove();});},300000);
+}
+
+function chessShowJoin(){
+  const ji=document.getElementById('chessJoinInput');
+  ji.style.display=ji.style.display==='none'?'block':'none';
+}
+
+function chessJoinRoom(){
+  if(!currentUser){chessRoomInfo('❌ bitte erst einloggen!');return;}
+  const code=document.getElementById('chessJoinCode').value.trim().toUpperCase();
+  if(code.length!==6){chessRoomInfo('❌ Code muss 6 Zeichen haben!');return;}
+  chessRoomInfo('⏳ suche Spiel...');
+  fbDb.ref('chessRooms/'+code).once('value').then(snap=>{
+    const room=snap.val();
+    if(!room){chessRoomInfo('❌ Spiel nicht gefunden!');return;}
+    if(room.status!=='waiting'){chessRoomInfo('❌ Spiel bereits voll!');return;}
+    if(room.host===currentUser.uid){chessRoomInfo('❌ das ist dein eigenes Spiel!');return;}
+    chessRoomId=code;
+    chessMyColor='b';
+    chessBoardFlipped=true;
+    fbDb.ref('chessRooms/'+code).update({
+      guest:currentUser.uid,
+      guestName:currentUser.username||'Spieler 2',
+      status:'playing'
+    });
+    document.getElementById('chessJoinInput').style.display='none';
+    chessRoomInfo('✅ verbunden! Du spielst Schwarz.');
+    chessListenRoom(code);
+  }).catch(()=>chessRoomInfo('❌ Fehler beim Verbinden!'));
+}
+
+function chessListenRoom(code){
+  if(chessRoomListener) chessRoomListener();
+  const ref=fbDb.ref('chessRooms/'+code);
+  const handler=ref.on('value',snap=>{
+    const room=snap.val();
+    if(!room) return;
+    if(room.status==='playing'&&room.guest&&room.host){
+      const oppName=chessMyColor==='w'?(room.guestName||'Gegner'):(room.hostName||'Gegner');
+      chessRoomInfo('🟢 '+oppName+' ist dabei! Spiel läuft...');
+      document.getElementById('chessNameW').textContent=chessMyColor==='w'?'Du':(room.hostName||'Weiß');
+      document.getElementById('chessNameB').textContent=chessMyColor==='b'?'Du':(room.guestName||'Schwarz');
+    }
+    if(room.status==='resigned'){
+      const msg=room.resignedBy===currentUser.uid?'🏳️ Du hast aufgegeben.':'🏆 Gegner hat aufgegeben! Du gewinnst!';
+      chessShowMsg(msg); chessGameOver=true; return;
+    }
+    const newBoard=JSON.parse(room.board||'null');
+    if(!newBoard)return;
+    const newTurn=room.turn||'w';
+    if(newTurn!==chessTurn||JSON.stringify(newBoard)!==JSON.stringify(chessBoard)){
+      chessBoard=newBoard;
+      chessTurn=newTurn;
+      chessCastling=JSON.parse(room.castling||'{}');
+      chessEnPassant=room.ep?JSON.parse(room.ep):null;
+      chessLastMove=room.lastMove?JSON.parse(room.lastMove):null;
+      chessAIThinking=false;
+      chessSelected=null;
+      const inCheck=chessIsInCheck(chessTurn,chessBoard);
+      const hasLegal=chessHasAnyLegal(chessTurn,chessBoard);
+      if(!hasLegal){
+        chessGameOver=true;
+        if(inCheck){chessShowMsg('♚ SCHACHMATT!!');chessAudio.gameOver();setTimeout(()=>chessFallKing(chessTurn),300);}
+        else{chessShowMsg('🤝 PATT!!');}
+      } else if(inCheck){
+        chessShowMsg('⚠️ SCHACH!');chessAudio.check();
+      } else {
+        chessShowMsg('');
+        chessAudio.move();
+      }
+      chessUpdateStrips();
+      chessRenderBoard();
+    }
+  });
+  chessRoomListener=()=>ref.off('value',handler);
+}
+
+function chessPushMove(fr,fc,tr,tc){
+  if(!chessRoomId)return;
+  fbDb.ref('chessRooms/'+chessRoomId).update({
+    board:JSON.stringify(chessBoard),
+    turn:chessTurn,
+    castling:JSON.stringify(chessCastling),
+    ep:chessEnPassant?JSON.stringify(chessEnPassant):null,
+    lastMove:JSON.stringify([fr,fc,tr,tc])
+  });
+}
+
+function chessLeaveRoom(){
+  if(chessRoomListener){chessRoomListener();chessRoomListener=null;}
+  if(chessRoomId){
+    fbDb.ref('chessRooms/'+chessRoomId+'/status').once('value').then(s=>{
+      if(s.val()==='waiting') fbDb.ref('chessRooms/'+chessRoomId).remove();
+    }).catch(()=>{});
+    chessRoomId=null;
+  }
+  const lobby=document.getElementById('chessOnlineLobby');
+  if(lobby&&chessMode==='online'){
+    document.getElementById('chessRoomCodeWrap').style.display='none';
+    document.getElementById('chessJoinInput').style.display='none';
+  }
+}
+
+function chessRoomInfo(txt){
+  const el=document.getElementById('chessRoomInfo');
+  if(el)el.textContent=txt;
+}
+
+function chessCopyCode(){
+  const code=document.getElementById('chessRoomCodeVal').textContent;
+  navigator.clipboard.writeText(code).then(()=>showEgg('📋 Code kopiert: '+code)).catch(()=>{});
+}
+
+window.chessCreateRoom=chessCreateRoom;
+window.chessShowJoin=chessShowJoin;
+window.chessJoinRoom=chessJoinRoom;
+window.chessCopyCode=chessCopyCode;
+window.chessLeaveRoom=chessLeaveRoom;
 
 
 
